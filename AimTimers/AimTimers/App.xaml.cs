@@ -19,9 +19,12 @@ namespace AimTimers
                 var unityContainer = new UnityContainer();
                 unityContainer.RegisterType<IDataStore<AimTimerItem>, MockDataStore>();
                 unityContainer.RegisterType<IAimTimerService, AimTimerService>();
-                unityContainer.RegisterType<IAimTimerItemViewModelFactory, AimTimerItemViewModelFactory>();
                 unityContainer.RegisterType<IAimTimerTickService, AimTimerTickService>();
+
                 unityContainer.RegisterType<IViewFactory, ViewFactory>();
+                unityContainer.RegisterType<IAimTimerItemViewModelFactory, AimTimerItemViewModelFactory>();
+                unityContainer.RegisterType<IAimTimerViewModelFactory, AimTimerViewModelFactory>();
+
                 unityContainer.RegisterType<IAimTimersViewModel, AimTimersViewModel>();
                 unityContainer.RegisterType<IMainPageViewModel, MainPageViewModel>();
 

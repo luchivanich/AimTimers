@@ -14,6 +14,10 @@ namespace AimTimers.Models
 
         public AimTimerItemStatus Status { get; set; }
 
+        public DateTime? StartOfActivityPeriod { get; set; }
+
+        public DateTime? EndOfActivityPeriod { get; set; }
+
         public TimeSpan TimeLeft => GetTimeLeft();
 
         private TimeSpan GetTimeLeft()
@@ -34,12 +38,15 @@ namespace AimTimers.Models
 
         public void Start()
         {
-            if (AimTimerIntervals.Any(i => i.EndDate == null))
+            var now = DateTime.Now;
+            if ((StartOfActivityPeriod.HasValue && now < StartOfActivityPeriod) || 
+                (EndOfActivityPeriod.HasValue && now > EndOfActivityPeriod ) || 
+                AimTimerIntervals.Any(i => i.EndDate == null))
             {
                 return;
             }
 
-            AimTimerIntervals.Add(new AimTimerInterval { AimTimerItem = this, StartDate = DateTime.Now, EndDate = null });
+            AimTimerIntervals.Add(new AimTimerInterval { AimTimerItem = this, StartDate = now, EndDate = null });
         }
 
     }

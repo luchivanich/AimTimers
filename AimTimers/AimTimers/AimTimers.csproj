@@ -23,8 +23,8 @@
     <Compile Update="Views\AimTimersPage.xaml.cs">
       <DependentUpon>AimTimersPage.xaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\AimTimerItemPage.xaml.cs">
-      <DependentUpon>AimTimerItemPage.xaml</DependentUpon>
+    <Compile Update="Views\AimTimerPage.xaml.cs">
+      <DependentUpon>AimTimerPage.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
 </Project>

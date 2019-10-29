@@ -2,9 +2,9 @@
 
 namespace AimTimers.Views
 {
-    public partial class AimTimerItemPage : ContentPage
+    public partial class AimTimerPage : ContentPage
     {
-        public AimTimerItemPage()
+        public AimTimerPage()
         {
             InitializeComponent();
         }

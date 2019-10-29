@@ -15,7 +15,7 @@ namespace AimTimers.ViewModels
         public IAimTimerItemViewModel Create(AimTimerItem aimTimerItem)
         {
             var result = new AimTimerItemViewModel(_aimTimerService);
-            result.SetAimTimer(aimTimerItem);
+            result.Setup(aimTimerItem);
             return result;
         }
 

@@ -30,6 +30,7 @@ namespace AimTimers.ViewModels
                 OnPropertyChanged();
             }
         }
+
         public string TimeLeft => _aimTimerItem.TimeLeft.ToString();
 
         public AimTimerItemViewModel(IAimTimerTickService aimTimerService)
@@ -37,9 +38,14 @@ namespace AimTimers.ViewModels
             _aimTimerService = aimTimerService;
         }
 
-        public void SetAimTimer(AimTimerItem aimTimerItem)
+        public void Setup(AimTimerItem aimTimerItem)
         {
             _aimTimerItem = aimTimerItem;
+        }
+
+        public AimTimer GetAimTimer()
+        {
+            return _aimTimerItem.AimTimer;
         }
 
         public void RefreshTimeLeft()

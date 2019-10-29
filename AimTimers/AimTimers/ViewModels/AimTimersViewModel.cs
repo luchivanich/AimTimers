@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-
-using Xamarin.Forms;
-
-using AimTimers.Services;
-using System.Windows.Input;
-using AimTimers.Views;
 using System.Threading.Tasks;
+using System.Windows.Input;
+using AimTimers.Services;
+using AimTimers.Views;
+using Xamarin.Forms;
 
 namespace AimTimers.ViewModels
 {
@@ -16,6 +14,7 @@ namespace AimTimers.ViewModels
         private readonly IViewFactory _viewFactory;
         private readonly IAimTimerService _aimTimerService;
         private readonly IAimTimerItemViewModelFactory _aimTimerItemViewModelFactory;
+        private readonly IAimTimerViewModelFactory _aimTimerViewModelFactory;
 
         private System.Timers.Timer _timer;
 
@@ -46,9 +45,8 @@ namespace AimTimers.ViewModels
 
         private async Task ExecuteAddItemCommand()
         {
-            var aimTimerItemViewModel = _aimTimerItemViewModelFactory.CreateNew();
-            await _viewFactory.NavigatePageAsync(aimTimerItemViewModel);
-
+            var aimTimerViewModel = _aimTimerViewModelFactory.CreateNew();
+            await _viewFactory.NavigatePageAsync(aimTimerViewModel);
         }
 
         public ICommand SelectItemCommand
@@ -61,16 +59,18 @@ namespace AimTimers.ViewModels
 
         private async Task ExecuteItemSelectCommand(IAimTimerItemViewModel aimTimerItemViewModel)
         {
-            await _viewFactory.NavigatePageAsync(aimTimerItemViewModel);
+            var aimTimerViewModel = _aimTimerViewModelFactory.Create(aimTimerItemViewModel.GetAimTimer());
+            await _viewFactory.NavigatePageAsync(aimTimerViewModel);
         }
 
         #endregion
 
-        public AimTimersViewModel(IViewFactory viewFactory, IAimTimerService aimTimerService, IAimTimerItemViewModelFactory aimTimerItemViewModelFactory)
+        public AimTimersViewModel(IViewFactory viewFactory, IAimTimerService aimTimerService, IAimTimerItemViewModelFactory aimTimerItemViewModelFactory, IAimTimerViewModelFactory aimTimerViewModelFactory)
         {
             _viewFactory = viewFactory;
             _aimTimerService = aimTimerService;
             _aimTimerItemViewModelFactory = aimTimerItemViewModelFactory;
+            _aimTimerViewModelFactory = aimTimerViewModelFactory;
 
             _timer = new System.Timers.Timer();
             _timer.Interval = 1000;
@@ -78,15 +78,6 @@ namespace AimTimers.ViewModels
 
             _timer.Enabled = true;
 
-
-            //MessagingCenter.Subscribe<NewItemPage, AimTimer>(this, "AddItem", async (obj, item) =>
-            //{
-            //    var newItem = item as AimTimer;
-            //    var aimTimerViewModel = DependencyService.Resolve<AimTimerItemViewModel>();
-            //    aimTimerViewModel.SetAimTimer(newItem);
-            //    Items.Add(aimTimerViewModel);
-            //    await DataStore.AddItemAsync(newItem);
-            //});
             LoadData();
         }
 
