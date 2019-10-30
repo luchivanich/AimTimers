@@ -81,7 +81,7 @@ namespace AimTimers.ViewModels
             LoadData();
         }
 
-        private async void LoadData()
+        private void LoadData()
         {
             if (IsBusy)
                 return;
@@ -91,7 +91,7 @@ namespace AimTimers.ViewModels
             try
             {
                 AimTimerItemViewModels.Clear();
-                var items = await _aimTimerService.GetActiveAimTimerItems();
+                var items = _aimTimerService.GetActiveAimTimerItems();
                 foreach (var item in items)
                 {
                     AimTimerItemViewModels.Add(_aimTimerItemViewModelFactory.Create(item));

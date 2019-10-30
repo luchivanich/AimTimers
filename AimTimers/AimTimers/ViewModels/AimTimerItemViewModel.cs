@@ -1,14 +1,12 @@
-﻿using System.Windows.Input;
+﻿using System;
+using System.Windows.Input;
 using AimTimers.Models;
-using AimTimers.Services;
 using Xamarin.Forms;
 
 namespace AimTimers.ViewModels
 {
     public class AimTimerItemViewModel : BaseViewModel, IAimTimerItemViewModel
     {
-        private IAimTimerTickService _aimTimerService;
-
         private AimTimerItem _aimTimerItem;
 
         public string Title
@@ -31,12 +29,17 @@ namespace AimTimers.ViewModels
             }
         }
 
-        public string TimeLeft => _aimTimerItem.TimeLeft.ToString();
-
-        public AimTimerItemViewModel(IAimTimerTickService aimTimerService)
+        public DateTime? EndOfActivityPeriod
         {
-            _aimTimerService = aimTimerService;
+            get => _aimTimerItem.EndOfActivityPeriod;
+            set
+            {
+                _aimTimerItem.EndOfActivityPeriod = value;
+                OnPropertyChanged();
+            }
         }
+
+        public string TimeLeft => _aimTimerItem.TimeLeft.ToString();
 
         public void Setup(AimTimerItem aimTimerItem)
         {

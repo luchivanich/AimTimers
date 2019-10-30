@@ -50,6 +50,8 @@
                                 LineBreakMode="NoWrap"
                                 Style="{DynamicResource ListItemDetailTextStyle}"
                                 FontSize="13" />
+                            <Label Text="Expires" />
+                            <Label Text="{Binding EndOfActivityPeriod}" />
                             <Button Text="Pause" 
                                 d:Text="Pause"
                                 Command="{Binding PauseCommand}"

@@ -22,6 +22,7 @@ namespace AimTimers.Models
 
         private TimeSpan GetTimeLeft()
         {
+            Refresh();
             return (AimTimer.Time ?? new TimeSpan()) - new TimeSpan(AimTimerIntervals?.Sum(i => (i.EndDate ?? DateTime.Now).Ticks - i.StartDate.Ticks) ?? 0);
         }
 
@@ -47,6 +48,14 @@ namespace AimTimers.Models
             }
 
             AimTimerIntervals.Add(new AimTimerInterval { AimTimerItem = this, StartDate = now, EndDate = null });
+        }
+
+        private void Refresh()
+        {
+            foreach(var item in AimTimerIntervals.Where(i => i.EndDate > EndOfActivityPeriod || (i.EndDate == null && DateTime.Now > EndOfActivityPeriod)))
+            {
+                item.EndDate = EndOfActivityPeriod;
+            }
         }
 
     }

@@ -1,6 +1,5 @@
 ﻿using Xamarin.Forms;
 using AimTimers.Services;
-using AimTimers.Models;
 using AimTimers.ViewModels;
 using Unity;
 using AimTimers.Views;
@@ -16,10 +15,11 @@ namespace AimTimers
             {
                 InitializeComponent();
 
+                MainPage = new MainPage();
+
                 var unityContainer = new UnityContainer();
-                unityContainer.RegisterType<IDataStore<AimTimerItem>, MockDataStore>();
-                unityContainer.RegisterType<IAimTimerService, AimTimerService>();
-                unityContainer.RegisterType<IAimTimerTickService, AimTimerTickService>();
+                unityContainer.RegisterInstance(Current.MainPage.Navigation);
+                unityContainer.RegisterSingleton<IAimTimerService, AimTimerService>();
 
                 unityContainer.RegisterType<IViewFactory, ViewFactory>();
                 unityContainer.RegisterType<IAimTimerItemViewModelFactory, AimTimerItemViewModelFactory>();
@@ -28,7 +28,6 @@ namespace AimTimers
                 unityContainer.RegisterType<IAimTimersViewModel, AimTimersViewModel>();
                 unityContainer.RegisterType<IMainPageViewModel, MainPageViewModel>();
 
-                MainPage = new MainPage();
                 MainPage.BindingContext = unityContainer.Resolve<IMainPageViewModel>();
             }
             catch (Exception e)

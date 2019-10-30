@@ -6,6 +6,13 @@ namespace AimTimers.Views
 {
     public class ViewFactory : IViewFactory
     {
+        private readonly INavigation _navigation;
+
+        public ViewFactory(INavigation navigation)
+        {
+            _navigation = navigation;
+        }
+
         public Page CreatePage(object viewModel)
         {
             var viewModelClassName = viewModel.GetType().Name;
@@ -20,7 +27,7 @@ namespace AimTimers.Views
         public async Task NavigatePageAsync(object viewModel)
         {
             var page = CreatePage(viewModel);
-            await Application.Current.MainPage.Navigation.PushAsync(page);
+            await _navigation.PushAsync(page);
         }
     }
 }

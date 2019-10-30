@@ -1,13 +1,17 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using AimTimers.Models;
+using AimTimers.Services;
 using Xamarin.Forms;
 
 namespace AimTimers.ViewModels
 {
     public class AimTimerViewModel : BaseViewModel, IAimTimerViewModel
     {
+        private readonly INavigation _navigation;
+        private readonly IAimTimerService _aimTimerService;
         private AimTimer _aimTimer;
 
         #region Properties
@@ -44,6 +48,12 @@ namespace AimTimers.ViewModels
 
         #endregion
 
+        public AimTimerViewModel(INavigation navigation, IAimTimerService aimTimerService)
+        {
+            _navigation = navigation;
+            _aimTimerService = aimTimerService;
+        }
+
         #region Commands
 
         public ICommand UpdateItemCommand
@@ -56,7 +66,11 @@ namespace AimTimers.ViewModels
 
         private async Task ExecuteUpdateItemCommand()
         {
-
+            if (_aimTimerService.GetActiveAimTimerItems().All(i => i.AimTimer != _aimTimer))
+            {
+                _aimTimerService.AddAimTimer(_aimTimer);
+            }
+            await _navigation.PopAsync();
         }
 
         #endregion
