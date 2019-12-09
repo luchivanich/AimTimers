@@ -24,6 +24,9 @@ namespace AimTimers.Droid
                 global::Xamarin.Forms.Forms.SetFlags("Shell_Experimental", "Visual_Experimental", "CollectionView_Experimental", "FastRenderers_Experimental");
                 Xamarin.Essentials.Platform.Init(this, savedInstanceState);
                 global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
+
+                Couchbase.Lite.Support.Droid.Activate(this);
+
                 LoadApplication(new App());
             }
             catch (Exception e)

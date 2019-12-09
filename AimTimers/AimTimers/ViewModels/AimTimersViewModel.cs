@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using AimTimers.Models;
 using AimTimers.Services;
 using AimTimers.Views;
 using Xamarin.Forms;
@@ -14,7 +15,7 @@ namespace AimTimers.ViewModels
         private readonly IViewFactory _viewFactory;
         private readonly IAimTimerService _aimTimerService;
         private readonly IAimTimerItemViewModelFactory _aimTimerItemViewModelFactory;
-        private readonly IAimTimerViewModelFactory _aimTimerViewModelFactory;
+        private readonly Func<IAimTimerViewModel> _aimTimerViewModelFactory;
 
         private System.Timers.Timer _timer;
 
@@ -45,7 +46,8 @@ namespace AimTimers.ViewModels
 
         private async Task ExecuteAddItemCommand()
         {
-            var aimTimerViewModel = _aimTimerViewModelFactory.CreateNew();
+            var aimTimerViewModel = _aimTimerViewModelFactory.Invoke();
+            aimTimerViewModel.Setup(new AimTimer());
             await _viewFactory.NavigatePageAsync(aimTimerViewModel);
         }
 
@@ -59,13 +61,14 @@ namespace AimTimers.ViewModels
 
         private async Task ExecuteItemSelectCommand(IAimTimerItemViewModel aimTimerItemViewModel)
         {
-            var aimTimerViewModel = _aimTimerViewModelFactory.Create(aimTimerItemViewModel.GetAimTimer());
+            var aimTimerViewModel = _aimTimerViewModelFactory.Invoke();
+            aimTimerViewModel.Setup(aimTimerItemViewModel.GetAimTimer());
             await _viewFactory.NavigatePageAsync(aimTimerViewModel);
         }
 
         #endregion
 
-        public AimTimersViewModel(IViewFactory viewFactory, IAimTimerService aimTimerService, IAimTimerItemViewModelFactory aimTimerItemViewModelFactory, IAimTimerViewModelFactory aimTimerViewModelFactory)
+        public AimTimersViewModel(IViewFactory viewFactory, IAimTimerService aimTimerService, IAimTimerItemViewModelFactory aimTimerItemViewModelFactory, Func<IAimTimerViewModel> aimTimerViewModelFactory)
         {
             _viewFactory = viewFactory;
             _aimTimerService = aimTimerService;

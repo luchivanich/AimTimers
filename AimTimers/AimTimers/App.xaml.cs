@@ -4,6 +4,8 @@ using AimTimers.ViewModels;
 using Unity;
 using AimTimers.Views;
 using System;
+using AimTimers.Repository;
+using Unity.Injection;
 
 namespace AimTimers
 {
@@ -19,13 +21,18 @@ namespace AimTimers
 
                 var unityContainer = new UnityContainer();
                 unityContainer.RegisterInstance(Current.MainPage.Navigation);
+                unityContainer.RegisterSingleton<IRepository, BaseRepository>();
                 unityContainer.RegisterSingleton<IAimTimerService, AimTimerService>();
 
                 unityContainer.RegisterType<IViewFactory, ViewFactory>();
                 unityContainer.RegisterType<IAimTimerItemViewModelFactory, AimTimerItemViewModelFactory>();
-                unityContainer.RegisterType<IAimTimerViewModelFactory, AimTimerViewModelFactory>();
+                
+                //unityContainer.RegisterType<IAimTimerViewModelFactory, AimTimerViewModelFactory>();
 
                 unityContainer.RegisterType<IAimTimersViewModel, AimTimersViewModel>();
+                unityContainer.RegisterType<IAimTimerViewModel, AimTimerViewModel>();
+                unityContainer.RegisterFactory<Func<IAimTimerViewModel>>(c => new Func<IAimTimerViewModel>(() => c.Resolve<IAimTimerViewModel>()));
+
                 unityContainer.RegisterType<IMainPageViewModel, MainPageViewModel>();
 
                 MainPage.BindingContext = unityContainer.Resolve<IMainPageViewModel>();

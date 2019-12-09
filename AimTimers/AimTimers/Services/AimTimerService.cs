@@ -2,15 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using AimTimers.Models;
+using AimTimers.Repository;
 
 namespace AimTimers.Services
 {
     public class AimTimerService : IAimTimerService
     {
+        private readonly IRepository _repository;
+
         private List<AimTimer> _aimTimers = new List<AimTimer>();
 
-        public AimTimerService()
+        public AimTimerService(IRepository repository)
         {
+            _repository = repository;
         }
 
         public IEnumerable<AimTimerItem> GetActiveAimTimerItems()
@@ -31,6 +35,7 @@ namespace AimTimers.Services
 
         public void AddAimTimer(AimTimer aimTimer)
         {
+            _repository.Save(aimTimer);
             _aimTimers.Add(aimTimer);
         }
     }
