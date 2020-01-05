@@ -1,11 +1,10 @@
 ﻿using System;
-
+using AimTimers.Di;
 using Android.App;
 using Android.Content.PM;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
 using Android.OS;
+using Android.Runtime;
+using Unity;
 
 namespace AimTimers.Droid
 {
@@ -21,13 +20,20 @@ namespace AimTimers.Droid
 
                 base.OnCreate(savedInstanceState);
 
+                AndroidEnvironment.UnhandledExceptionRaiser -= StoreLogger;
+                AndroidEnvironment.UnhandledExceptionRaiser += StoreLogger;
+
                 global::Xamarin.Forms.Forms.SetFlags("Shell_Experimental", "Visual_Experimental", "CollectionView_Experimental", "FastRenderers_Experimental");
                 Xamarin.Essentials.Platform.Init(this, savedInstanceState);
                 global::Xamarin.Forms.Forms.Init(this, savedInstanceState);
 
                 Couchbase.Lite.Support.Droid.Activate(this);
 
-                LoadApplication(new App());
+                var diContainer = new DiContainer();
+                var unityContainer = diContainer.SetupIoc();
+                var application = unityContainer.Resolve<Xamarin.Forms.Application>();
+
+                LoadApplication(application);
             }
             catch (Exception e)
             {
@@ -39,6 +45,12 @@ namespace AimTimers.Droid
             Xamarin.Essentials.Platform.OnRequestPermissionsResult(requestCode, permissions, grantResults);
 
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+
+        private void StoreLogger(object sender, RaiseThrowableEventArgs e)
+        {
+            Console.WriteLine(e.Exception.StackTrace);
+            var i = 1;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Windows.Input;
 using AimTimers.Models;
 using Xamarin.Forms;
@@ -8,47 +9,45 @@ namespace AimTimers.ViewModels
     public class AimTimerItemViewModel : BaseViewModel, IAimTimerItemViewModel
     {
         private AimTimerItem _aimTimerItem;
+        private AimTimer _aimTimer;
 
         public string Title
         {
-            get => _aimTimerItem.AimTimer.Title;
+            get => _aimTimer.Title;
             set
             {
-                _aimTimerItem.AimTimer.Title = value;
+                _aimTimer.Title = value;
                 OnPropertyChanged();
             }
         }
 
         public string Description
         {
-            get => _aimTimerItem.AimTimer.Description;
+            get => _aimTimer.Description;
             set
             {
-                _aimTimerItem.AimTimer.Description = value;
+                _aimTimer.Description = value;
                 OnPropertyChanged();
             }
         }
 
-        public DateTime? EndOfActivityPeriod
+        public string TimeLeft => GetTimeLeft().ToString();
+
+        public TimeSpan GetTimeLeft()
         {
-            get => _aimTimerItem.EndOfActivityPeriod;
-            set
-            {
-                _aimTimerItem.EndOfActivityPeriod = value;
-                OnPropertyChanged();
-            }
+            _aimTimerItem.Refresh();
+            return new TimeSpan(_aimTimer.Ticks ?? 0) - new TimeSpan(_aimTimerItem?.AimTimerIntervals?.Sum(i => (i.EndDate ?? DateTime.Now).Ticks - i.StartDate.Ticks) ?? 0);
         }
 
-        public string TimeLeft => _aimTimerItem.TimeLeft.ToString();
-
-        public void Setup(AimTimerItem aimTimerItem)
+        public void Setup(AimTimer aimTimer, AimTimerItem aimTimerItem)
         {
+            _aimTimer = aimTimer;
             _aimTimerItem = aimTimerItem;
         }
 
         public AimTimer GetAimTimer()
         {
-            return _aimTimerItem.AimTimer;
+            return _aimTimer;
         }
 
         public void RefreshTimeLeft()

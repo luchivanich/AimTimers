@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 
 namespace AimTimers.Models
 {
@@ -6,6 +7,7 @@ namespace AimTimers.Models
     {
         public string Id { get; set; }
 
+        [JsonIgnore]
         public AimTimerItem AimTimerItem { get; set; }
 
         public DateTime StartDate { get; set; }

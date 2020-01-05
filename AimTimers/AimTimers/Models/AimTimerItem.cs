@@ -8,22 +8,16 @@ namespace AimTimers.Models
     {
         public int Id { get; set; }
 
-        public AimTimer AimTimer { get; set; }
-
         public List<AimTimerInterval> AimTimerIntervals { get; set; } = new List<AimTimerInterval>();
 
-        public AimTimerItemStatus Status { get; set; }
+        public DateTime StartOfActivityPeriod { get; private set; }
 
-        public DateTime? StartOfActivityPeriod { get; set; }
+        public DateTime EndOfActivityPeriod { get; private set; }
 
-        public DateTime? EndOfActivityPeriod { get; set; }
-
-        public TimeSpan TimeLeft => GetTimeLeft();
-
-        private TimeSpan GetTimeLeft()
+        public AimTimerItem(DateTime startOfActivityPeriod, DateTime endOfActivityPeriod)
         {
-            Refresh();
-            return (AimTimer.Time ?? new TimeSpan()) - new TimeSpan(AimTimerIntervals?.Sum(i => (i.EndDate ?? DateTime.Now).Ticks - i.StartDate.Ticks) ?? 0);
+            StartOfActivityPeriod = startOfActivityPeriod;
+            EndOfActivityPeriod = endOfActivityPeriod;
         }
 
         public void Pause()
@@ -40,9 +34,7 @@ namespace AimTimers.Models
         public void Start()
         {
             var now = DateTime.Now;
-            if ((StartOfActivityPeriod.HasValue && now < StartOfActivityPeriod) || 
-                (EndOfActivityPeriod.HasValue && now > EndOfActivityPeriod ) || 
-                AimTimerIntervals.Any(i => i.EndDate == null))
+            if (now < StartOfActivityPeriod ||  now > EndOfActivityPeriod || AimTimerIntervals.Any(i => i.EndDate == null))
             {
                 return;
             }
@@ -50,7 +42,7 @@ namespace AimTimers.Models
             AimTimerIntervals.Add(new AimTimerInterval { AimTimerItem = this, StartDate = now, EndDate = null });
         }
 
-        private void Refresh()
+        public void Refresh()
         {
             foreach(var item in AimTimerIntervals.Where(i => i.EndDate > EndOfActivityPeriod || (i.EndDate == null && DateTime.Now > EndOfActivityPeriod)))
             {

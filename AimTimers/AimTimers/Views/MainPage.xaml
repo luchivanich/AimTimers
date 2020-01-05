@@ -6,7 +6,7 @@
        mc:Ignorable="d"
        xmlns:local="clr-namespace:AimTimers.Views"
        Title="AimTimers"
-       x:Class="AimTimers.MainPage">
+       x:Class="AimTimers.Views.MainPage">
 
     <!-- 
         Styles and Resources 

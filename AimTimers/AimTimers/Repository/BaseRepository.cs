@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Couchbase.Lite;
+using Couchbase.Lite.Query;
+using Newtonsoft.Json;
 
 namespace AimTimers.Repository
 {
@@ -46,10 +49,40 @@ namespace AimTimers.Repository
             Database = null;
         }
 
-        public void Save<T>(T model)
+        public void Save<T>(T model, string id)
         {
-            var mutableDocument = model.ToMutableDocument();
-            Database.Save(mutableDocument);
+            try
+            {
+                var mutableDocument = model.ToMutableDocument(id);
+                Database.Save(mutableDocument);
+            }
+            catch(Exception e)
+            {
+
+            }
+        }
+
+        public List<T> LoadAll<T>()
+        {
+            var result = new List<T>();
+            using (var query = QueryBuilder.Select(SelectResult.All()).From(DataSource.Database(Database)))
+            {
+                foreach (var item in query.Execute())
+                {
+                    try
+                    {
+                        var body = item.GetDictionary(0);
+                        var jsonString = JsonConvert.SerializeObject(body);
+                    
+                        result.Add(JsonConvert.DeserializeObject<T>(jsonString));
+                    }
+                    catch(Exception e)
+                    {
+
+                    }
+                }
+            }
+            return result;
         }
     }
 }

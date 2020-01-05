@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace AimTimers.Views
@@ -22,12 +21,6 @@ namespace AimTimers.Views
             var result = Activator.CreateInstance(pageType) as Page;
             result.BindingContext = viewModel;
             return result;
-        }
-
-        public async Task NavigatePageAsync(object viewModel)
-        {
-            var page = CreatePage(viewModel);
-            await _navigation.PushAsync(page);
         }
     }
 }

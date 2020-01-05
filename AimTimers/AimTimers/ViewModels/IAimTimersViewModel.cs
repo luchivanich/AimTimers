@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace AimTimers.ViewModels
+﻿namespace AimTimers.ViewModels
 {
     public interface IAimTimersViewModel
     {
+        void Init();
     }
 }

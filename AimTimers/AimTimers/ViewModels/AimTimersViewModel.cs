@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using AimTimers.Models;
 using AimTimers.Services;
+using AimTimers.ViewModelFactories;
 using AimTimers.Views;
 using Xamarin.Forms;
 
@@ -12,10 +13,11 @@ namespace AimTimers.ViewModels
 {
     public class AimTimersViewModel : BaseViewModel, IAimTimersViewModel
     {
+        private readonly INavigation _navigation;
         private readonly IViewFactory _viewFactory;
         private readonly IAimTimerService _aimTimerService;
         private readonly IAimTimerItemViewModelFactory _aimTimerItemViewModelFactory;
-        private readonly Func<IAimTimerViewModel> _aimTimerViewModelFactory;
+        private readonly IAimTimerViewModelFactory _aimTimerViewModelFactory;
 
         private System.Timers.Timer _timer;
 
@@ -46,9 +48,7 @@ namespace AimTimers.ViewModels
 
         private async Task ExecuteAddItemCommand()
         {
-            var aimTimerViewModel = _aimTimerViewModelFactory.Invoke();
-            aimTimerViewModel.Setup(new AimTimer());
-            await _viewFactory.NavigatePageAsync(aimTimerViewModel);
+            await NavigateAimTimerView(new AimTimer());
         }
 
         public ICommand SelectItemCommand
@@ -61,27 +61,41 @@ namespace AimTimers.ViewModels
 
         private async Task ExecuteItemSelectCommand(IAimTimerItemViewModel aimTimerItemViewModel)
         {
-            var aimTimerViewModel = _aimTimerViewModelFactory.Invoke();
-            aimTimerViewModel.Setup(aimTimerItemViewModel.GetAimTimer());
-            await _viewFactory.NavigatePageAsync(aimTimerViewModel);
+            await NavigateAimTimerView(aimTimerItemViewModel.GetAimTimer());
+        }
+
+        private async Task NavigateAimTimerView(AimTimer aimTimer)
+        {
+            var aimTimerViewModel = _aimTimerViewModelFactory.Create(aimTimer);
+            var aimTimerView = _viewFactory.CreatePage(aimTimerViewModel);
+            await _navigation.PushAsync(aimTimerView);
         }
 
         #endregion
 
-        public AimTimersViewModel(IViewFactory viewFactory, IAimTimerService aimTimerService, IAimTimerItemViewModelFactory aimTimerItemViewModelFactory, Func<IAimTimerViewModel> aimTimerViewModelFactory)
+        public AimTimersViewModel(
+            INavigation navigation,
+            IViewFactory viewFactory,
+            IAimTimerService aimTimerService,
+            IAimTimerItemViewModelFactory aimTimerItemViewModelFactory,
+            IAimTimerViewModelFactory aimTimerViewModelFactory)
         {
+            _navigation = navigation;
             _viewFactory = viewFactory;
             _aimTimerService = aimTimerService;
             _aimTimerItemViewModelFactory = aimTimerItemViewModelFactory;
             _aimTimerViewModelFactory = aimTimerViewModelFactory;
+        }
+
+        public void Init()
+        {
+            LoadData();
 
             _timer = new System.Timers.Timer();
             _timer.Interval = 1000;
             _timer.Elapsed += OnTimedEvent;
 
             _timer.Enabled = true;
-
-            LoadData();
         }
 
         private void LoadData()
@@ -93,11 +107,13 @@ namespace AimTimers.ViewModels
 
             try
             {
+                var today = DateTime.Today;
                 AimTimerItemViewModels.Clear();
-                var items = _aimTimerService.GetActiveAimTimerItems();
-                foreach (var item in items)
+                var aimTimers = _aimTimerService.GetActiveAimTimers();
+                foreach (var aimTimer in aimTimers)
                 {
-                    AimTimerItemViewModels.Add(_aimTimerItemViewModelFactory.Create(item));
+                    var aimTimerItem = aimTimer.GetAimTimerByDate(today);
+                    AimTimerItemViewModels.Add(_aimTimerItemViewModelFactory.Create(aimTimer, aimTimerItem));
                 }
             }
             catch (Exception ex)

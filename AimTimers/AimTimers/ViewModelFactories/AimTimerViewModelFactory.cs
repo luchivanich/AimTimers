@@ -1,15 +1,16 @@
 ﻿using AimTimers.Models;
 using AimTimers.Services;
+using AimTimers.ViewModels;
 using Xamarin.Forms;
 
-namespace AimTimers.ViewModels
+namespace AimTimers.ViewModelFactories
 {
     public class AimTimerViewModelFactory : IAimTimerViewModelFactory
     {
         private readonly INavigation _navigation;
         private readonly IAimTimerService _aimTimerService;
 
-        public AimTimerViewModelFactory(IAimTimerService aimTimerService, INavigation navigation)
+        public AimTimerViewModelFactory(INavigation navigation, IAimTimerService aimTimerService)
         {
             _navigation = navigation;
             _aimTimerService = aimTimerService;
@@ -20,12 +21,6 @@ namespace AimTimers.ViewModels
             var result = new AimTimerViewModel(_navigation, _aimTimerService);
             result.Setup(aimTimer);
             return result;
-        }
-
-        public IAimTimerViewModel CreateNew()
-        {
-            var aimTimer = new AimTimer();
-            return Create(aimTimer);
         }
     }
 }

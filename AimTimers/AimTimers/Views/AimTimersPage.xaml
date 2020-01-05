@@ -36,7 +36,6 @@
                     <ViewCell>
                         <StackLayout Padding="10">
                             <Label Text="{Binding Title}" 
-                                d:Text="{Binding .}"
                                 LineBreakMode="NoWrap" 
                                 Style="{DynamicResource ListItemTextStyle}" 
                                 FontSize="16" />

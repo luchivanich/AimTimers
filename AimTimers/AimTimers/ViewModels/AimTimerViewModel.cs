@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using AimTimers.Models;
@@ -36,12 +35,12 @@ namespace AimTimers.ViewModels
             }
         }
 
-        public TimeSpan? Time
+        public TimeSpan Time
         {
-            get => _aimTimer.Time;
+            get => new TimeSpan(_aimTimer.Ticks ?? 0);
             set
             {
-                _aimTimer.Time = value;
+                _aimTimer.Ticks = value.Ticks;
                 OnPropertyChanged();
             }
         }
@@ -66,10 +65,10 @@ namespace AimTimers.ViewModels
 
         private async Task ExecuteUpdateItemCommand()
         {
-            if (_aimTimerService.GetActiveAimTimerItems().All(i => i.AimTimer != _aimTimer))
-            {
-                _aimTimerService.AddAimTimer(_aimTimer);
-            }
+            //if (_aimTimerService.GetActiveAimTimerItems().All(i => i.AimTimer != _aimTimer))
+            //{
+            //    _aimTimerService.AddAimTimer(_aimTimer);
+            //}
             await _navigation.PopAsync();
         }
 

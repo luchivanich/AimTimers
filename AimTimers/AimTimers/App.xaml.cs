@@ -1,46 +1,24 @@
-﻿using Xamarin.Forms;
-using AimTimers.Services;
-using AimTimers.ViewModels;
-using Unity;
+﻿using AimTimers.ViewModels;
 using AimTimers.Views;
-using System;
-using AimTimers.Repository;
-using Unity.Injection;
+using Xamarin.Forms;
 
 namespace AimTimers
 {
     public partial class App : Application
     {
-        public App()
+        private readonly IViewFactory _viewFactory;
+        private readonly IMainViewModel _mainViewModel;
+
+        public App(IViewFactory viewFactory, IMainViewModel mainViewModel)
         {
-            try
-            {
-                InitializeComponent();
+            _viewFactory = viewFactory;
+            _mainViewModel = mainViewModel;
+        }
 
-                MainPage = new MainPage();
-
-                var unityContainer = new UnityContainer();
-                unityContainer.RegisterInstance(Current.MainPage.Navigation);
-                unityContainer.RegisterSingleton<IRepository, BaseRepository>();
-                unityContainer.RegisterSingleton<IAimTimerService, AimTimerService>();
-
-                unityContainer.RegisterType<IViewFactory, ViewFactory>();
-                unityContainer.RegisterType<IAimTimerItemViewModelFactory, AimTimerItemViewModelFactory>();
-                
-                //unityContainer.RegisterType<IAimTimerViewModelFactory, AimTimerViewModelFactory>();
-
-                unityContainer.RegisterType<IAimTimersViewModel, AimTimersViewModel>();
-                unityContainer.RegisterType<IAimTimerViewModel, AimTimerViewModel>();
-                unityContainer.RegisterFactory<Func<IAimTimerViewModel>>(c => new Func<IAimTimerViewModel>(() => c.Resolve<IAimTimerViewModel>()));
-
-                unityContainer.RegisterType<IMainPageViewModel, MainPageViewModel>();
-
-                MainPage.BindingContext = unityContainer.Resolve<IMainPageViewModel>();
-            }
-            catch (Exception e)
-            {
-                var i = 0;
-            }
+        public void Init()
+        {
+            InitializeComponent();
+            MainPage = _viewFactory.CreatePage(_mainViewModel);
         }
     }
 }

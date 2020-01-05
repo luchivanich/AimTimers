@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace AimTimers.Models
 {
@@ -8,19 +9,24 @@ namespace AimTimers.Models
         public string Id { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
-        public TimeSpan? Time { get; set; }
+        public long? Ticks { get; set; }
         public List<AimTimerItem> AimTimerItems { get; set; } = new List<AimTimerItem>();
 
-        public AimTimerItem AddAimTimerItem(DateTime date)
+        public AimTimerItem GetAimTimerByDate(DateTime date)
         {
-            var result = new AimTimerItem
+            var aimTimerItem = AimTimerItems.FirstOrDefault(i => i.StartOfActivityPeriod.Date == date.Date);
+            if (aimTimerItem == null)
             {
-                AimTimer = this,
-                StartOfActivityPeriod = date,
-                EndOfActivityPeriod = date.AddDays(1).AddTicks(-1)
-            };
-            AimTimerItems.Add(result);
-            return result;
+                aimTimerItem = AddAimTimerItem(date);
+            }
+            return aimTimerItem;
+        }
+
+        private AimTimerItem AddAimTimerItem(DateTime date)
+        {
+            var aimTimerItem = new AimTimerItem(date.Date, date.Date.AddDays(1).AddTicks(-1));
+            AimTimerItems.Add(aimTimerItem);
+            return aimTimerItem;
         }
     }
 }

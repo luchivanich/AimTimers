@@ -1,9 +1,10 @@
-﻿using AimTimers.Views;
+﻿using AimTimers.ViewModelFactories;
+using AimTimers.Views;
 using Xamarin.Forms;
 
 namespace AimTimers.ViewModels
 {
-    public class MainPageViewModel : BaseViewModel, IMainPageViewModel
+    public class MainViewModel : BaseViewModel, IMainViewModel
     {
         private readonly IViewFactory _viewFactory;
         private readonly IAimTimersViewModel _aimTimersViewModel;
@@ -19,7 +20,6 @@ namespace AimTimers.ViewModels
             }
         }
 
-
         private DataTemplate _archiveItemsTab;
         public DataTemplate ArchiveItemsTab
         {
@@ -31,15 +31,13 @@ namespace AimTimers.ViewModels
             }
         }
 
-        public MainPageViewModel(IViewFactory viewFactory, IAimTimersViewModel aimTimersViewModel)
+        public MainViewModel(IViewFactory viewFactory, IAimTimersViewModel aimTimersViewModel)
         {
             _viewFactory = viewFactory;
             _aimTimersViewModel = aimTimersViewModel;
-
-            Init();
         }
 
-        private void Init()
+        public void Init()
         {
             ItemsTab = new DataTemplate(() => { return _viewFactory.CreatePage(_aimTimersViewModel); });
             ArchiveItemsTab = new DataTemplate(() => { return new AboutPage(); });

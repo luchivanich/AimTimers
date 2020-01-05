@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
+﻿using AimTimers.Di;
 using Foundation;
 using UIKit;
+using Unity;
 
 namespace AimTimers.iOS
 {
@@ -24,7 +22,10 @@ namespace AimTimers.iOS
         {
             global::Xamarin.Forms.Forms.SetFlags("Shell_Experimental", "Visual_Experimental", "CollectionView_Experimental", "FastRenderers_Experimental");
             global::Xamarin.Forms.Forms.Init();
-            LoadApplication(new App());
+            var diContainer = new DiContainer();
+            var unityContainer = diContainer.SetupIoc();
+            var application = unityContainer.Resolve<Xamarin.Forms.Application>();
+            LoadApplication(application);
 
             return base.FinishedLaunching(app, options);
         }
