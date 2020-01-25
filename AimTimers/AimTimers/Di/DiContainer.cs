@@ -1,7 +1,6 @@
-﻿using System;
-using AimTimers.Models;
-using AimTimers.Repository;
+﻿using AimTimers.Repository;
 using AimTimers.Services;
+using AimTimers.Utils;
 using AimTimers.ViewModelFactories;
 using AimTimers.ViewModels;
 using AimTimers.Views;
@@ -16,10 +15,13 @@ namespace AimTimers.Di
         {
             var unityContainer = new UnityContainer();
 
+            unityContainer.RegisterType<ITimer, TimerAdapter>();
+            unityContainer.RegisterType<IDateTimeProvider, DateTimeProvider>();
             unityContainer.RegisterType<IViewFactory, ViewFactory>();
             unityContainer.RegisterType<INavigation, NavigationAdapter>();
             unityContainer.RegisterSingleton<IRepository, BaseRepository>();
             unityContainer.RegisterSingleton<IAimTimerService, AimTimerService>();
+            unityContainer.RegisterSingleton<IAimTimerNotificationService, AimTimerNotificationService>();
 
             unityContainer.RegisterFactory<Application>(c =>
             {
@@ -32,18 +34,7 @@ namespace AimTimers.Di
             });
             
             unityContainer.RegisterType<IAimTimerItemViewModelFactory, AimTimerItemViewModelFactory>();
-            unityContainer.RegisterFactory<IAimTimersViewModel>(c => 
-            {
-                var result = new AimTimersViewModel(
-                    c.Resolve<INavigation>(),
-                    c.Resolve<IViewFactory>(),
-                    c.Resolve<IAimTimerService>(),
-                    c.Resolve<IAimTimerItemViewModelFactory>(),
-                    c.Resolve<AimTimerViewModelFactory>());
-                result.Init();
-                return result;
-            });
-
+            unityContainer.RegisterType<IAimTimersViewModel, AimTimersViewModel>();
             unityContainer.RegisterType<IAimTimerViewModelFactory, AimTimerViewModelFactory>();
 
             unityContainer.RegisterFactory<IMainViewModel>(c =>

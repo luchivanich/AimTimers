@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Xamarin.Forms;
 
-namespace AimTimers.Views
+namespace AimTimers.Utils
 {
     public class NavigationAdapter : INavigation
     {

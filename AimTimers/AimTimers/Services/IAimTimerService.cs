@@ -1,12 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using AimTimers.Models;
 
 namespace AimTimers.Services
 {
     public interface IAimTimerService
     {
-        IEnumerable<AimTimer> GetActiveAimTimers();
-
+        void Stop(AimTimer aimTimer);
+        void Start(AimTimer aimTimer);
+        
         void AddAimTimer(AimTimer aimTimer);
+        IEnumerable<AimTimer> GetActiveAimTimers();
     }
 }

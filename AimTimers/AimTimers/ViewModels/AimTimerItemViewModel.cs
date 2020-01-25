@@ -2,12 +2,15 @@
 using System.Linq;
 using System.Windows.Input;
 using AimTimers.Models;
+using AimTimers.Services;
 using Xamarin.Forms;
 
 namespace AimTimers.ViewModels
 {
     public class AimTimerItemViewModel : BaseViewModel, IAimTimerItemViewModel
     {
+        private readonly IAimTimerService _aimTimerService;
+
         private AimTimerItem _aimTimerItem;
         private AimTimer _aimTimer;
 
@@ -32,6 +35,11 @@ namespace AimTimers.ViewModels
         }
 
         public string TimeLeft => GetTimeLeft().ToString();
+
+        public AimTimerItemViewModel(IAimTimerService aimTimerService)
+        {
+            _aimTimerService = aimTimerService;
+        }
 
         public TimeSpan GetTimeLeft()
         {
@@ -65,7 +73,7 @@ namespace AimTimers.ViewModels
 
         private void ExecutePauseCommand()
         {
-            _aimTimerItem.Pause();
+            _aimTimerService.Stop(_aimTimer);
         }
 
         public ICommand PlayCommand
@@ -78,7 +86,7 @@ namespace AimTimers.ViewModels
 
         private void ExecutePlayCommand()
         {
-            _aimTimerItem.Start();
+            _aimTimerService.Start(_aimTimer);
         }
     }
 }

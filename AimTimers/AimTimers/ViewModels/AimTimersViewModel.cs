@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using AimTimers.Models;
 using AimTimers.Services;
+using AimTimers.Utils;
 using AimTimers.ViewModelFactories;
 using AimTimers.Views;
 using Xamarin.Forms;
@@ -13,29 +14,42 @@ namespace AimTimers.ViewModels
 {
     public class AimTimersViewModel : BaseViewModel, IAimTimersViewModel
     {
+        private readonly ITimer _timer;
         private readonly INavigation _navigation;
         private readonly IViewFactory _viewFactory;
         private readonly IAimTimerService _aimTimerService;
         private readonly IAimTimerItemViewModelFactory _aimTimerItemViewModelFactory;
         private readonly IAimTimerViewModelFactory _aimTimerViewModelFactory;
 
-        private System.Timers.Timer _timer;
-
         public ObservableCollection<IAimTimerItemViewModel> AimTimerItemViewModels { get; set; } = new ObservableCollection<IAimTimerItemViewModel>();
 
         #region Commands
 
-        public ICommand LoadItemsCommand
+        public ICommand RefreshCommand
         {
             get
             {
-                return new Command(() => ExecuteLoadItemsCommand());
+                return new Command(() => ExecuteRefreshCommandCommand());
             }
         }
 
-        private void ExecuteLoadItemsCommand()
+        private void ExecuteRefreshCommandCommand()
         {
             LoadData();
+            StartTimer();
+        }
+
+        public ICommand FreezeCommand
+        {
+            get
+            {
+                return new Command(() => ExecuteFreezeCommandCommand());
+            }
+        }
+
+        private void ExecuteFreezeCommandCommand()
+        {
+            StopTimer();
         }
 
         public ICommand AddItemCommand
@@ -74,28 +88,19 @@ namespace AimTimers.ViewModels
         #endregion
 
         public AimTimersViewModel(
+            ITimer timer,
             INavigation navigation,
             IViewFactory viewFactory,
             IAimTimerService aimTimerService,
             IAimTimerItemViewModelFactory aimTimerItemViewModelFactory,
             IAimTimerViewModelFactory aimTimerViewModelFactory)
         {
+            _timer = timer;
             _navigation = navigation;
             _viewFactory = viewFactory;
             _aimTimerService = aimTimerService;
             _aimTimerItemViewModelFactory = aimTimerItemViewModelFactory;
             _aimTimerViewModelFactory = aimTimerViewModelFactory;
-        }
-
-        public void Init()
-        {
-            LoadData();
-
-            _timer = new System.Timers.Timer();
-            _timer.Interval = 1000;
-            _timer.Elapsed += OnTimedEvent;
-
-            _timer.Enabled = true;
         }
 
         private void LoadData()
@@ -124,6 +129,20 @@ namespace AimTimers.ViewModels
             {
                 IsBusy = false;
             }
+        }
+
+        private void StartTimer()
+        {
+            _timer.Interval = 1000;
+            _timer.Elapsed -= OnTimedEvent;
+            _timer.Elapsed += OnTimedEvent;
+            _timer.Start();
+        }
+
+        private void StopTimer()
+        {
+            _timer.Elapsed -= OnTimedEvent;
+            _timer.Stop();
         }
 
         private void OnTimedEvent(object sender, System.Timers.ElapsedEventArgs e)

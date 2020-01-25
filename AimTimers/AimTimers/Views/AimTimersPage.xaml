@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:local="clr-namespace:AimTimers.Behaviors"
+             xmlns:behaviors="clr-namespace:AimTimers.Behaviors"
              xmlns:converters="clr-namespace:AimTimers.Converters"
              mc:Ignorable="d"
              x:Class="AimTimers.Views.AimTimersPage"
@@ -15,6 +15,11 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
+    <ContentPage.Behaviors>
+        <behaviors:EventToCommandBehavior EventName="Appearing" Command="{Binding RefreshCommand}"/>
+        <behaviors:EventToCommandBehavior EventName="Disappearing" Command="{Binding FreezeCommand}"/>
+    </ContentPage.Behaviors>
+
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Add" Command="{Binding AddItemCommand}" />
     </ContentPage.ToolbarItems>
@@ -24,12 +29,12 @@
                 ItemsSource="{Binding AimTimerItemViewModels}"
                 VerticalOptions="FillAndExpand"
                 HasUnevenRows="true"
-                RefreshCommand="{Binding LoadItemsCommand}"
+                RefreshCommand="{Binding RefreshCommand}"
                 IsPullToRefreshEnabled="true"
                 IsRefreshing="{Binding IsBusy, Mode=OneWay}"
                 CachingStrategy="RecycleElement">
             <ListView.Behaviors>
-                <local:EventToCommandBehavior EventName="ItemSelected" Command="{Binding SelectItemCommand}" Converter="{StaticResource SelectedItemConverter}"/>
+                <behaviors:EventToCommandBehavior EventName="ItemSelected" Command="{Binding SelectItemCommand}" Converter="{StaticResource SelectedItemConverter}"/>
             </ListView.Behaviors>
             <ListView.ItemTemplate>
                 <DataTemplate>
