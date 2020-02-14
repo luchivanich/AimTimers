@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using AimTimers.Models;
+using AimTimers.Bl;
 using AimTimers.Services;
 using Xamarin.Forms;
 
@@ -11,36 +11,36 @@ namespace AimTimers.ViewModels
     {
         private readonly INavigation _navigation;
         private readonly IAimTimerService _aimTimerService;
-        private AimTimer _aimTimer;
+        private IAimTimer _aimTimer;
 
         #region Properties
 
         public string Title
         {
-            get => _aimTimer.Title;
+            get => _aimTimer.AimTimerModel.Title;
             set
             {
-                _aimTimer.Title = value;
+                _aimTimer.AimTimerModel.Title = value;
                 OnPropertyChanged();
             }
         }
 
         public string Description
         {
-            get => _aimTimer.Description;
+            get => _aimTimer.AimTimerModel.Description;
             set
             {
-                _aimTimer.Description = value;
+                _aimTimer.AimTimerModel.Description = value;
                 OnPropertyChanged();
             }
         }
 
         public TimeSpan Time
         {
-            get => new TimeSpan(_aimTimer.Ticks ?? 0);
+            get => new TimeSpan(_aimTimer.AimTimerModel.Ticks ?? 0);
             set
             {
-                _aimTimer.Ticks = value.Ticks;
+                _aimTimer.AimTimerModel.Ticks = value.Ticks;
                 OnPropertyChanged();
             }
         }
@@ -74,7 +74,7 @@ namespace AimTimers.ViewModels
 
         #endregion
 
-        public void Setup(AimTimer aimTimer)
+        public void Setup(IAimTimer aimTimer)
         {
             _aimTimer = aimTimer;
         }

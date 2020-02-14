@@ -1,4 +1,4 @@
-﻿using AimTimers.Models;
+﻿using AimTimers.Bl;
 using AimTimers.Services;
 using AimTimers.ViewModels;
 using Xamarin.Forms;
@@ -16,7 +16,7 @@ namespace AimTimers.ViewModelFactories
             _aimTimerService = aimTimerService;
         }
 
-        public IAimTimerViewModel Create(AimTimer aimTimer)
+        public IAimTimerViewModel Create(IAimTimer aimTimer)
         {
             var result = new AimTimerViewModel(_navigation, _aimTimerService);
             result.Setup(aimTimer);

@@ -1,9 +1,8 @@
 ﻿using System;
-using Newtonsoft.Json;
 
 namespace AimTimers.Models
 {
-    public class AimTimerInterval
+    public class AimTimerIntervalModel
     {
         public string Id { get; set; }
 

@@ -1,4 +1,7 @@
-﻿using AimTimers.Repository;
+﻿using System;
+using AimTimers.Bl;
+using AimTimers.Models;
+using AimTimers.Repository;
 using AimTimers.Services;
 using AimTimers.Utils;
 using AimTimers.ViewModelFactories;
@@ -22,6 +25,8 @@ namespace AimTimers.Di
             unityContainer.RegisterSingleton<IRepository, BaseRepository>();
             unityContainer.RegisterSingleton<IAimTimerService, AimTimerService>();
             unityContainer.RegisterSingleton<IAimTimerNotificationService, AimTimerNotificationService>();
+
+            unityContainer.RegisterInstance<Func<AimTimerModel, IAimTimer>>(aimTimerModel => new AimTimer(aimTimerModel));
 
             unityContainer.RegisterFactory<Application>(c =>
             {

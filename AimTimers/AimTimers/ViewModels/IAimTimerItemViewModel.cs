@@ -1,5 +1,5 @@
-﻿
-using AimTimers.Models;
+﻿using AimTimers.Bl;
+
 
 namespace AimTimers.ViewModels
 {
@@ -7,6 +7,6 @@ namespace AimTimers.ViewModels
     {
         void RefreshTimeLeft();
 
-        AimTimer GetAimTimer();
+        IAimTimer GetAimTimer();
     }
 }

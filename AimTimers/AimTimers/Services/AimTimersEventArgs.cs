@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using AimTimers.Models;
+using AimTimers.Bl;
 
 namespace AimTimers.Services
 {
     public class AimTimersEventArgs : EventArgs
     {
-        public IEnumerable<AimTimer> AimTimers { get; set; }
+        public IEnumerable<IAimTimer> AimTimers { get; set; }
     }
 }

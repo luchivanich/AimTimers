@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using AimTimers.Bl;
 using AimTimers.Models;
 using AimTimers.Services;
 using AimTimers.Utils;
@@ -16,7 +17,7 @@ namespace AimTimersTests
             var dateTimeProvider = new Mock<IDateTimeProvider>();
 
             var aimTimerService = new Mock<IAimTimerService>();
-            aimTimerService.Setup(s => s.GetActiveAimTimers()).Returns(new List<AimTimer>());
+            aimTimerService.Setup(s => s.GetActiveAimTimers()).Returns(new List<IAimTimer>());
 
             var timer = new Mock<ITimer>();
 
@@ -28,39 +29,42 @@ namespace AimTimersTests
         }
 
         [Fact]
-        public void TimerIntervalSetCorrectly()
+        public void TimerIntervalSetCorrectlyForOneTimerUntilItsEnd()
         {
             var expectedResultMilliseconds = 10000;
             var expectedResultTicks = (new TimeSpan(0, 0, 0, 0, expectedResultMilliseconds)).Ticks;
             var now = new DateTime(2020, 1, 26, 1, 0, 0);
 
-            var aimTimer = new AimTimer
+            var aimTimers = new List<IAimTimer>
             {
-                Ticks = expectedResultTicks,
-                AimTimerItems = new List<AimTimerItem>
-                {
-                    new AimTimerItem(now.Date, now.Date.AddDays(1).AddTicks(-1))
+                new AimTimer(
+                    new AimTimerModel
                     {
-                        AimTimerIntervals = new List<AimTimerInterval>
+                        Ticks = expectedResultTicks,
+                        AimTimerItemModels = new List<AimTimerItemModel>
                         {
-                            new AimTimerInterval
+                            new AimTimerItemModel(now.Date, now.Date.AddDays(1).AddTicks(-1))
                             {
-                                StartDate = now,
-                                EndDate = null
+                                AimTimerIntervals = new List<AimTimerIntervalModel>
+                                {
+                                    new AimTimerIntervalModel
+                                    {
+                                        StartDate = now,
+                                        EndDate = null
+                                    }
+                                }
                             }
                         }
-                    }
-                }
+                    })
             };
 
             var dateTimeProvider = new Mock<IDateTimeProvider>();
             dateTimeProvider.Setup(p => p.GetNow()).Returns(now);
 
             var aimTimerService = new Mock<IAimTimerService>();
-            aimTimerService.Setup(s => s.GetActiveAimTimers()).Returns(new List<AimTimer> { aimTimer });
+            aimTimerService.Setup(s => s.GetActiveAimTimers()).Returns(aimTimers);
 
             var timer = new Mock<ITimer>();
-
 
             var aimTimerNotificationService = new AimTimerNotificationService(dateTimeProvider.Object, aimTimerService.Object, timer.Object);
 
@@ -68,5 +72,49 @@ namespace AimTimersTests
 
             timer.VerifySet(t => t.Interval = expectedResultMilliseconds);
         }
+
+        //[Fact]
+        //public void TimerIntervalSetCorrectlyForTwoTimersUntilItsEnd()
+        //{
+        //    var expectedResultMilliseconds = 10000;
+        //    var expectedResultTicks = (new TimeSpan(0, 0, 0, 0, expectedResultMilliseconds)).Ticks;
+        //    var now = new DateTime(2020, 1, 26, 1, 0, 0);
+
+        //    var aimTimers = new List<AimTimer>
+        //    {
+        //        new AimTimer
+        //        {
+        //            Ticks = expectedResultTicks,
+        //            AimTimerItems = new List<AimTimerItem>
+        //            {
+        //                new AimTimerItem(now.Date, now.Date.AddDays(1).AddTicks(-1))
+        //                {
+        //                    AimTimerIntervals = new List<AimTimerInterval>
+        //                    {
+        //                        new AimTimerInterval
+        //                        {
+        //                            StartDate = now,
+        //                            EndDate = null
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    };
+
+        //    var dateTimeProvider = new Mock<IDateTimeProvider>();
+        //    dateTimeProvider.Setup(p => p.GetNow()).Returns(now);
+
+        //    var aimTimerService = new Mock<IAimTimerService>();
+        //    aimTimerService.Setup(s => s.GetActiveAimTimers()).Returns(aimTimers);
+
+        //    var timer = new Mock<ITimer>();
+
+        //    var aimTimerNotificationService = new AimTimerNotificationService(dateTimeProvider.Object, aimTimerService.Object, timer.Object);
+
+        //    aimTimerNotificationService.Start();
+
+        //    timer.VerifySet(t => t.Interval = expectedResultMilliseconds);
+        //}
     }
 }

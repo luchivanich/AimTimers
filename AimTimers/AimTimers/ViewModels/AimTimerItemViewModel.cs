@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Windows.Input;
-using AimTimers.Models;
+using AimTimers.Bl;
 using AimTimers.Services;
 using Xamarin.Forms;
 
@@ -11,25 +11,25 @@ namespace AimTimers.ViewModels
     {
         private readonly IAimTimerService _aimTimerService;
 
-        private AimTimerItem _aimTimerItem;
-        private AimTimer _aimTimer;
+        private IAimTimerItem _aimTimerItem;
+        private IAimTimer _aimTimer;
 
         public string Title
         {
-            get => _aimTimer.Title;
+            get => _aimTimer.AimTimerModel.Title;
             set
             {
-                _aimTimer.Title = value;
+                _aimTimer.AimTimerModel.Title = value;
                 OnPropertyChanged();
             }
         }
 
         public string Description
         {
-            get => _aimTimer.Description;
+            get => _aimTimer.AimTimerModel.Description;
             set
             {
-                _aimTimer.Description = value;
+                _aimTimer.AimTimerModel.Description = value;
                 OnPropertyChanged();
             }
         }
@@ -44,16 +44,16 @@ namespace AimTimers.ViewModels
         public TimeSpan GetTimeLeft()
         {
             _aimTimerItem.Refresh();
-            return new TimeSpan(_aimTimer.Ticks ?? 0) - new TimeSpan(_aimTimerItem?.AimTimerIntervals?.Sum(i => (i.EndDate ?? DateTime.Now).Ticks - i.StartDate.Ticks) ?? 0);
+            return new TimeSpan(_aimTimer.AimTimerModel.Ticks ?? 0) - new TimeSpan(_aimTimerItem.AimTimerItemModel.AimTimerIntervals?.Sum(i => (i.EndDate ?? DateTime.Now).Ticks - i.StartDate.Ticks) ?? 0);
         }
 
-        public void Setup(AimTimer aimTimer, AimTimerItem aimTimerItem)
+        public void Setup(IAimTimer aimTimer, IAimTimerItem aimTimerItem)
         {
             _aimTimer = aimTimer;
             _aimTimerItem = aimTimerItem;
         }
 
-        public AimTimer GetAimTimer()
+        public IAimTimer GetAimTimer()
         {
             return _aimTimer;
         }
@@ -73,7 +73,7 @@ namespace AimTimers.ViewModels
 
         private void ExecutePauseCommand()
         {
-            _aimTimerService.Stop(_aimTimer);
+            _aimTimer.Stop();
         }
 
         public ICommand PlayCommand
@@ -86,7 +86,7 @@ namespace AimTimers.ViewModels
 
         private void ExecutePlayCommand()
         {
-            _aimTimerService.Start(_aimTimer);
+            _aimTimer.Start();
         }
     }
 }

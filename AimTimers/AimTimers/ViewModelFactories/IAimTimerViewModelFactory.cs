@@ -1,10 +1,10 @@
-﻿using AimTimers.Models;
+﻿using AimTimers.Bl;
 using AimTimers.ViewModels;
 
 namespace AimTimers.ViewModelFactories
 {
     public interface IAimTimerViewModelFactory
     {
-        IAimTimerViewModel Create(AimTimer aimTimer);
+        IAimTimerViewModel Create(IAimTimer aimTimer);
     }
 }

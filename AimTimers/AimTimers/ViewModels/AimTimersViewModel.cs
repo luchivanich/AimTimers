@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using AimTimers.Bl;
 using AimTimers.Models;
 using AimTimers.Services;
 using AimTimers.Utils;
@@ -20,6 +21,7 @@ namespace AimTimers.ViewModels
         private readonly IAimTimerService _aimTimerService;
         private readonly IAimTimerItemViewModelFactory _aimTimerItemViewModelFactory;
         private readonly IAimTimerViewModelFactory _aimTimerViewModelFactory;
+        private readonly Func<AimTimerModel, IAimTimer> _aimTimerFactory;
 
         public ObservableCollection<IAimTimerItemViewModel> AimTimerItemViewModels { get; set; } = new ObservableCollection<IAimTimerItemViewModel>();
 
@@ -62,7 +64,7 @@ namespace AimTimers.ViewModels
 
         private async Task ExecuteAddItemCommand()
         {
-            await NavigateAimTimerView(new AimTimer());
+            await NavigateAimTimerView(_aimTimerFactory.Invoke(new AimTimerModel()));
         }
 
         public ICommand SelectItemCommand
@@ -78,7 +80,7 @@ namespace AimTimers.ViewModels
             await NavigateAimTimerView(aimTimerItemViewModel.GetAimTimer());
         }
 
-        private async Task NavigateAimTimerView(AimTimer aimTimer)
+        private async Task NavigateAimTimerView(IAimTimer aimTimer)
         {
             var aimTimerViewModel = _aimTimerViewModelFactory.Create(aimTimer);
             var aimTimerView = _viewFactory.CreatePage(aimTimerViewModel);
@@ -93,7 +95,8 @@ namespace AimTimers.ViewModels
             IViewFactory viewFactory,
             IAimTimerService aimTimerService,
             IAimTimerItemViewModelFactory aimTimerItemViewModelFactory,
-            IAimTimerViewModelFactory aimTimerViewModelFactory)
+            IAimTimerViewModelFactory aimTimerViewModelFactory,
+            Func<AimTimerModel, IAimTimer> aimTimerFactory)
         {
             _timer = timer;
             _navigation = navigation;
@@ -101,6 +104,7 @@ namespace AimTimers.ViewModels
             _aimTimerService = aimTimerService;
             _aimTimerItemViewModelFactory = aimTimerItemViewModelFactory;
             _aimTimerViewModelFactory = aimTimerViewModelFactory;
+            _aimTimerFactory = aimTimerFactory;
         }
 
         private void LoadData()
@@ -117,7 +121,7 @@ namespace AimTimers.ViewModels
                 var aimTimers = _aimTimerService.GetActiveAimTimers();
                 foreach (var aimTimer in aimTimers)
                 {
-                    var aimTimerItem = aimTimer.GetAimTimerByDate(today);
+                    var aimTimerItem = aimTimer.GetAimTimerItemByDate(today);
                     AimTimerItemViewModels.Add(_aimTimerItemViewModelFactory.Create(aimTimer, aimTimerItem));
                 }
             }
