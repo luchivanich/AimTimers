@@ -1,5 +1,4 @@
-﻿using AimTimers.ViewModelFactories;
-using AimTimers.Views;
+﻿using AimTimers.Views;
 using Xamarin.Forms;
 
 namespace AimTimers.ViewModels

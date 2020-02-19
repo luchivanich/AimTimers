@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using AimTimers.Bl;
 using AimTimers.Models;
 using AimTimers.Services;
-using AimTimers.Utils;
 using AimTimers.ViewModelFactories;
 using AimTimers.Views;
 using Xamarin.Forms;
@@ -15,7 +14,7 @@ namespace AimTimers.ViewModels
 {
     public class AimTimersViewModel : BaseViewModel, IAimTimersViewModel
     {
-        private readonly ITimer _timer;
+        private readonly IAimTimerNotificationService _aimTimerNotificationService;
         private readonly INavigation _navigation;
         private readonly IViewFactory _viewFactory;
         private readonly IAimTimerService _aimTimerService;
@@ -38,7 +37,6 @@ namespace AimTimers.ViewModels
         private void ExecuteRefreshCommandCommand()
         {
             LoadData();
-            StartTimer();
         }
 
         public ICommand FreezeCommand
@@ -51,7 +49,7 @@ namespace AimTimers.ViewModels
 
         private void ExecuteFreezeCommandCommand()
         {
-            StopTimer();
+            _aimTimerNotificationService.OnStatusChanged -= _aimTimerNotificationService_OnStatusChanged;
         }
 
         public ICommand AddItemCommand
@@ -90,7 +88,7 @@ namespace AimTimers.ViewModels
         #endregion
 
         public AimTimersViewModel(
-            ITimer timer,
+            IAimTimerNotificationService aimTimerNotificationService,
             INavigation navigation,
             IViewFactory viewFactory,
             IAimTimerService aimTimerService,
@@ -98,7 +96,7 @@ namespace AimTimers.ViewModels
             IAimTimerViewModelFactory aimTimerViewModelFactory,
             Func<AimTimerModel, IAimTimer> aimTimerFactory)
         {
-            _timer = timer;
+            _aimTimerNotificationService = aimTimerNotificationService;
             _navigation = navigation;
             _viewFactory = viewFactory;
             _aimTimerService = aimTimerService;
@@ -109,51 +107,33 @@ namespace AimTimers.ViewModels
 
         private void LoadData()
         {
-            if (IsBusy)
-                return;
-
-            IsBusy = true;
-
-            try
+            AimTimerItemViewModels.Clear();
+            foreach (var aimTimerModel in _aimTimerService.GetActiveAimTimers())
             {
-                var today = DateTime.Today;
-                AimTimerItemViewModels.Clear();
-                var aimTimers = _aimTimerService.GetActiveAimTimers();
-                foreach (var aimTimer in aimTimers)
+                var aimTimer = _aimTimerFactory.Invoke(aimTimerModel);
+                AimTimerItemViewModels.Add(_aimTimerItemViewModelFactory.Create(aimTimer));
+            }
+
+            _aimTimerNotificationService.SetItemsToFollow(AimTimerItemViewModels.Select(i => i.GetAimTimer()).ToList());
+            _aimTimerNotificationService.Start();
+            _aimTimerNotificationService.OnStatusChanged += _aimTimerNotificationService_OnStatusChanged;
+
+            AimTimerItemViewModels.CollectionChanged += AimTimerItemViewModels_CollectionChanged;
+        }
+
+        private void AimTimerItemViewModels_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            _aimTimerNotificationService.SetItemsToFollow(AimTimerItemViewModels.Select(i => i.GetAimTimer()).ToList());
+        }
+
+        private void _aimTimerNotificationService_OnStatusChanged(object sender, AimTimersEventArgs e)
+        {
+            foreach (var aimTimerItemViewModel in AimTimerItemViewModels)
+            {
+                if (e.AimTimers.Any(i => i == aimTimerItemViewModel.GetAimTimer()))
                 {
-                    var aimTimerItem = aimTimer.GetAimTimerItemByDate(today);
-                    AimTimerItemViewModels.Add(_aimTimerItemViewModelFactory.Create(aimTimer, aimTimerItem));
+                    aimTimerItemViewModel.RefreshTimeLeft();
                 }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex);
-            }
-            finally
-            {
-                IsBusy = false;
-            }
-        }
-
-        private void StartTimer()
-        {
-            _timer.Interval = 1000;
-            _timer.Elapsed -= OnTimedEvent;
-            _timer.Elapsed += OnTimedEvent;
-            _timer.Start();
-        }
-
-        private void StopTimer()
-        {
-            _timer.Elapsed -= OnTimedEvent;
-            _timer.Stop();
-        }
-
-        private void OnTimedEvent(object sender, System.Timers.ElapsedEventArgs e)
-        {
-            foreach (var i in AimTimerItemViewModels)
-            {
-                i.RefreshTimeLeft();
             }
         }
     }

@@ -10,6 +10,6 @@ namespace AimTimers.Bl
         void Start();
         void Stop();
 
-        IAimTimerItem GetAimTimerItemByDate(DateTime date);
+        TimeSpan GetTimeLeft();
     }
 }

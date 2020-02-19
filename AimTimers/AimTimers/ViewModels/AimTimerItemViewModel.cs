@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Windows.Input;
 using AimTimers.Bl;
 using AimTimers.Services;
@@ -11,7 +10,6 @@ namespace AimTimers.ViewModels
     {
         private readonly IAimTimerService _aimTimerService;
 
-        private IAimTimerItem _aimTimerItem;
         private IAimTimer _aimTimer;
 
         public string Title
@@ -34,23 +32,16 @@ namespace AimTimers.ViewModels
             }
         }
 
-        public string TimeLeft => GetTimeLeft().ToString();
+        public string TimeLeft => _aimTimer.GetTimeLeft().ToString();
 
         public AimTimerItemViewModel(IAimTimerService aimTimerService)
         {
             _aimTimerService = aimTimerService;
         }
 
-        public TimeSpan GetTimeLeft()
-        {
-            _aimTimerItem.Refresh();
-            return new TimeSpan(_aimTimer.AimTimerModel.Ticks ?? 0) - new TimeSpan(_aimTimerItem.AimTimerItemModel.AimTimerIntervals?.Sum(i => (i.EndDate ?? DateTime.Now).Ticks - i.StartDate.Ticks) ?? 0);
-        }
-
-        public void Setup(IAimTimer aimTimer, IAimTimerItem aimTimerItem)
+        public void Setup(IAimTimer aimTimer)
         {
             _aimTimer = aimTimer;
-            _aimTimerItem = aimTimerItem;
         }
 
         public IAimTimer GetAimTimer()

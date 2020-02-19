@@ -1,21 +1,25 @@
 ﻿using System;
 using System.Linq;
 using AimTimers.Models;
+using AimTimers.Utils;
 
 namespace AimTimers.Bl
 {
     public class AimTimer : IAimTimer
     {
+        private readonly IDateTimeProvider _dateTimeProvider;
+
         public AimTimerModel AimTimerModel { get; }
 
-        public AimTimer(AimTimerModel aimTimerModel)
+        public AimTimer(AimTimerModel aimTimerModel, IDateTimeProvider dateTimeProvider)
         {
+            _dateTimeProvider = dateTimeProvider;
             AimTimerModel = aimTimerModel;
         }
 
         public void Start()
         {
-            var now = DateTime.Now;
+            var now = _dateTimeProvider.GetNow();
             var currentAimTimerItem = GetAimTimerItemByDate(now);
             if (now < currentAimTimerItem.AimTimerItemModel.StartOfActivityPeriod || 
                 now > currentAimTimerItem.AimTimerItemModel.EndOfActivityPeriod || 
@@ -29,16 +33,25 @@ namespace AimTimers.Bl
 
         public void Stop()
         {
-            var lastInterval = GetAimTimerItemByDate(DateTime.Now).AimTimerItemModel.AimTimerIntervals.SingleOrDefault(i => i.EndDate == null);
+            var now = _dateTimeProvider.GetNow();
+            var lastInterval = GetAimTimerItemByDate(now).AimTimerItemModel.AimTimerIntervals.SingleOrDefault(i => i.EndDate == null);
             if (lastInterval == null)
             {
                 return;
             }
 
-            lastInterval.EndDate = DateTime.Now;
+            lastInterval.EndDate = now;
         }
 
-        public IAimTimerItem GetAimTimerItemByDate(DateTime date)
+        public TimeSpan GetTimeLeft()
+        {
+            var now = _dateTimeProvider.GetNow();
+            var aimTimerItem = GetAimTimerItemByDate(now);
+            aimTimerItem.Refresh();
+            return new TimeSpan(AimTimerModel.Ticks ?? 0) - new TimeSpan(aimTimerItem.AimTimerItemModel.AimTimerIntervals?.Sum(i => (i.EndDate ?? now).Ticks - i.StartDate.Ticks) ?? 0);
+        }
+
+        private IAimTimerItem GetAimTimerItemByDate(DateTime date)
         {
             var aimTimerItemModel = AimTimerModel.AimTimerItemModels.FirstOrDefault(i => i.StartOfActivityPeriod.Date == date.Date);
             if (aimTimerItemModel == null)

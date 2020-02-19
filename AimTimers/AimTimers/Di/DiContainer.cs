@@ -24,9 +24,13 @@ namespace AimTimers.Di
             unityContainer.RegisterType<INavigation, NavigationAdapter>();
             unityContainer.RegisterSingleton<IRepository, BaseRepository>();
             unityContainer.RegisterSingleton<IAimTimerService, AimTimerService>();
-            unityContainer.RegisterSingleton<IAimTimerNotificationService, AimTimerNotificationService>();
+            unityContainer.RegisterType<IAimTimerNotificationService, AimTimerNotificationService>();
 
-            unityContainer.RegisterInstance<Func<AimTimerModel, IAimTimer>>(aimTimerModel => new AimTimer(aimTimerModel));
+            unityContainer.RegisterFactory<Func<AimTimerModel, IAimTimer>>(
+                container => new Func<AimTimerModel, IAimTimer>(
+                    aimTimerModel => new AimTimer(aimTimerModel, container.Resolve<IDateTimeProvider>())
+                )
+            );
 
             unityContainer.RegisterFactory<Application>(c =>
             {

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using AimTimers.Bl;
 using AimTimers.Models;
 using AimTimers.Repository;
 
@@ -11,7 +9,6 @@ namespace AimTimers.Services
     {
         private readonly IRepository _repository;
 
-        private object _lock = new object();
         private IEnumerable<AimTimerModel> _aimTimers = new List<AimTimerModel>();
                 
         public AimTimerService(IRepository repository)
@@ -19,13 +16,9 @@ namespace AimTimers.Services
             _repository = repository;
         }
 
-        public IEnumerable<IAimTimer> GetActiveAimTimers()
+        public IEnumerable<AimTimerModel> GetActiveAimTimers()
         {
-            lock (_lock)
-            {
-                _aimTimers = _repository.LoadAll<AimTimerModel>();
-            }
-            return _aimTimers.Select(i => new AimTimer(i)).ToList();
+            return _repository.LoadAll<AimTimerModel>();
         }
 
         public void AddAimTimer(AimTimerModel aimTimer)

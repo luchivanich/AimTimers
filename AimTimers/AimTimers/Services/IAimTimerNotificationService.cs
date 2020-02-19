@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using AimTimers.Bl;
 
 namespace AimTimers.Services
 {
@@ -6,6 +8,7 @@ namespace AimTimers.Services
     {
         event EventHandler<AimTimersEventArgs> OnStatusChanged;
 
+        void SetItemsToFollow(IEnumerable<IAimTimer> aimTimers);
         void Start();
         void Stop();
     }
