@@ -6,7 +6,7 @@ using Xamarin.Forms;
 
 namespace AimTimers.ViewModels
 {
-    public class AimTimerItemViewModel : BaseViewModel, IAimTimerItemViewModel
+    public class AimTimerListItemViewModel : BaseViewModel, IAimTimerListItemViewModel
     {
         private readonly IAimTimerService _aimTimerService;
 
@@ -34,7 +34,7 @@ namespace AimTimers.ViewModels
 
         public string TimeLeft => _aimTimer.GetTimeLeft().ToString();
 
-        public AimTimerItemViewModel(IAimTimerService aimTimerService)
+        public AimTimerListItemViewModel(IAimTimerService aimTimerService)
         {
             _aimTimerService = aimTimerService;
         }

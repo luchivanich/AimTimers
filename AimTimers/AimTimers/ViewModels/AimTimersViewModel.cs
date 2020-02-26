@@ -22,7 +22,7 @@ namespace AimTimers.ViewModels
         private readonly IAimTimerViewModelFactory _aimTimerViewModelFactory;
         private readonly Func<AimTimerModel, IAimTimer> _aimTimerFactory;
 
-        public ObservableCollection<IAimTimerItemViewModel> AimTimerItemViewModels { get; set; } = new ObservableCollection<IAimTimerItemViewModel>();
+        public ObservableCollection<IAimTimerListItemViewModel> AimTimerItemViewModels { get; set; } = new ObservableCollection<IAimTimerListItemViewModel>();
 
         #region Commands
 
@@ -69,11 +69,11 @@ namespace AimTimers.ViewModels
         {
             get
             {
-                return new Command<IAimTimerItemViewModel>(async (aimTimerItemViewModel) => await ExecuteItemSelectCommand(aimTimerItemViewModel));
+                return new Command<IAimTimerListItemViewModel>(async (aimTimerItemViewModel) => await ExecuteItemSelectCommand(aimTimerItemViewModel));
             }
         }
 
-        private async Task ExecuteItemSelectCommand(IAimTimerItemViewModel aimTimerItemViewModel)
+        private async Task ExecuteItemSelectCommand(IAimTimerListItemViewModel aimTimerItemViewModel)
         {
             await NavigateAimTimerView(aimTimerItemViewModel.GetAimTimer());
         }

@@ -65,10 +65,7 @@ namespace AimTimers.ViewModels
 
         private async Task ExecuteUpdateItemCommand()
         {
-            //if (_aimTimerService.GetActiveAimTimerItems().All(i => i.AimTimer != _aimTimer))
-            //{
-            //    _aimTimerService.AddAimTimer(_aimTimer);
-            //}
+            _aimTimerService.AddAimTimer(_aimTimer.AimTimerModel);
             await _navigation.PopAsync();
         }
 

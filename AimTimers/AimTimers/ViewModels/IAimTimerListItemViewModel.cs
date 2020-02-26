@@ -3,7 +3,7 @@
 
 namespace AimTimers.ViewModels
 {
-    public interface IAimTimerItemViewModel
+    public interface IAimTimerListItemViewModel
     {
         void RefreshTimeLeft();
 
