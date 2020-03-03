@@ -53,8 +53,10 @@ namespace AimTimers.Repository
         {
             try
             {
-                var mutableDocument = model.ToMutableDocument(id);
-                Database.Save(mutableDocument);
+                using (var modelAsDocument = model.ToMutableDocument(id))
+                {
+                    Database.Save(modelAsDocument);
+                }
             }
             catch(Exception e)
             {

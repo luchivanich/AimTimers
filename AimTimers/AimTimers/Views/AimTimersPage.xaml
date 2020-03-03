@@ -39,33 +39,52 @@
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
-                        <StackLayout Padding="10">
-                            <Label Text="{Binding Title}" 
-                                LineBreakMode="NoWrap" 
-                                Style="{DynamicResource ListItemTextStyle}" 
-                                FontSize="16" />
-                            <Label Text="{Binding Description}" 
-                                d:Text="Item description"
-                                LineBreakMode="NoWrap"
-                                Style="{DynamicResource ListItemDetailTextStyle}"
-                                FontSize="13" />
-                            <Label Text="{Binding TimeLeft}" 
-                                d:Text="Time Left"
-                                LineBreakMode="NoWrap"
-                                Style="{DynamicResource ListItemDetailTextStyle}"
-                                FontSize="13" />
-                            <Label Text="Expires" />
-                            <Label Text="{Binding EndOfActivityPeriod}" />
-                            <Button Text="Pause" 
-                                d:Text="Pause"
-                                Command="{Binding PauseCommand}"
-                                CommandParameter="{Binding .}"
-                                FontSize="13" />
-                            <Button Text="Play" 
-                                d:Text="Play"
-                                Command="{Binding PlayCommand}"
-                                CommandParameter="{Binding .}"
-                                FontSize="13" />
+                        <StackLayout Orientation="Horizontal">
+                            <StackLayout Orientation="Vertical" Padding="10" HorizontalOptions="FillAndExpand">
+                                <Label Text="{Binding Title}" 
+                                    LineBreakMode="NoWrap" 
+                                    Style="{DynamicResource ListItemTextStyle}" 
+                                    FontSize="16" />
+                                <Label Text="{Binding Description}" 
+                                    d:Text="Item description"
+                                    LineBreakMode="NoWrap"
+                                    Style="{DynamicResource ListItemDetailTextStyle}"
+                                    FontSize="13" />
+                                <Label Text="{Binding TimeLeft}" 
+                                    d:Text="Time Left"
+                                    LineBreakMode="NoWrap"
+                                    Style="{DynamicResource ListItemDetailTextStyle}"
+                                    FontSize="13" />
+                                <Label Text="Expires" />
+                                <Label Text="{Binding EndOfActivityPeriod}" />
+                            </StackLayout>
+                            <StackLayout Orientation="Vertical">
+                                <StackLayout Orientation="Horizontal" HorizontalOptions="End" VerticalOptions="Start">
+                                    <Button
+                                        Text="&#xe034;"
+                                        FontFamily="{StaticResource CustomFont}"
+                                        Command="{Binding PauseCommand}"
+                                        CommandParameter="{Binding .}"
+                                        WidthRequest="50"
+                                        FontSize="20" />
+                                    <Button
+                                        Text="&#xe037;"
+                                        FontFamily="{StaticResource CustomFont}"
+                                        Command="{Binding PlayCommand}"
+                                        CommandParameter="{Binding .}"
+                                        WidthRequest="50"
+                                        FontSize="20" />
+                                </StackLayout>
+                                <Button
+                                    HorizontalOptions="End"
+                                    VerticalOptions="End"
+                                    Text="&#xe92b;"
+                                    FontFamily="{StaticResource CustomFont}"
+
+                                    CommandParameter="{Binding .}"
+                                    WidthRequest="50"
+                                    FontSize="20" />
+                            </StackLayout>
                         </StackLayout>
                     </ViewCell>
                 </DataTemplate>

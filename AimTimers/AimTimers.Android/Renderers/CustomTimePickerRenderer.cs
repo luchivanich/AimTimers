@@ -22,10 +22,17 @@ namespace AimTimers.Droid.Renderers
         {
             base.OnElementChanged(e);
             this.SetNativeControl(new Android.Widget.EditText(Context));
-            this.Control.Click += Control_Click;
-            this.Control.Text = DateTime.Now.ToString("HH:mm");
             this.Control.KeyListener = null;
-            this.Control.FocusChange += Control_FocusChange;
+            if (Control != null)
+            {
+                Control.Click += Control_Click;
+                Control.FocusChange += Control_FocusChange;
+
+                if (Element != null && !Element.Time.Equals(default(TimeSpan)))
+                    Control.Text = Element.Time.ToString(@"hh\:mm");
+                else
+                    Control.Text = DateTime.Now.ToString("HH:mm");
+            }
         }
 
         void Control_Click(object sender, EventArgs e)
@@ -43,7 +50,7 @@ namespace AimTimers.Droid.Renderers
         {
             if (dialog == null)
             {
-                dialog = new TimePickerDialog(Context, 3, OnTimeSet, 0, 0, true);
+                dialog = new TimePickerDialog(Context, 3, OnTimeSet, Element.Time.Hours, Element.Time.Minutes, true);
             }
             dialog.Show();
         }
