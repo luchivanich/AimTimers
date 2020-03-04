@@ -85,6 +85,20 @@ namespace AimTimers.ViewModels
             await _navigation.PushAsync(aimTimerView);
         }
 
+        public ICommand DeleteCommand
+        {
+            get
+            {
+                return new Command<AimTimerListItemViewModel>((aimTimerListItemViewModel) => ExecuteDeleteCommand(aimTimerListItemViewModel));
+            }
+        }
+
+        private void ExecuteDeleteCommand(AimTimerListItemViewModel aimTimerListItemViewModel)
+        {
+            _aimTimerService.DeleteAimTimer(aimTimerListItemViewModel.GetAimTimer()?.AimTimerModel.Id);
+            LoadData();
+        }
+
         #endregion
 
         public AimTimersViewModel(

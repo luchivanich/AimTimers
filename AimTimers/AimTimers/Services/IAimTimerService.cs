@@ -8,5 +8,7 @@ namespace AimTimers.Services
     {
         void AddAimTimer(AimTimerModel aimTimer);
         IEnumerable<AimTimerModel> GetActiveAimTimers();
+
+        void DeleteAimTimer(string aimTimerId);
     }
 }

@@ -29,5 +29,10 @@ namespace AimTimers.Services
             }
             _repository.Save(aimTimer, aimTimer.Id);
         }
+
+        public void DeleteAimTimer(string aimTimerId)
+        {
+            _repository.Delete(aimTimerId);
+        }
     }
 }

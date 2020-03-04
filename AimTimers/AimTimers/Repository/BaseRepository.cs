@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using AimTimers.Models;
 using Couchbase.Lite;
 using Couchbase.Lite.Query;
 using Newtonsoft.Json;
@@ -64,10 +65,10 @@ namespace AimTimers.Repository
             }
         }
 
-        public List<T> LoadAll<T>()
+        public List<T> LoadAll<T>() where T: IModel
         {
             var result = new List<T>();
-            using (var query = QueryBuilder.Select(SelectResult.All()).From(DataSource.Database(Database)))
+            using (var query = QueryBuilder.Select(SelectResult.All(), SelectResult.Expression(Meta.ID)).From(DataSource.Database(Database)))
             {
                 foreach (var item in query.Execute())
                 {
@@ -75,8 +76,9 @@ namespace AimTimers.Repository
                     {
                         var body = item.GetDictionary(0);
                         var jsonString = JsonConvert.SerializeObject(body);
-                    
-                        result.Add(JsonConvert.DeserializeObject<T>(jsonString));
+                        var resultItem = JsonConvert.DeserializeObject<T>(jsonString);
+                        resultItem.Id = item[1].String;
+                        result.Add(resultItem);
                     }
                     catch(Exception e)
                     {
@@ -85,6 +87,16 @@ namespace AimTimers.Repository
                 }
             }
             return result;
+        }
+
+        public void Delete(string id)
+        {
+            var documentToDelete = Database.GetDocument(id);
+            if (documentToDelete == null)
+            {
+                return;
+            }
+            Database.Delete(documentToDelete);
         }
     }
 }

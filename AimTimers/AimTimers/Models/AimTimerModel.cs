@@ -2,7 +2,7 @@
 
 namespace AimTimers.Models
 {
-    public class AimTimerModel
+    public class AimTimerModel : IModel
     {
         public string Id { get; set; }
         public string Title { get; set; }

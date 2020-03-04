@@ -8,7 +8,7 @@
              mc:Ignorable="d"
              x:Class="AimTimers.Views.AimTimersPage"
              Title="{Binding Title}"
-             x:Name="BrowseItemsPage">
+             x:Name="AimTimersContentPage">
     <ContentPage.Resources>
         <ResourceDictionary>
             <converters:SelectedItemEventArgsToSelectedItemConverter x:Key="SelectedItemConverter" />
@@ -80,7 +80,7 @@
                                     VerticalOptions="End"
                                     Text="&#xe92b;"
                                     FontFamily="{StaticResource CustomFont}"
-
+                                    Command="{Binding BindingContext.DeleteCommand, Source={x:Reference AimTimersContentPage}}"
                                     CommandParameter="{Binding .}"
                                     WidthRequest="50"
                                     FontSize="20" />
