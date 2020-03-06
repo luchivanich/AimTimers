@@ -1,16 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using AimTimers.Bl;
+using AimTimers.Models;
 using AimTimers.Services;
+using AimTimers.ViewModelFactories;
 using Xamarin.Forms;
 
 namespace AimTimers.ViewModels
 {
     public class AimTimerViewModel : BaseViewModel, IAimTimerViewModel
     {
+        private readonly IAimTimerNotificationService _aimTimerNotificationService;
         private readonly INavigation _navigation;
         private readonly IAimTimerService _aimTimerService;
+        Func<AimTimerModel, AimTimerItemModel, IAimTimerItem> _aimTimerItemFactory;
+        private readonly IAimTimerItemListItemViewModelFactory _aimTimerItemListItemViewModelFactory;
+
         private IAimTimer _aimTimer;
 
         #region Properties
@@ -45,12 +54,22 @@ namespace AimTimers.ViewModels
             }
         }
 
+        public ObservableCollection<IAimTimerItemListItemViewModel> AimTimerItems { get; set; }
+
         #endregion
 
-        public AimTimerViewModel(INavigation navigation, IAimTimerService aimTimerService)
+        public AimTimerViewModel(
+            IAimTimerNotificationService aimTimerNotificationService,
+            INavigation navigation,
+            IAimTimerService aimTimerService,
+            Func<AimTimerModel, AimTimerItemModel, IAimTimerItem> aimTimerItemFactory,
+            IAimTimerItemListItemViewModelFactory aimTimerItemListItemViewModelFactory)
         {
+            _aimTimerNotificationService = aimTimerNotificationService;
             _navigation = navigation;
             _aimTimerService = aimTimerService;
+            _aimTimerItemFactory = aimTimerItemFactory;
+            _aimTimerItemListItemViewModelFactory = aimTimerItemListItemViewModelFactory;
         }
 
         #region Commands
@@ -74,6 +93,26 @@ namespace AimTimers.ViewModels
         public void Setup(IAimTimer aimTimer)
         {
             _aimTimer = aimTimer;
+
+            _aimTimerNotificationService.SetItemsToFollow(new List<IAimTimer> { aimTimer });
+            _aimTimerNotificationService.Start();
+            _aimTimerNotificationService.OnStatusChanged += _aimTimerNotificationService_OnStatusChanged;
+
+            AimTimerItems = new ObservableCollection<IAimTimerItemListItemViewModel>();
+            foreach (var item in _aimTimer.AimTimerModel.AimTimerItemModels.OrderByDescending(i => i.EndOfActivityPeriod).ToList())
+            {
+                var aimTimerItem = _aimTimerItemFactory.Invoke(aimTimer.AimTimerModel, item);
+                var itemToAdd = _aimTimerItemListItemViewModelFactory.Create(_aimTimer, aimTimerItem);
+                AimTimerItems.Add(itemToAdd);
+            }
+        }
+
+        private void _aimTimerNotificationService_OnStatusChanged(object sender, AimTimersEventArgs e)
+        {
+            foreach(var i in AimTimerItems)
+            {
+                i.RefreshTimeLeft();
+            }
         }
     }
 }

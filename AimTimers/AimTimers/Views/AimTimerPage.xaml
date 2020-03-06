@@ -16,6 +16,74 @@
         <TimePicker Time="{Binding Time}" Format="HH:mm"/>
 
         <Button Text="Update" Command="{Binding UpdateItemCommand}"/>
+
+        <ListView x:Name="ItemsListView"
+                ItemsSource="{Binding AimTimerItems}"
+                VerticalOptions="FillAndExpand"
+                HasUnevenRows="true"
+                RefreshCommand="{Binding RefreshCommand}"
+                IsPullToRefreshEnabled="true"
+                IsRefreshing="{Binding IsBusy, Mode=OneWay}"
+                CachingStrategy="RecycleElement">
+            <!--<ListView.Behaviors>
+                <behaviors:EventToCommandBehavior EventName="ItemSelected" Command="{Binding SelectItemCommand}" Converter="{StaticResource SelectedItemConverter}"/>
+            </ListView.Behaviors>-->
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <StackLayout Orientation="Horizontal">
+                            <StackLayout
+                                Orientation="Vertical"
+                                Padding="10"
+                                HorizontalOptions="StartAndExpand">
+                                <Label
+                                    Text="Date: " 
+                                    LineBreakMode="NoWrap" 
+                                    Style="{DynamicResource ListItemDetailTextStyle}" 
+                                    FontSize="16" />
+                                <Label
+                                    Text="{Binding DateRunning}" 
+                                    LineBreakMode="NoWrap"
+                                    Style="{DynamicResource ListItemDetailTextStyle}"
+                                    FontSize="13" />
+                                <Label 
+                                    Text="TimeLeft: " 
+                                    LineBreakMode="NoWrap"
+                                    Style="{DynamicResource ListItemDetailTextStyle}"
+                                    FontSize="13" />
+                                <Label
+                                    Text="{Binding TimeLeft}" 
+                                    d:Text="Time Left"
+                                    LineBreakMode="NoWrap"
+                                    Style="{DynamicResource ListItemDetailTextStyle}"
+                                    FontSize="13" />
+                            </StackLayout>
+                            <StackLayout 
+                                Orientation="Horizontal"
+                                HorizontalOptions="End"
+                                IsVisible="{Binding IsCurrent}">
+                                <Button
+                                    Text="&#xe034;"
+                                    FontFamily="{StaticResource CustomFont}"
+                                    Command="{Binding PauseCommand}"
+                                    CommandParameter="{Binding .}"
+                                    WidthRequest="50"
+                                    FontSize="20"
+                                    VerticalOptions="Start"/>
+                                <Button
+                                    Text="&#xe037;"
+                                    FontFamily="{StaticResource CustomFont}"
+                                    Command="{Binding PlayCommand}"
+                                    CommandParameter="{Binding .}"
+                                    WidthRequest="50"
+                                    FontSize="20"
+                                    VerticalOptions="Start"/>
+                            </StackLayout>
+                        </StackLayout>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
     </StackLayout>
     
 </ContentPage>

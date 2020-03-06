@@ -58,7 +58,7 @@ namespace AimTimers.Bl
             {
                 aimTimerItemModel = AddAimTimerItem(date);
             }
-            return new AimTimerItem(aimTimerItemModel);
+            return new AimTimerItem(AimTimerModel, aimTimerItemModel, _dateTimeProvider);
         }
 
         private AimTimerItemModel AddAimTimerItem(DateTime date)

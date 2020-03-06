@@ -1,4 +1,5 @@
-﻿using AimTimers.Models;
+﻿using System;
+using AimTimers.Models;
 
 namespace AimTimers.Bl
 {
@@ -6,5 +7,6 @@ namespace AimTimers.Bl
     {
         AimTimerItemModel AimTimerItemModel { get; }
         void Refresh();
+        TimeSpan GetTimeLeft();
     }
 }
