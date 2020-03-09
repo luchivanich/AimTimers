@@ -9,16 +9,21 @@ namespace AimTimers.ViewModelFactories
     {
         private readonly IAimTimerService _aimTimerService;
         private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly IAimTimerIntervalListItemViewModelFactory _aimTimerIntervalListItemViewModelFactory;
 
-        public AimTimerItemListItemViewModelFactory(IAimTimerService aimTimerService, IDateTimeProvider dateTimeProvider)
+        public AimTimerItemListItemViewModelFactory(
+            IAimTimerService aimTimerService,
+            IDateTimeProvider dateTimeProvider,
+            IAimTimerIntervalListItemViewModelFactory aimTimerIntervalListItemViewModelFactory)
         {
             _aimTimerService = aimTimerService;
             _dateTimeProvider = dateTimeProvider;
+            _aimTimerIntervalListItemViewModelFactory = aimTimerIntervalListItemViewModelFactory;
         }
 
         public IAimTimerItemListItemViewModel Create(IAimTimer aimTimer, IAimTimerItem aimTimerItem)
         {
-            var result = new AimTimerItemListItemViewModel(_aimTimerService, _dateTimeProvider);
+            var result = new AimTimerItemListItemViewModel(_aimTimerService, _dateTimeProvider, _aimTimerIntervalListItemViewModelFactory);
             result.Setup(aimTimer, aimTimerItem);
             return result;
         }

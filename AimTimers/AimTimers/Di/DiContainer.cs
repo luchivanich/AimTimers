@@ -52,6 +52,8 @@ namespace AimTimers.Di
             unityContainer.RegisterType<IAimTimerViewModelFactory, AimTimerViewModelFactory>();
             unityContainer.RegisterType<IAimTimerItemListItemViewModel, AimTimerItemListItemViewModel>();
             unityContainer.RegisterType<IAimTimerItemListItemViewModelFactory, AimTimerItemListItemViewModelFactory>();
+            unityContainer.RegisterType<IAimTimerIntervalListItemViewModel, AimTimerIntervalListItemViewModel>();
+            unityContainer.RegisterType<IAimTimerIntervalListItemViewModelFactory, AimTimerIntervalListItemViewModelFactory>();
 
             unityContainer.RegisterFactory<IMainViewModel>(c =>
             {
