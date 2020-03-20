@@ -96,12 +96,7 @@
                             <ListView
                                 x:Name="ItemIntervalsListView"
                                 ItemsSource="{Binding AimTimerIntervals}"
-                                VerticalOptions="FillAndExpand"
-                                HasUnevenRows="true"
-                                RefreshCommand="{Binding RefreshCommand}"
-                                IsPullToRefreshEnabled="true"
-                                IsRefreshing="{Binding IsBusy, Mode=OneWay}"
-                                CachingStrategy="RecycleElement">
+                                VerticalOptions="FillAndExpand">
                                 <ListView.ItemTemplate>
                                     <DataTemplate>
                                         <ViewCell>
