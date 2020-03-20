@@ -36,46 +36,46 @@
             RefreshCommand="{Binding RefreshCommand}"
             IsPullToRefreshEnabled="true"
             IsRefreshing="{Binding IsBusy, Mode=OneWay}"
-            CachingStrategy="RecycleElement">
+            CachingStrategy="RecycleElement"
+            IsGroupingEnabled="True">
             <!--<ListView.Behaviors>
                 <behaviors:EventToCommandBehavior EventName="ItemSelected" Command="{Binding SelectItemCommand}" Converter="{StaticResource SelectedItemConverter}"/>
             </ListView.Behaviors>-->
-            <ListView.ItemTemplate>
+            <ListView.GroupHeaderTemplate>
                 <DataTemplate>
                     <ViewCell>
-                        <StackLayout Orientation="Vertical">
-                            <StackLayout Orientation="Horizontal">
-                                <StackLayout
+                        <StackLayout Orientation="Horizontal">
+                            <StackLayout
                                     Orientation="Vertical"
                                     Padding="3"
                                     HorizontalOptions="StartAndExpand">
-                                    <StackLayout Orientation="Horizontal">
-                                        <Label
+                                <StackLayout Orientation="Horizontal">
+                                    <Label
                                             Text="Date: " 
                                             LineBreakMode="NoWrap" 
                                             Style="{StaticResource AimTimerItemLabelStyle}"/>
-                                        <Label
+                                    <Label
                                             Text="{Binding DateRunning}" 
                                             LineBreakMode="NoWrap"
                                             Style="{StaticResource AimTimerItemValueLabelStyle}"/>
-                                    </StackLayout>
-                                    <StackLayout Orientation="Horizontal">
-                                        <Label
+                                </StackLayout>
+                                <StackLayout Orientation="Horizontal">
+                                    <Label
                                             Text="TimeLeft: " 
                                             LineBreakMode="NoWrap"
                                             Style="{StaticResource AimTimerItemLabelStyle}"/>
-                                        <Label
+                                    <Label
                                             Text="{Binding TimeLeft}" 
                                             d:Text="Time Left"
                                             LineBreakMode="NoWrap"
                                             Style="{StaticResource AimTimerItemValueLabelStyle}"/>
-                                    </StackLayout>
                                 </StackLayout>
-                                <StackLayout 
+                            </StackLayout>
+                            <StackLayout 
                                     Orientation="Horizontal"
                                     HorizontalOptions="End"
                                     IsVisible="{Binding IsCurrent}">
-                                    <Button
+                                <Button
                                         Text="&#xe034;"
                                         FontFamily="{StaticResource CustomFont}"
                                         Command="{Binding PauseCommand}"
@@ -83,7 +83,7 @@
                                         WidthRequest="50"
                                         FontSize="20"
                                         VerticalOptions="Start"/>
-                                    <Button
+                                <Button
                                         Text="&#xe037;"
                                         FontFamily="{StaticResource CustomFont}"
                                         Command="{Binding PlayCommand}"
@@ -91,38 +91,32 @@
                                         WidthRequest="50"
                                         FontSize="20"
                                         VerticalOptions="Start"/>
-                                </StackLayout>
                             </StackLayout>
-                            <ListView
-                                x:Name="ItemIntervalsListView"
-                                ItemsSource="{Binding AimTimerIntervals}"
-                                VerticalOptions="FillAndExpand">
-                                <ListView.ItemTemplate>
-                                    <DataTemplate>
-                                        <ViewCell>
-                                            <StackLayout Orientation="Horizontal">
-                                                <Label
-                                                    Text="Start: " 
-                                                    LineBreakMode="NoWrap" 
-                                                    Style="{StaticResource AimTimerItemLabelStyle}"/>
-                                                <Label
-                                                    Text="{Binding StartDate}" 
-                                                    LineBreakMode="NoWrap"
-                                                    Style="{StaticResource AimTimerItemValueLabelStyle}"/>
-                                                <Label 
-                                                    Text="End: " 
-                                                    LineBreakMode="NoWrap"
-                                                    Style="{StaticResource AimTimerItemLabelStyle}"/>
-                                                <Label
-                                                    Text="{Binding EndDate}" 
-                                                    d:Text="Time Left"
-                                                    LineBreakMode="NoWrap"
-                                                    Style="{StaticResource AimTimerItemValueLabelStyle}"/>
-                                            </StackLayout>
-                                        </ViewCell>
-                                    </DataTemplate>
-                                </ListView.ItemTemplate>
-                            </ListView>
+                        </StackLayout>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.GroupHeaderTemplate>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <StackLayout Orientation="Horizontal">
+                            <Label
+                                Text="Start: " 
+                                LineBreakMode="NoWrap" 
+                                Style="{StaticResource AimTimerItemLabelStyle}"/>
+                            <Label
+                                Text="{Binding StartDate}" 
+                                LineBreakMode="NoWrap"
+                                Style="{StaticResource AimTimerItemValueLabelStyle}"/>
+                            <Label 
+                                Text="End: " 
+                                LineBreakMode="NoWrap"
+                                Style="{StaticResource AimTimerItemLabelStyle}"/>
+                            <Label
+                                Text="{Binding EndDate}" 
+                                d:Text="Time Left"
+                                LineBreakMode="NoWrap"
+                                Style="{StaticResource AimTimerItemValueLabelStyle}"/>
                         </StackLayout>
                     </ViewCell>
                 </DataTemplate>

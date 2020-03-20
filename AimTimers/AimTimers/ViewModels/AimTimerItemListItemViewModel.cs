@@ -8,7 +8,7 @@ using Xamarin.Forms;
 
 namespace AimTimers.ViewModels
 {
-    public class AimTimerItemListItemViewModel : BaseViewModel, IAimTimerItemListItemViewModel
+    public class AimTimerItemListItemViewModel : ObservableCollection<IAimTimerIntervalListItemViewModel>, IAimTimerItemListItemViewModel
     {
         private readonly IAimTimerService _aimTimerService;
         private readonly IDateTimeProvider _dateTimeProvider;
@@ -23,7 +23,7 @@ namespace AimTimers.ViewModels
 
         public string TimeLeft => _aimTimerItem.GetTimeLeft().ToString();
 
-        public ObservableCollection<IAimTimerIntervalListItemViewModel> AimTimerIntervals { get; set; }
+        public ObservableCollection<IAimTimerIntervalListItemViewModel> AimTimerIntervals => this;
 
         public AimTimerItemListItemViewModel(
             IAimTimerService aimTimerService,
@@ -46,18 +46,17 @@ namespace AimTimers.ViewModels
         {
             if (IsCurrent)
             {
-                OnPropertyChanged(nameof(TimeLeft));
+               // OnPropertyChanged(nameof(TimeLeft));
             }
         }
 
         private void LoadIntervals()
         {
-            AimTimerIntervals = new ObservableCollection<IAimTimerIntervalListItemViewModel>();
+            this.Clear();
             foreach (var interval in _aimTimerItem.AimTimerItemModel.AimTimerIntervals)
             {
-                AimTimerIntervals.Add(_aimTimerIntervalListItemViewModelFactory.Create(interval));
+                this.Add(_aimTimerIntervalListItemViewModelFactory.Create(interval));
             }
-            OnPropertyChanged(nameof(AimTimerIntervals));
         }
 
         public ICommand PauseCommand

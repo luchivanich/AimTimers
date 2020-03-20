@@ -7,8 +7,6 @@ namespace AimTimers.ViewModels
 {
     public class BaseViewModel : INotifyPropertyChanged
     {
-        //public IDataStore<AimTimer> DataStore => DependencyService.Get<IDataStore<AimTimer>>() ?? new MockDataStore();
-
         bool isBusy = false;
         public bool IsBusy
         {
