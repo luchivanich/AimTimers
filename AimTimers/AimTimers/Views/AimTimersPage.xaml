@@ -5,6 +5,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:behaviors="clr-namespace:AimTimers.Behaviors"
              xmlns:converters="clr-namespace:AimTimers.Converters"
+             xmlns:utils="clr-namespace:AimTimers.Utils"
              mc:Ignorable="d"
              x:Class="AimTimers.Views.AimTimersPage"
              Title="{Binding Title}"
@@ -61,29 +62,20 @@
                             <StackLayout Orientation="Vertical">
                                 <StackLayout Orientation="Horizontal" HorizontalOptions="End" VerticalOptions="Start">
                                     <Button
-                                        Text="&#xe034;"
-                                        FontFamily="{StaticResource CustomFont}"
+                                        Text="{x:Static utils:MaterialIconCodes.Pause}"
                                         Command="{Binding PauseCommand}"
-                                        CommandParameter="{Binding .}"
-                                        WidthRequest="50"
-                                        FontSize="20" />
+                                        CommandParameter="{Binding .}"/>
                                     <Button
-                                        Text="&#xe037;"
-                                        FontFamily="{StaticResource CustomFont}"
+                                        Text="{x:Static utils:MaterialIconCodes.Play}"
                                         Command="{Binding PlayCommand}"
-                                        CommandParameter="{Binding .}"
-                                        WidthRequest="50"
-                                        FontSize="20" />
+                                        CommandParameter="{Binding .}"/>
                                 </StackLayout>
                                 <Button
                                     HorizontalOptions="End"
                                     VerticalOptions="End"
-                                    Text="&#xe92b;"
-                                    FontFamily="{StaticResource CustomFont}"
+                                    Text="{x:Static utils:MaterialIconCodes.DeleteForever}"
                                     Command="{Binding BindingContext.DeleteCommand, Source={x:Reference AimTimersContentPage}}"
-                                    CommandParameter="{Binding .}"
-                                    WidthRequest="50"
-                                    FontSize="20" />
+                                    CommandParameter="{Binding .}"/>
                             </StackLayout>
                         </StackLayout>
                     </ViewCell>

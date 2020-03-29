@@ -121,6 +121,13 @@ namespace AimTimers.ViewModels
 
         private void LoadData()
         {
+            if (IsBusy)
+            {
+                return;
+            }
+
+            IsBusy = true;
+
             AimTimerItemViewModels.Clear();
             foreach (var aimTimerModel in _aimTimerService.GetActiveAimTimers())
             {
@@ -133,6 +140,8 @@ namespace AimTimers.ViewModels
             _aimTimerNotificationService.OnStatusChanged += _aimTimerNotificationService_OnStatusChanged;
 
             AimTimerItemViewModels.CollectionChanged += AimTimerItemViewModels_CollectionChanged;
+
+            IsBusy = false;
         }
 
         private void AimTimerItemViewModels_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)

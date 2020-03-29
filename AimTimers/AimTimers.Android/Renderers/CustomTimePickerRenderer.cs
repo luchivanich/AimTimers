@@ -31,7 +31,7 @@ namespace AimTimers.Droid.Renderers
                 if (Element != null && !Element.Time.Equals(default(TimeSpan)))
                     Control.Text = Element.Time.ToString(@"hh\:mm");
                 else
-                    Control.Text = DateTime.Now.ToString("HH:mm");
+                    Control.Text = "00:00";
             }
         }
 

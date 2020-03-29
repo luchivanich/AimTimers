@@ -7,10 +7,18 @@
              x:Class="AimTimers.App">
     <Application.Resources>
         <ResourceDictionary>
-            <OnPlatform x:Key="CustomFont" x:TypeArguments="x:String">
+            <OnPlatform x:Key="MaterialFont" x:TypeArguments="x:String">
                 <On Platform="Android" Value="MaterialIcons-Regular.ttf#material" />
                 <On Platform="iOS" Value="customfont" />
             </OnPlatform>
         </ResourceDictionary>
+
+        <Style TargetType="Button">
+            <Setter Property="BackgroundColor" Value="White"/>
+            <Setter Property="WidthRequest" Value="40"/>
+            <Setter Property="FontSize" Value="30"/>
+            <Setter Property="FontFamily" Value="{StaticResource MaterialFont}"/>
+            <Setter Property="Margin" Value="0"/>
+        </Style>
     </Application.Resources>
 </Application>

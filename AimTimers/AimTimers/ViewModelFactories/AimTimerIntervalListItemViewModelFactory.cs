@@ -9,8 +9,8 @@ namespace AimTimers.ViewModelFactories
         {
             return new AimTimerIntervalListItemViewModel
             {
-                StartDate = interval.StartDate.ToLongTimeString(),
-                EndDate = interval.EndDate?.ToLongTimeString()
+                StartDate = interval.StartDate,
+                EndDate = interval.EndDate
             };
         }
     }

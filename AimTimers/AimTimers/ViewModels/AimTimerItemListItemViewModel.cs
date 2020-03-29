@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Windows.Input;
 using AimTimers.Bl;
 using AimTimers.Services;
@@ -8,7 +9,7 @@ using Xamarin.Forms;
 
 namespace AimTimers.ViewModels
 {
-    public class AimTimerItemListItemViewModel : ObservableCollection<IAimTimerIntervalListItemViewModel>, IAimTimerItemListItemViewModel
+    public class AimTimerItemListItemViewModel : ObservableCollection<IAimTimerIntervalListItemViewModel>, IAimTimerItemListItemViewModel, INotifyPropertyChanged
     {
         private readonly IAimTimerService _aimTimerService;
         private readonly IDateTimeProvider _dateTimeProvider;
@@ -22,6 +23,18 @@ namespace AimTimers.ViewModels
         public bool IsCurrent => _dateTimeProvider.GetNow().Date == _aimTimerItem.AimTimerItemModel.StartOfActivityPeriod.Date;
 
         public string TimeLeft => _aimTimerItem.GetTimeLeft().ToString();
+
+        private bool _isExpanded;
+        public bool IsExpanded
+        {
+            get => _isExpanded;
+            set
+            {
+                _isExpanded = value;
+                OnPropertyChanged(new PropertyChangedEventArgs(nameof(IsExpanded)));
+                LoadIntervals();
+            }
+        }
 
         public ObservableCollection<IAimTimerIntervalListItemViewModel> AimTimerIntervals => this;
 
@@ -46,13 +59,20 @@ namespace AimTimers.ViewModels
         {
             if (IsCurrent)
             {
-               // OnPropertyChanged(nameof(TimeLeft));
+                OnPropertyChanged(new PropertyChangedEventArgs(nameof(TimeLeft)));
+                // OnPropertyChanged(nameof(TimeLeft));
             }
         }
 
         private void LoadIntervals()
         {
             this.Clear();
+
+            if (!_isExpanded)
+            {
+                return;
+            }
+
             foreach (var interval in _aimTimerItem.AimTimerItemModel.AimTimerIntervals)
             {
                 this.Add(_aimTimerIntervalListItemViewModelFactory.Create(interval));
@@ -87,6 +107,19 @@ namespace AimTimers.ViewModels
             _aimTimer.Start();
             _aimTimerService.AddAimTimer(_aimTimer.AimTimerModel);
             LoadIntervals();
+        }
+
+        public ICommand ToggleHistoryDetailsCommand
+        {
+            get
+            {
+                return new Command(() => ExecuteToggleHistoryDetailsCommand());
+            }
+        }
+
+        private void ExecuteToggleHistoryDetailsCommand()
+        {
+            IsExpanded = !IsExpanded;
         }
     }
 }
