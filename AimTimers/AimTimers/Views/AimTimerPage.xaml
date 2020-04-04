@@ -78,7 +78,6 @@
                                             Style="{StaticResource AimTimerItemLabelStyle}"/>
                                         <Label
                                             Text="{Binding TimeLeft}" 
-                                            d:Text="Time Left"
                                             LineBreakMode="NoWrap"
                                             Style="{StaticResource AimTimerItemValueLabelStyle}"/>
                                     </StackLayout>
@@ -97,7 +96,10 @@
                                         VerticalOptions="Start"/>
                                 </StackLayout>
                             </StackLayout>
-                            <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+                            <StackLayout Orientation="Horizontal" HorizontalOptions="Center" HeightRequest="20" WidthRequest="20">
+                                <StackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding ToggleHistoryDetailsCommand}"/>
+                                </StackLayout.GestureRecognizers>
                                 <Label
                                     Text="{x:Static utils:MaterialIconCodes.ExpandLess}"
                                     FontFamily="{StaticResource MaterialFont}">
@@ -109,9 +111,6 @@
                                             <Setter Property="Text" Value="{x:Static utils:MaterialIconCodes.ExpandLess}"/>
                                         </DataTrigger>
                                     </Label.Triggers>
-                                    <Label.GestureRecognizers>
-                                        <TapGestureRecognizer Command="{Binding ToggleHistoryDetailsCommand}"/>
-                                    </Label.GestureRecognizers>
                                 </Label>
                             </StackLayout>
                         </StackLayout>
@@ -128,7 +127,6 @@
                                 Style="{StaticResource AimTimerItemLabelStyle}"/>
                             <Label
                                 Text="{Binding StartDateString}" 
-                                d:Text="Started"
                                 LineBreakMode="NoWrap"
                                 Style="{StaticResource AimTimerItemValueLabelStyle}"/>
                             <Label 
@@ -137,7 +135,6 @@
                                 Style="{StaticResource AimTimerItemLabelStyle}"/>
                             <Label
                                 Text="{Binding EndDateString}"
-                                d:Text="Ended"
                                 LineBreakMode="NoWrap"
                                 Style="{StaticResource AimTimerItemValueLabelStyle}"/>
                             <Label 
@@ -146,7 +143,6 @@
                                 Style="{StaticResource AimTimerItemLabelStyle}"/>
                             <Label
                                 Text="{Binding Duration}"
-                                d:Text="Duration"
                                 LineBreakMode="NoWrap"
                                 Style="{StaticResource AimTimerItemValueLabelStyle}"/>
                         </StackLayout>

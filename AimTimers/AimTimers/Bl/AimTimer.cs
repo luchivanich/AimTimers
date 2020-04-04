@@ -51,9 +51,9 @@ namespace AimTimers.Bl
             return new TimeSpan(AimTimerModel.Ticks ?? 0) - new TimeSpan(aimTimerItem.AimTimerItemModel.AimTimerIntervals?.Sum(i => (i.EndDate ?? now).Ticks - i.StartDate.Ticks) ?? 0);
         }
 
-        private IAimTimerItem GetAimTimerItemByDate(DateTime date)
+        public IAimTimerItem GetAimTimerItemByDate(DateTime date)
         {
-            var aimTimerItemModel = AimTimerModel.AimTimerItemModels.FirstOrDefault(i => i.StartOfActivityPeriod.Date == date.Date);
+            var aimTimerItemModel = AimTimerModel.AimTimerItemModels.FirstOrDefault(i => i.StartOfActivityPeriod <= date && i.EndOfActivityPeriod >= date);
             if (aimTimerItemModel == null)
             {
                 aimTimerItemModel = AddAimTimerItem(date);
@@ -66,6 +66,14 @@ namespace AimTimers.Bl
             var aimTimerItem = new AimTimerItemModel(date.Date, date.Date.AddDays(1).AddTicks(-1));
             AimTimerModel.AimTimerItemModels.Add(aimTimerItem);
             return aimTimerItem;
+        }
+
+        public AimTimerStatus GetAimTimerStatus(DateTime date)
+        {
+            var aimTimerItem = GetAimTimerItemByDate(date);
+            aimTimerItem.Refresh();
+            var interval = aimTimerItem.AimTimerItemModel.AimTimerIntervals.FirstOrDefault(i => i.StartDate <= date && i.EndDate >= date || i.EndDate == null);
+            return (interval != null && interval.EndDate == null) ? AimTimerStatus.InProgress : AimTimerStatus.Paused;
         }
     }
 }

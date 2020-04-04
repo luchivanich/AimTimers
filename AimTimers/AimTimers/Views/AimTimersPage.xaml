@@ -33,49 +33,105 @@
                 RefreshCommand="{Binding RefreshCommand}"
                 IsPullToRefreshEnabled="true"
                 IsRefreshing="{Binding IsBusy, Mode=OneWay}"
+                SelectionMode="None"
                 CachingStrategy="RecycleElement">
-            <ListView.Behaviors>
-                <behaviors:EventToCommandBehavior EventName="ItemSelected" Command="{Binding SelectItemCommand}" Converter="{StaticResource SelectedItemConverter}"/>
-            </ListView.Behaviors>
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
                         <StackLayout Orientation="Horizontal">
+                            <StackLayout.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding PlayPauseItemCommand}"/>
+                            </StackLayout.GestureRecognizers>
+                            <StackLayout.Triggers>
+                                <DataTrigger TargetType="StackLayout" Binding="{Binding IsInProgress}" Value="false">
+                                    <Setter Property="BackgroundColor" Value="#ffb2ae" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="StackLayout" Binding="{Binding IsInProgress}" Value="true">
+                                    <Setter Property="BackgroundColor" Value="#61f7ff" />
+                                </DataTrigger>
+                            </StackLayout.Triggers>
                             <StackLayout Orientation="Vertical" Padding="10" HorizontalOptions="FillAndExpand">
                                 <Label Text="{Binding Title}" 
                                     LineBreakMode="NoWrap" 
                                     Style="{DynamicResource ListItemTextStyle}" 
                                     FontSize="16" />
-                                <Label Text="{Binding Description}" 
-                                    d:Text="Item description"
-                                    LineBreakMode="NoWrap"
-                                    Style="{DynamicResource ListItemDetailTextStyle}"
-                                    FontSize="13" />
-                                <Label Text="{Binding TimeLeft}" 
-                                    d:Text="Time Left"
-                                    LineBreakMode="NoWrap"
-                                    Style="{DynamicResource ListItemDetailTextStyle}"
-                                    FontSize="13" />
-                                <Label Text="Expires" />
-                                <Label Text="{Binding EndOfActivityPeriod}" />
-                            </StackLayout>
-                            <StackLayout Orientation="Vertical">
-                                <StackLayout Orientation="Horizontal" HorizontalOptions="End" VerticalOptions="Start">
-                                    <Button
-                                        Text="{x:Static utils:MaterialIconCodes.Pause}"
-                                        Command="{Binding PauseCommand}"
-                                        CommandParameter="{Binding .}"/>
-                                    <Button
-                                        Text="{x:Static utils:MaterialIconCodes.Play}"
-                                        Command="{Binding PlayCommand}"
-                                        CommandParameter="{Binding .}"/>
+                                <StackLayout Orientation="Horizontal">
+                                    <Label 
+                                        Text="Left"
+                                        VerticalOptions="Center"
+                                        Style="{DynamicResource ListItemDetailTextStyle}"
+                                        FontSize="17"/>
+                                    <Label Text="{Binding TimeLeft}" 
+                                        LineBreakMode="NoWrap"
+                                        VerticalOptions="Center"
+                                        Style="{DynamicResource ListItemDetailTextStyle}"
+                                        FontAttributes="Bold"
+                                        FontSize="22" />
+                                    <Label 
+                                        Text="Passed"
+                                        VerticalOptions="Center"
+                                        Style="{DynamicResource ListItemDetailTextStyle}"
+                                        FontSize="17"
+                                        HorizontalOptions="EndAndExpand"/>
+                                    <Label 
+                                        Text="{Binding TimePassed}" 
+                                        VerticalOptions="Center"
+                                        LineBreakMode="NoWrap"
+                                        Style="{DynamicResource ListItemDetailTextStyle}"
+                                        FontAttributes="Bold"
+                                        FontSize="22"/>
                                 </StackLayout>
-                                <Button
-                                    HorizontalOptions="End"
-                                    VerticalOptions="End"
-                                    Text="{x:Static utils:MaterialIconCodes.DeleteForever}"
-                                    Command="{Binding BindingContext.DeleteCommand, Source={x:Reference AimTimersContentPage}}"
-                                    CommandParameter="{Binding .}"/>
+                                <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
+                                    <Label 
+                                        Text="Total"
+                                        FontSize="13"/>
+                                    <Label 
+                                        Text="{Binding Time}"
+                                        FontAttributes="Bold"
+                                        FontSize="13"/>
+                                    <Label
+                                        Text="Expires"
+                                        FontSize="13"
+                                        HorizontalOptions="EndAndExpand"/>
+                                    <Label 
+                                        Text="{Binding EndOfActivityPeriod}"
+                                        FontAttributes="Bold"
+                                        FontSize="13"/>
+                                </StackLayout>
+                            </StackLayout>
+                            <StackLayout Orientation="Vertical" Spacing="0">
+                                <StackLayout Orientation="Horizontal" HorizontalOptions="End" VerticalOptions="CenterAndExpand">
+                                    <StackLayout Orientation="Horizontal" HorizontalOptions="Center" HeightRequest="40" WidthRequest="40">
+                                        <StackLayout.GestureRecognizers>
+                                            <TapGestureRecognizer 
+                                                Command="{Binding BindingContext.SelectItemCommand, Source={x:Reference AimTimersContentPage}}" 
+                                                CommandParameter="{Binding .}"/>
+                                        </StackLayout.GestureRecognizers>
+                                        <Label
+                                            HorizontalOptions="Center"
+                                            VerticalOptions="Center"
+                                            Text="{x:Static utils:MaterialIconCodes.MoreHoriz}"
+                                            FontFamily="{StaticResource MaterialFont}"
+                                            FontSize="20">
+                                        </Label>
+                                    </StackLayout>
+                                </StackLayout>
+                                <StackLayout Orientation="Horizontal" HorizontalOptions="End" VerticalOptions="Start">
+                                    <StackLayout Orientation="Horizontal" HorizontalOptions="Center" HeightRequest="40" WidthRequest="40">
+                                        <StackLayout.GestureRecognizers>
+                                            <TapGestureRecognizer 
+                                                Command="{Binding BindingContext.DeleteItemCommand, Source={x:Reference AimTimersContentPage}}"
+                                                CommandParameter="{Binding .}"/>
+                                        </StackLayout.GestureRecognizers>
+                                        <Label
+                                            HorizontalOptions="Center"
+                                            VerticalOptions="Center"
+                                            Text="{x:Static utils:MaterialIconCodes.DeleteForever}"
+                                            FontFamily="{StaticResource MaterialFont}"
+                                            FontSize="20">
+                                        </Label>
+                                    </StackLayout>
+                                </StackLayout>
                             </StackLayout>
                         </StackLayout>
                     </ViewCell>

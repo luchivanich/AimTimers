@@ -69,13 +69,13 @@ namespace AimTimers.ViewModels
         {
             get
             {
-                return new Command<IAimTimerListItemViewModel>(async (aimTimerItemViewModel) => await ExecuteItemSelectCommand(aimTimerItemViewModel));
+                return new Command<IAimTimerListItemViewModel>(async (aimTimerListItemViewModel) => await ExecuteItemSelectCommand(aimTimerListItemViewModel));
             }
         }
 
-        private async Task ExecuteItemSelectCommand(IAimTimerListItemViewModel aimTimerItemViewModel)
+        private async Task ExecuteItemSelectCommand(IAimTimerListItemViewModel aimTimerListItemViewModel)
         {
-            await NavigateAimTimerView(aimTimerItemViewModel.GetAimTimer());
+            await NavigateAimTimerView(aimTimerListItemViewModel.GetAimTimer());
         }
 
         private async Task NavigateAimTimerView(IAimTimer aimTimer)
@@ -85,15 +85,15 @@ namespace AimTimers.ViewModels
             await _navigation.PushAsync(aimTimerView);
         }
 
-        public ICommand DeleteCommand
+        public ICommand DeleteItemCommand
         {
             get
             {
-                return new Command<AimTimerListItemViewModel>((aimTimerListItemViewModel) => ExecuteDeleteCommand(aimTimerListItemViewModel));
+                return new Command<AimTimerListItemViewModel>((aimTimerListItemViewModel) => ExecuteDeleteItemCommand(aimTimerListItemViewModel));
             }
         }
 
-        private void ExecuteDeleteCommand(AimTimerListItemViewModel aimTimerListItemViewModel)
+        private void ExecuteDeleteItemCommand(IAimTimerListItemViewModel aimTimerListItemViewModel)
         {
             _aimTimerService.DeleteAimTimer(aimTimerListItemViewModel.GetAimTimer()?.AimTimerModel.Id);
             LoadData();

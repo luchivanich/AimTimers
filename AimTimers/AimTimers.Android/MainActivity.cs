@@ -5,6 +5,7 @@ using Android.Content.PM;
 using Android.OS;
 using Android.Runtime;
 using Unity;
+using Xamarin.Forms;
 
 namespace AimTimers.Droid
 {
