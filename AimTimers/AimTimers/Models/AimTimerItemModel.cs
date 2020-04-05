@@ -13,6 +13,8 @@ namespace AimTimers.Models
 
         public DateTime EndOfActivityPeriod { get; private set; }
 
+        public bool IsCanceled { get; set; }
+
         public AimTimerItemModel(DateTime startOfActivityPeriod, DateTime endOfActivityPeriod)
         {
             StartOfActivityPeriod = startOfActivityPeriod;

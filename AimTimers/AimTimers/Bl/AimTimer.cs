@@ -20,7 +20,11 @@ namespace AimTimers.Bl
         public void Start()
         {
             var now = _dateTimeProvider.GetNow();
-            var currentAimTimerItem = GetAimTimerItemByDate(now);
+            var currentAimTimerItem = GetCurrentAimTimerItem();
+            if (currentAimTimerItem.AimTimerItemModel.IsCanceled)
+            {
+                return;
+            }
             if (now < currentAimTimerItem.AimTimerItemModel.StartOfActivityPeriod || 
                 now > currentAimTimerItem.AimTimerItemModel.EndOfActivityPeriod || 
                 currentAimTimerItem.AimTimerItemModel.AimTimerIntervals.Any(i => i.EndDate == null))
@@ -34,7 +38,8 @@ namespace AimTimers.Bl
         public void Stop()
         {
             var now = _dateTimeProvider.GetNow();
-            var lastInterval = GetAimTimerItemByDate(now).AimTimerItemModel.AimTimerIntervals.SingleOrDefault(i => i.EndDate == null);
+            var currentAimTimerItem = GetCurrentAimTimerItem();
+            var lastInterval = currentAimTimerItem.AimTimerItemModel.AimTimerIntervals.SingleOrDefault(i => i.EndDate == null);
             if (lastInterval == null)
             {
                 return;
@@ -43,20 +48,23 @@ namespace AimTimers.Bl
             lastInterval.EndDate = now;
         }
 
-        public TimeSpan GetTimeLeft()
+        public TimeSpan TimeLeft { get; private set; }
+
+        public void RefreshTimeLeft()
         {
             var now = _dateTimeProvider.GetNow();
-            var aimTimerItem = GetAimTimerItemByDate(now);
+            var aimTimerItem = GetCurrentAimTimerItem();
             aimTimerItem.Refresh();
-            return new TimeSpan(AimTimerModel.Ticks ?? 0) - new TimeSpan(aimTimerItem.AimTimerItemModel.AimTimerIntervals?.Sum(i => (i.EndDate ?? now).Ticks - i.StartDate.Ticks) ?? 0);
+            TimeLeft = new TimeSpan(AimTimerModel.Ticks ?? 0) - new TimeSpan(aimTimerItem.AimTimerItemModel.AimTimerIntervals?.Sum(i => (i.EndDate ?? now).Ticks - i.StartDate.Ticks) ?? 0);
         }
 
-        public IAimTimerItem GetAimTimerItemByDate(DateTime date)
+        public IAimTimerItem GetCurrentAimTimerItem()
         {
-            var aimTimerItemModel = AimTimerModel.AimTimerItemModels.FirstOrDefault(i => i.StartOfActivityPeriod <= date && i.EndOfActivityPeriod >= date);
+            var now = _dateTimeProvider.GetNow();
+            var aimTimerItemModel = AimTimerModel.AimTimerItemModels.FirstOrDefault(i => i.StartOfActivityPeriod <= now && i.EndOfActivityPeriod >= now);
             if (aimTimerItemModel == null)
             {
-                aimTimerItemModel = AddAimTimerItem(date);
+                aimTimerItemModel = AddAimTimerItem(now);
             }
             return new AimTimerItem(AimTimerModel, aimTimerItemModel, _dateTimeProvider);
         }
@@ -68,12 +76,31 @@ namespace AimTimers.Bl
             return aimTimerItem;
         }
 
-        public AimTimerStatus GetAimTimerStatus(DateTime date)
+        public AimTimerRunningStatus GetAimTimerRunningStatus()
         {
-            var aimTimerItem = GetAimTimerItemByDate(date);
+            var now = _dateTimeProvider.GetNow();
+            var aimTimerItem = GetCurrentAimTimerItem();
             aimTimerItem.Refresh();
-            var interval = aimTimerItem.AimTimerItemModel.AimTimerIntervals.FirstOrDefault(i => i.StartDate <= date && i.EndDate >= date || i.EndDate == null);
-            return (interval != null && interval.EndDate == null) ? AimTimerStatus.InProgress : AimTimerStatus.Paused;
+            var interval = aimTimerItem.AimTimerItemModel.AimTimerIntervals.FirstOrDefault(i => i.StartDate <= now && i.EndDate >= now || i.EndDate == null);
+            return (interval != null && interval.EndDate == null) ? AimTimerRunningStatus.InProgress : AimTimerRunningStatus.Paused;
+        }
+
+        public AimTimerStatus GetAimTimerStatus()
+        {
+            if (GetCurrentAimTimerItem().AimTimerItemModel.IsCanceled)
+            {
+                return AimTimerStatus.Canceled;
+            }
+            return TimeLeft.Ticks < 0 ? AimTimerStatus.Finished : AimTimerStatus.Active;
+        }
+
+        public void SetIsCanceled(bool isCanceled)
+        {
+            if (isCanceled)
+            {
+                Stop();
+            }
+            GetCurrentAimTimerItem().AimTimerItemModel.IsCanceled = isCanceled;
         }
     }
 }

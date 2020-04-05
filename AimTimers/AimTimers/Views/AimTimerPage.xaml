@@ -27,10 +27,12 @@
         <ToolbarItem Text="Update" Command="{Binding UpdateItemCommand}" />
     </ContentPage.ToolbarItems>
 
-    <StackLayout Spacing="10" Margin="20, 10, 20, 0">
+    <StackLayout Spacing="10" Padding="10">
         <StackLayout Orientation="Vertical">
             <Label Text="Name" HorizontalOptions="Start"/>
-            <Entry Text="{Binding Title}" HorizontalOptions="FillAndExpand"/>
+            <Entry
+                Text="{Binding Title}"
+                HorizontalOptions="FillAndExpand"/>
         </StackLayout>
         <!--<StackLayout Orientation="Horizontal">
             <Label Text="Description" HorizontalOptions="Start"/>

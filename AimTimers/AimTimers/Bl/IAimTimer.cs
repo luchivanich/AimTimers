@@ -9,8 +9,11 @@ namespace AimTimers.Bl
         AimTimerModel AimTimerModel { get; }
         void Start();
         void Stop();
-        TimeSpan GetTimeLeft();
-        IAimTimerItem GetAimTimerItemByDate(DateTime date);
-        AimTimerStatus GetAimTimerStatus(DateTime date);
+        TimeSpan TimeLeft { get; }
+        void RefreshTimeLeft();
+        IAimTimerItem GetCurrentAimTimerItem();
+        AimTimerRunningStatus GetAimTimerRunningStatus();
+        AimTimerStatus GetAimTimerStatus();
+        void SetIsCanceled(bool isCanceled);
     }
 }

@@ -12,7 +12,14 @@
              x:Name="AimTimersContentPage">
     <ContentPage.Resources>
         <ResourceDictionary>
-            <converters:SelectedItemEventArgsToSelectedItemConverter x:Key="SelectedItemConverter" />
+            <converters:AimTimerStatusToStringConverter x:Key="AimTimerStatusToStringConverter" />
+            <Style TargetType="Label">
+                <Style.Triggers>
+                    <DataTrigger TargetType="Label" Binding="{Binding Status}" Value="2">
+                        <Setter Property="TextColor" Value="#e0e0e0" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
         </ResourceDictionary>
     </ContentPage.Resources>
 
@@ -43,50 +50,97 @@
                                 <TapGestureRecognizer Command="{Binding PlayPauseItemCommand}"/>
                             </StackLayout.GestureRecognizers>
                             <StackLayout.Triggers>
-                                <DataTrigger TargetType="StackLayout" Binding="{Binding IsInProgress}" Value="false">
-                                    <Setter Property="BackgroundColor" Value="#ffb2ae" />
-                                </DataTrigger>
-                                <DataTrigger TargetType="StackLayout" Binding="{Binding IsInProgress}" Value="true">
+                                <MultiTrigger TargetType="StackLayout">
+                                    <MultiTrigger.Conditions>
+                                        <BindingCondition Binding="{Binding Status}" Value="0"/>
+                                        <BindingCondition Binding="{Binding RunningStatus}" Value="0"/>
+                                    </MultiTrigger.Conditions>
+                                    <Setter Property="BackgroundColor" Value="#ffd24d"/>
+                                </MultiTrigger>
+                                <MultiTrigger TargetType="StackLayout">
+                                    <MultiTrigger.Conditions>
+                                        <BindingCondition Binding="{Binding Status}" Value="0"/>
+                                        <BindingCondition Binding="{Binding RunningStatus}" Value="1"/>
+                                    </MultiTrigger.Conditions>
+                                    <Setter Property="BackgroundColor" Value="#ffb2ae"/>
+                                </MultiTrigger>
+                                <DataTrigger TargetType="StackLayout" Binding="{Binding Status}" Value="1">
                                     <Setter Property="BackgroundColor" Value="#61f7ff" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="StackLayout" Binding="{Binding Status}" Value="2">
+                                    <Setter Property="BackgroundColor" Value="#474747" />
                                 </DataTrigger>
                             </StackLayout.Triggers>
                             <StackLayout Orientation="Vertical" Padding="10" HorizontalOptions="FillAndExpand">
-                                <Label Text="{Binding Title}" 
-                                    LineBreakMode="NoWrap" 
-                                    Style="{DynamicResource ListItemTextStyle}" 
-                                    FontSize="16" />
                                 <StackLayout Orientation="Horizontal">
                                     <Label 
-                                        Text="Left"
-                                        VerticalOptions="Center"
-                                        Style="{DynamicResource ListItemDetailTextStyle}"
-                                        FontSize="17"/>
-                                    <Label Text="{Binding TimeLeft}" 
-                                        LineBreakMode="NoWrap"
-                                        VerticalOptions="Center"
-                                        Style="{DynamicResource ListItemDetailTextStyle}"
+                                        Text="{Binding Title}" 
+                                        LineBreakMode="NoWrap" 
+                                        Style="{DynamicResource ListItemTextStyle}"
                                         FontAttributes="Bold"
-                                        FontSize="22" />
-                                    <Label 
-                                        Text="Passed"
                                         VerticalOptions="Center"
-                                        Style="{DynamicResource ListItemDetailTextStyle}"
-                                        FontSize="17"
-                                        HorizontalOptions="EndAndExpand"/>
+                                        HorizontalOptions="Start"
+                                        FontSize="20" />
                                     <Label 
-                                        Text="{Binding TimePassed}" 
-                                        VerticalOptions="Center"
-                                        LineBreakMode="NoWrap"
-                                        Style="{DynamicResource ListItemDetailTextStyle}"
+                                        Text="{Binding Status, Converter={StaticResource AimTimerStatusToStringConverter}}"  
+                                        Style="{DynamicResource ListItemTextStyle}"
                                         FontAttributes="Bold"
-                                        FontSize="22"/>
+                                        HorizontalOptions="EndAndExpand"
+                                        VerticalOptions="Center"
+                                        FontSize="15" />
+                                </StackLayout>
+                                <StackLayout Orientation="Horizontal">
+                                    <StackLayout Orientation="Vertical" Spacing="0">
+                                        <Label
+                                            Text="Time Passed"
+                                            VerticalOptions="Center"
+                                            Style="{DynamicResource ListItemDetailTextStyle}"
+                                            FontSize="15"/>
+                                        <Label 
+                                            Text="{Binding TimePassed, StringFormat='{}{0:hh\\:mm\\:ss}'}"
+                                            VerticalOptions="Center"
+                                            LineBreakMode="NoWrap"
+                                            Style="{DynamicResource ListItemDetailTextStyle}"
+                                            FontAttributes="Bold"
+                                            FontSize="25"/>
+                                    </StackLayout>
+                                    <StackLayout Orientation="Vertical" HorizontalOptions="EndAndExpand" Spacing="0">
+                                        <Label 
+                                            Text="Time Left"
+                                            VerticalOptions="Center"
+                                            Style="{DynamicResource ListItemDetailTextStyle}"
+                                            FontSize="15"
+                                            HorizontalOptions="EndAndExpand"/>
+                                        <StackLayout Orientation="Horizontal">
+                                            <Label
+                                                Text="-"
+                                                VerticalOptions="Center"
+                                                Style="{DynamicResource ListItemDetailTextStyle}"
+                                                FontAttributes="Bold"
+                                                IsVisible="false"
+                                                Margin="0,0,-5,0"
+                                                FontSize="25">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding Status}" Value="1">
+                                                        <Setter Property="IsVisible" Value="true" />
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                            <Label
+                                                Text="{Binding TimeLeft, StringFormat='{}{0:hh\\:mm\\:ss}'}"
+                                                VerticalOptions="Center"
+                                                Style="{DynamicResource ListItemDetailTextStyle}"
+                                                FontAttributes="Bold"
+                                                FontSize="25"/>
+                                        </StackLayout>
+                                    </StackLayout>
                                 </StackLayout>
                                 <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
                                     <Label 
                                         Text="Total"
                                         FontSize="13"/>
                                     <Label 
-                                        Text="{Binding Time}"
+                                        Text="{Binding Time, StringFormat='{}{0:hh\\:mm\\:ss}'}"
                                         FontAttributes="Bold"
                                         FontSize="13"/>
                                     <Label
@@ -99,39 +153,54 @@
                                         FontSize="13"/>
                                 </StackLayout>
                             </StackLayout>
-                            <StackLayout Orientation="Vertical" Spacing="0">
-                                <StackLayout Orientation="Horizontal" HorizontalOptions="End" VerticalOptions="CenterAndExpand">
-                                    <StackLayout Orientation="Horizontal" HorizontalOptions="Center" HeightRequest="40" WidthRequest="40">
-                                        <StackLayout.GestureRecognizers>
-                                            <TapGestureRecognizer 
-                                                Command="{Binding BindingContext.SelectItemCommand, Source={x:Reference AimTimersContentPage}}" 
-                                                CommandParameter="{Binding .}"/>
-                                        </StackLayout.GestureRecognizers>
-                                        <Label
-                                            HorizontalOptions="Center"
-                                            VerticalOptions="Center"
-                                            Text="{x:Static utils:MaterialIconCodes.MoreHoriz}"
-                                            FontFamily="{StaticResource MaterialFont}"
-                                            FontSize="20">
-                                        </Label>
-                                    </StackLayout>
+                            <StackLayout Orientation="Vertical" Spacing="0" WidthRequest="70">
+                                <StackLayout Orientation="Horizontal" HorizontalOptions="Center" HeightRequest="65">
+                                    <StackLayout.GestureRecognizers>
+                                        <TapGestureRecognizer 
+                                            Command="{Binding BindingContext.SelectItemCommand, Source={x:Reference AimTimersContentPage}}" 
+                                            CommandParameter="{Binding .}"/>
+                                    </StackLayout.GestureRecognizers>
+                                    <Label
+                                        HorizontalOptions="Center"
+                                        VerticalOptions="Center"
+                                        Text="{x:Static utils:MaterialIconCodes.MoreVert}"
+                                        FontFamily="{StaticResource MaterialFont}"
+                                        FontSize="20">
+                                    </Label>
                                 </StackLayout>
-                                <StackLayout Orientation="Horizontal" HorizontalOptions="End" VerticalOptions="Start">
-                                    <StackLayout Orientation="Horizontal" HorizontalOptions="Center" HeightRequest="40" WidthRequest="40">
-                                        <StackLayout.GestureRecognizers>
-                                            <TapGestureRecognizer 
-                                                Command="{Binding BindingContext.DeleteItemCommand, Source={x:Reference AimTimersContentPage}}"
-                                                CommandParameter="{Binding .}"/>
-                                        </StackLayout.GestureRecognizers>
-                                        <Label
-                                            HorizontalOptions="Center"
-                                            VerticalOptions="Center"
-                                            Text="{x:Static utils:MaterialIconCodes.DeleteForever}"
-                                            FontFamily="{StaticResource MaterialFont}"
-                                            FontSize="20">
-                                        </Label>
-                                    </StackLayout>
-                                </StackLayout>
+                                <!--<StackLayout Orientation="Horizontal" HorizontalOptions="Center" HeightRequest="65">
+                                    <StackLayout.GestureRecognizers>
+                                        <TapGestureRecognizer 
+                                            Command="{Binding BindingContext.ToggleCancelItemCommand, Source={x:Reference AimTimersContentPage}}"
+                                            CommandParameter="{Binding .}"/>
+                                    </StackLayout.GestureRecognizers>
+                                    <Label
+                                        HorizontalOptions="Center"
+                                        VerticalOptions="Center"
+                                        Text="{x:Static utils:MaterialIconCodes.Cancel}"
+                                        FontFamily="{StaticResource MaterialFont}"
+                                        IsVisible="True"
+                                        FontSize="20">
+                                        <Label.Triggers>
+                                            <DataTrigger TargetType="Label" Binding="{Binding Status}" Value="2">
+                                                <Setter Property="IsVisible" Value="false" />
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
+                                    <Label
+                                        HorizontalOptions="Center"
+                                        VerticalOptions="Center"
+                                        Text="{x:Static utils:MaterialIconCodes.Undo}"
+                                        FontFamily="{StaticResource MaterialFont}"
+                                        IsVisible="False"
+                                        FontSize="20">
+                                        <Label.Triggers>
+                                            <DataTrigger TargetType="Label" Binding="{Binding Status}" Value="2">
+                                                <Setter Property="IsVisible" Value="true" />
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
+                                </StackLayout>-->
                             </StackLayout>
                         </StackLayout>
                     </ViewCell>
@@ -139,5 +208,4 @@
             </ListView.ItemTemplate>
         </ListView>
     </StackLayout>
-
 </ContentPage>

@@ -34,9 +34,9 @@
         <Tab Title="Items" Icon="tab_feed.png">
             <ShellContent ContentTemplate="{Binding ItemsTab}" />
         </Tab>
-        <Tab Title="Archive" Icon="tab_feed.png">
+        <!--<Tab Title="Archive" Icon="tab_feed.png">
             <ShellContent ContentTemplate="{Binding ArchiveItemsTab}" />
-        </Tab>
+        </Tab>-->
     </TabBar>
 
     <!-- Optional Templates 

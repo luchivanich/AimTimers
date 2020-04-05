@@ -24,6 +24,8 @@ namespace AimTimers.ViewModels
 
         public ObservableCollection<IAimTimerListItemViewModel> AimTimerItemViewModels { get; set; } = new ObservableCollection<IAimTimerListItemViewModel>();
 
+        public string Title => "Active Timers";
+
         #region Commands
 
         public ICommand RefreshCommand
@@ -99,6 +101,23 @@ namespace AimTimers.ViewModels
             LoadData();
         }
 
+        public ICommand ToggleCancelItemCommand
+        {
+            get
+            {
+                return new Command<AimTimerListItemViewModel>((aimTimerListItemViewModel) => ExecuteToggleCancelItemCommand(aimTimerListItemViewModel));
+            }
+        }
+
+        private void ExecuteToggleCancelItemCommand(IAimTimerListItemViewModel aimTimerListItemViewModel)
+        {
+            var aimTimer = aimTimerListItemViewModel.GetAimTimer();
+            var isCanceled = aimTimer.GetCurrentAimTimerItem().AimTimerItemModel.IsCanceled;
+            aimTimer.SetIsCanceled(!isCanceled);
+            _aimTimerService.AddAimTimer(aimTimerListItemViewModel.GetAimTimer().AimTimerModel);
+            //LoadData();
+        }
+
         #endregion
 
         public AimTimersViewModel(
@@ -151,6 +170,8 @@ namespace AimTimers.ViewModels
 
         private void _aimTimerNotificationService_OnStatusChanged(object sender, AimTimersEventArgs e)
         {
+            Console.Write(DateTime.Now);
+
             foreach (var aimTimerItemViewModel in AimTimerItemViewModels)
             {
                 if (e.AimTimers.Any(i => i == aimTimerItemViewModel.GetAimTimer()))

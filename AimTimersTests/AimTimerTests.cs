@@ -112,7 +112,7 @@ namespace AimTimersTests
         }
 
         [Fact]
-        public void Stop_Method_Does_Nothing_When_Timer_Is_Stoped()
+        public void Stop_Method_Does_Nothing_When_Timer_Is_Stopped()
         {
             var now = DateTime.Now;
             var expectedEndDate = now.AddHours(1);
@@ -135,6 +135,25 @@ namespace AimTimersTests
 
             Assert.Single(aimTimerItemModel.AimTimerIntervals);
             Assert.Equal(expectedEndDate, aimTimerIntervalModel.EndDate);
+        }
+
+        [Fact]
+        public void RefreshTimeLeft_Method_Set_TimeLeft_Equals_Initial_Time_When_Timer_Is_Not_Started()
+        {
+            var time = new TimeSpan(0, 10, 0);
+            var now = DateTime.Now;
+            var dateTimeProvider = new Mock<IDateTimeProvider>();
+            dateTimeProvider.Setup(dtp => dtp.GetNow()).Returns(now);
+
+            var aimTimerModel = new AimTimerModel
+            {
+                Ticks = time.Ticks
+            };
+
+            var aimTimer = new AimTimer(aimTimerModel, dateTimeProvider.Object);
+            aimTimer.RefreshTimeLeft();
+
+            Assert.Equal(time, aimTimer.TimeLeft);
         }
     }
 }

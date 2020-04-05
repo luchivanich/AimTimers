@@ -33,15 +33,45 @@ namespace AimTimers.ViewModels
             }
         }
 
-        public bool IsInProgress => _aimTimer.GetAimTimerStatus(DateTime.Now) == AimTimerStatus.InProgress;
+        public AimTimerStatus Status => _aimTimer.GetAimTimerStatus();
 
-        public string Time => (new TimeSpan(_aimTimer.AimTimerModel.Ticks ?? default)).ToString(@"hh\:mm\:ss");
+        public AimTimerRunningStatus RunningStatus => _aimTimer.GetAimTimerRunningStatus();
 
-        public string TimeLeft => _aimTimer.GetTimeLeft().ToString(@"hh\:mm\:ss");
+        public TimeSpan Time => new TimeSpan(_aimTimer.AimTimerModel.Ticks ?? default);
 
-        public string TimePassed => (new TimeSpan(_aimTimer.AimTimerModel.Ticks ?? default) - _aimTimer.GetTimeLeft()).ToString(@"hh\:mm\:ss");
+        public TimeSpan TimeLeft => _aimTimer.TimeLeft;
 
-        public string EndOfActivityPeriod => _aimTimer.GetAimTimerItemByDate(DateTime.Now)?.AimTimerItemModel.EndOfActivityPeriod.ToLongTimeString() ?? string.Empty;
+        public TimeSpan TimePassed => Time - TimeLeft;
+
+        public string EndOfActivityPeriod => _aimTimer.GetCurrentAimTimerItem()?.AimTimerItemModel.EndOfActivityPeriod.ToLongTimeString() ?? string.Empty;
+
+        #region Commands
+
+        public ICommand PlayPauseItemCommand
+        {
+            get
+            {
+                return new Command(() => ExecutePlayPauseItemCommand());
+            }
+        }
+
+        private void ExecutePlayPauseItemCommand()
+        {
+            if (_aimTimer.GetAimTimerRunningStatus() == AimTimerRunningStatus.InProgress)
+            {
+                _aimTimer.Stop();
+            }
+            else
+            {
+                _aimTimer.Start();
+                
+            }
+            _aimTimerService.AddAimTimer(_aimTimer.AimTimerModel);
+            OnPropertyChanged(nameof(RunningStatus));
+            OnPropertyChanged(nameof(Status));
+        }
+
+        #endregion
 
         public AimTimerListItemViewModel(IAimTimerService aimTimerService)
         {
@@ -60,31 +90,13 @@ namespace AimTimers.ViewModels
 
         public void RefreshTimeLeft()
         {
-            OnPropertyChanged(nameof(TimeLeft));
-            OnPropertyChanged(nameof(TimePassed));
-        }
-
-        public ICommand PlayPauseItemCommand
-        {
-            get
-            {
-                return new Command(() => ExecutePlayPauseItemCommand());
-            }
-        }
-
-        private void ExecutePlayPauseItemCommand()
-        {
-            if (_aimTimer.GetAimTimerStatus(DateTime.Now) == AimTimerStatus.InProgress)
-            {
-                _aimTimer.Stop();
-            }
-            else
-            {
-                _aimTimer.Start();
-                
-            }
-            _aimTimerService.AddAimTimer(_aimTimer.AimTimerModel);
-            OnPropertyChanged(nameof(IsInProgress));
+            //if (RunningStatus == AimTimerRunningStatus.InProgress)
+            //{
+                _aimTimer.RefreshTimeLeft();
+                OnPropertyChanged(nameof(TimeLeft));
+                OnPropertyChanged(nameof(TimePassed));
+                OnPropertyChanged(nameof(Status));
+            //}
         }
     }
 }

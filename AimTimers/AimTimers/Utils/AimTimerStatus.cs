@@ -2,7 +2,8 @@
 {
     public enum AimTimerStatus
     {
-        InProgress,
-        Paused
+        Active = 0,
+        Finished = 1,
+        Canceled = 2
     }
 }
