@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using AimTimers.Utils;
 using System.Linq;
 using AimTimers.Bl;
+using AsyncAwaitBestPractices;
 
 namespace AimTimers.Services
 {
@@ -12,7 +13,13 @@ namespace AimTimers.Services
 
         private readonly ITimer _timer;
 
-        public event EventHandler<AimTimersEventArgs> OnStatusChanged;
+        readonly WeakEventManager<AimTimersEventArgs> _statusChangedEventManager = new WeakEventManager<AimTimersEventArgs>();
+
+        public event EventHandler<AimTimersEventArgs> OnStatusChanged
+        {
+            add => _statusChangedEventManager.AddEventHandler(value);
+            remove => _statusChangedEventManager.RemoveEventHandler(value);
+        }
 
         private IEnumerable<IAimTimer> _aimTimers = new List<IAimTimer>();
 
@@ -51,7 +58,7 @@ namespace AimTimers.Services
                     return;
                 }
 
-                OnStatusChanged?.Invoke(this, new AimTimersEventArgs { AimTimers = _aimTimers });
+                _statusChangedEventManager.HandleEvent(this, new AimTimersEventArgs { AimTimers = _aimTimers }, nameof(OnStatusChanged));
             }
         }
     }
