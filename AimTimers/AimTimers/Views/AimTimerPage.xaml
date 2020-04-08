@@ -23,9 +23,9 @@
         </Style>
     </ContentPage.Resources>
 
-    <ContentPage.ToolbarItems>
+    <!--<ContentPage.ToolbarItems>
         <ToolbarItem Text="Update" Command="{Binding UpdateItemCommand}" />
-    </ContentPage.ToolbarItems>
+    </ContentPage.ToolbarItems>-->
 
     <StackLayout Spacing="10" Padding="10">
         <StackLayout Orientation="Vertical">
@@ -43,7 +43,7 @@
             <TimePicker Time="{Binding Time}" Format="HH:mm"  HorizontalOptions="FillAndExpand"/>
         </StackLayout>
 
-        <Label Text="History" HorizontalOptions="Center" FontSize="Large" Margin="0,20,0,10"/>
+        <!--<Label Text="History" HorizontalOptions="Center" FontSize="Large" Margin="0,20,0,10"/>
 
         <ListView
             x:Name="ItemsListView"
@@ -151,6 +151,6 @@
                     </ViewCell>
                 </DataTemplate>
             </ListView.ItemTemplate>
-        </ListView>
+        </ListView>-->
     </StackLayout>
 </ContentPage>

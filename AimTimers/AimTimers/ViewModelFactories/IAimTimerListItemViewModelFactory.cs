@@ -3,7 +3,7 @@ using AimTimers.ViewModels;
 
 namespace AimTimers.ViewModelFactories
 {
-    public interface IAimTimerItemViewModelFactory
+    public interface IAimTimerListItemViewModelFactory
     {
         IAimTimerListItemViewModel Create(IAimTimer aimTimer);
     }

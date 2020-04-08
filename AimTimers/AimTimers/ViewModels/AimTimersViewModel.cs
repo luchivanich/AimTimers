@@ -18,9 +18,11 @@ namespace AimTimers.ViewModels
         private readonly INavigation _navigation;
         private readonly IViewFactory _viewFactory;
         private readonly IAimTimerService _aimTimerService;
-        private readonly IAimTimerItemViewModelFactory _aimTimerItemViewModelFactory;
+        private readonly IAimTimerListItemViewModelFactory _aimTimerItemViewModelFactory;
         private readonly IAimTimerViewModelFactory _aimTimerViewModelFactory;
         private readonly Func<AimTimerModel, IAimTimer> _aimTimerFactory;
+
+        private bool _isLoaded;
 
         public ObservableCollection<IAimTimerListItemViewModel> AimTimerItemViewModels { get; set; } = new ObservableCollection<IAimTimerListItemViewModel>();
 
@@ -38,7 +40,19 @@ namespace AimTimers.ViewModels
 
         private void ExecuteRefreshCommandCommand()
         {
-            LoadData();
+            if (!_isLoaded)
+            {
+                InitialLoad();
+                _isLoaded = true;
+            }
+            else
+            {
+                foreach(var i in AimTimerItemViewModels)
+                {
+                    i.Refresh();
+                }
+            }
+            _aimTimerNotificationService.OnStatusChanged += _aimTimerNotificationService_OnStatusChanged;
         }
 
         public ICommand FreezeCommand
@@ -64,7 +78,9 @@ namespace AimTimers.ViewModels
 
         private async Task ExecuteAddItemCommand()
         {
-            await NavigateAimTimerView(_aimTimerFactory.Invoke(new AimTimerModel()));
+            var aimTimer = _aimTimerFactory.Invoke(new AimTimerModel());
+            await NavigateAimTimerView(aimTimer);
+            AimTimerItemViewModels.Add(_aimTimerItemViewModelFactory.Create(aimTimer));
         }
 
         public ICommand SelectItemCommand
@@ -98,7 +114,7 @@ namespace AimTimers.ViewModels
         private void ExecuteDeleteItemCommand(IAimTimerListItemViewModel aimTimerListItemViewModel)
         {
             _aimTimerService.DeleteAimTimer(aimTimerListItemViewModel.GetAimTimer()?.AimTimerModel.Id);
-            LoadData();
+            AimTimerItemViewModels.Remove(aimTimerListItemViewModel);
         }
 
         public ICommand ToggleCancelItemCommand
@@ -115,7 +131,6 @@ namespace AimTimers.ViewModels
             var isCanceled = aimTimer.GetCurrentAimTimerItem().AimTimerItemModel.IsCanceled;
             aimTimer.SetIsCanceled(!isCanceled);
             _aimTimerService.AddAimTimer(aimTimerListItemViewModel.GetAimTimer().AimTimerModel);
-            //LoadData();
         }
 
         #endregion
@@ -125,7 +140,7 @@ namespace AimTimers.ViewModels
             INavigation navigation,
             IViewFactory viewFactory,
             IAimTimerService aimTimerService,
-            IAimTimerItemViewModelFactory aimTimerItemViewModelFactory,
+            IAimTimerListItemViewModelFactory aimTimerItemViewModelFactory,
             IAimTimerViewModelFactory aimTimerViewModelFactory,
             Func<AimTimerModel, IAimTimer> aimTimerFactory)
         {
@@ -138,15 +153,8 @@ namespace AimTimers.ViewModels
             _aimTimerFactory = aimTimerFactory;
         }
 
-        private void LoadData()
+        private void InitialLoad()
         {
-            if (IsBusy)
-            {
-                return;
-            }
-
-            IsBusy = true;
-
             AimTimerItemViewModels.Clear();
             foreach (var aimTimerModel in _aimTimerService.GetActiveAimTimers())
             {
@@ -156,11 +164,7 @@ namespace AimTimers.ViewModels
 
             _aimTimerNotificationService.SetItemsToFollow(AimTimerItemViewModels.Select(i => i.GetAimTimer()).ToList());
             _aimTimerNotificationService.Start();
-            _aimTimerNotificationService.OnStatusChanged += _aimTimerNotificationService_OnStatusChanged;
-
             AimTimerItemViewModels.CollectionChanged += AimTimerItemViewModels_CollectionChanged;
-
-            IsBusy = false;
         }
 
         private void AimTimerItemViewModels_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)

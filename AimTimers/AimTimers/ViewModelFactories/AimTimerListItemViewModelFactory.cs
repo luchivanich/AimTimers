@@ -1,15 +1,14 @@
 ﻿using AimTimers.Bl;
 using AimTimers.Services;
-using AimTimers.Utils;
 using AimTimers.ViewModels;
 
 namespace AimTimers.ViewModelFactories
 {
-    public class AimTimerItemViewModelFactory : IAimTimerItemViewModelFactory
+    public class AimTimerListItemViewModelFactory : IAimTimerListItemViewModelFactory
     {
         private readonly IAimTimerService _aimTimerService;
 
-        public AimTimerItemViewModelFactory(IAimTimerService aimTimerService)
+        public AimTimerListItemViewModelFactory(IAimTimerService aimTimerService)
         {
             _aimTimerService = aimTimerService;
         }

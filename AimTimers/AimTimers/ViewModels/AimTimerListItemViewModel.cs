@@ -41,7 +41,7 @@ namespace AimTimers.ViewModels
 
         public TimeSpan TimeLeft => _aimTimer.TimeLeft;
 
-        public TimeSpan TimePassed => Time - TimeLeft;
+        public TimeSpan TimePassed => Time - new TimeSpan(TimeLeft.Hours, TimeLeft.Minutes, TimeLeft.Seconds);
 
         public string EndOfActivityPeriod => _aimTimer.GetCurrentAimTimerItem()?.AimTimerItemModel.EndOfActivityPeriod.ToLongTimeString() ?? string.Empty;
 
@@ -97,6 +97,16 @@ namespace AimTimers.ViewModels
                 OnPropertyChanged(nameof(TimePassed));
                 OnPropertyChanged(nameof(Status));
             //}
+        }
+
+        public void Refresh()
+        {
+            OnPropertyChanged(nameof(Title));
+            OnPropertyChanged(nameof(Time));
+            OnPropertyChanged(nameof(Status));
+            OnPropertyChanged(nameof(RunningStatus));
+
+            RefreshTimeLeft();
         }
     }
 }
