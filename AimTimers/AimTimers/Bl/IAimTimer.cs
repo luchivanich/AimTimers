@@ -10,6 +10,8 @@ namespace AimTimers.Bl
         void Start();
         void Stop();
         TimeSpan TimeLeft { get; }
+        bool IsDeleted { get; set; }
+
         void RefreshTimeLeft();
         IAimTimerItem GetCurrentAimTimerItem();
         AimTimerRunningStatus GetAimTimerRunningStatus();

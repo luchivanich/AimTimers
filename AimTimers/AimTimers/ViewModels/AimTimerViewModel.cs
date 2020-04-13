@@ -7,6 +7,7 @@ using System.Windows.Input;
 using AimTimers.Bl;
 using AimTimers.Models;
 using AimTimers.Services;
+using AimTimers.Utils;
 using AimTimers.ViewModelFactories;
 using Xamarin.Forms;
 
@@ -16,9 +17,13 @@ namespace AimTimers.ViewModels
     {
         private readonly IAimTimerNotificationService _aimTimerNotificationService;
         private readonly INavigation _navigation;
+        private readonly IAlertManager _alertManager;
         private readonly IAimTimerService _aimTimerService;
         Func<AimTimerModel, AimTimerItemModel, IAimTimerItem> _aimTimerItemFactory;
         private readonly IAimTimerItemListItemViewModelFactory _aimTimerItemListItemViewModelFactory;
+
+        private string _originalTitle;
+        private TimeSpan _originalTime;
 
         private IAimTimer _aimTimer;
 
@@ -61,12 +66,14 @@ namespace AimTimers.ViewModels
         public AimTimerViewModel(
             IAimTimerNotificationService aimTimerNotificationService,
             INavigation navigation,
+            IAlertManager alertManager,
             IAimTimerService aimTimerService,
             Func<AimTimerModel, AimTimerItemModel, IAimTimerItem> aimTimerItemFactory,
             IAimTimerItemListItemViewModelFactory aimTimerItemListItemViewModelFactory)
         {
             _aimTimerNotificationService = aimTimerNotificationService;
             _navigation = navigation;
+            _alertManager = alertManager;
             _aimTimerService = aimTimerService;
             _aimTimerItemFactory = aimTimerItemFactory;
             _aimTimerItemListItemViewModelFactory = aimTimerItemListItemViewModelFactory;
@@ -78,14 +85,36 @@ namespace AimTimers.ViewModels
         {
             get
             {
-                return new Command(async () => await ExecuteUpdateItemCommand());
+                return new Command(() => ExecuteUpdateItemCommand());
             }
         }
 
-        private async Task ExecuteUpdateItemCommand()
+        private void ExecuteUpdateItemCommand()
         {
-            _aimTimerService.AddAimTimer(_aimTimer.AimTimerModel);
-            await _navigation.PopAsync();
+            if (_originalTitle != Title || _originalTime != Time)
+            {
+                _aimTimerService.AddAimTimer(_aimTimer.AimTimerModel);
+                _originalTime = Time;
+                _originalTitle = Title;
+            }
+        }
+
+        public ICommand DeleteItemCommand
+        {
+            get
+            {
+                return new Command(async () => await ExecuteDeleteItemCommand());
+            }
+        }
+
+        private async Task ExecuteDeleteItemCommand()
+        {
+            if (await _alertManager.DisplayAlert("Warning!", "Would you like to remove timer completely?", "Yes", "No"))
+            {
+                _aimTimerService.DeleteAimTimer(_aimTimer.AimTimerModel.Id);
+                _aimTimer.IsDeleted = true;
+                await _navigation.PopAsync();
+            }
         }
 
         #endregion
@@ -93,6 +122,9 @@ namespace AimTimers.ViewModels
         public void Setup(IAimTimer aimTimer)
         {
             _aimTimer = aimTimer;
+
+            _originalTime = Time;
+            _originalTitle = Title;
 
             _aimTimerNotificationService.SetItemsToFollow(new List<IAimTimer> { aimTimer });
             _aimTimerNotificationService.Start();

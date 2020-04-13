@@ -21,7 +21,7 @@ namespace AimTimers.Utils
 
         public IReadOnlyList<Page> ModalStack => throw new System.NotImplementedException();
 
-        public IReadOnlyList<Page> NavigationStack => throw new System.NotImplementedException();
+        public IReadOnlyList<Page> NavigationStack => MainPageNavigation.NavigationStack;
 
         public void InsertPageBefore(Page page, Page before)
         {

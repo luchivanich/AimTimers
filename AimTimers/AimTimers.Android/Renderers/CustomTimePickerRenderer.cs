@@ -2,6 +2,8 @@
 using AimTimers.Droid.Renderers;
 using Android.App;
 using Android.Content;
+using Android.Graphics.Drawables;
+using Android.Views;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
 
@@ -25,6 +27,16 @@ namespace AimTimers.Droid.Renderers
             this.Control.KeyListener = null;
             if (Control != null)
             {
+                Control.SetHintTextColor(Android.Graphics.Color.White);
+                Control.SetSingleLine(true);
+                //Control.SetTypeface(null, TypefaceStyle.Bold);
+                //Control.Gravity = GravityFlags.Center;
+
+                // Remove borders
+                GradientDrawable gd = new GradientDrawable();
+                gd.SetStroke(0, Android.Graphics.Color.LightGray);
+                Control.Background = gd;
+
                 Control.Click += Control_Click;
                 Control.FocusChange += Control_FocusChange;
 

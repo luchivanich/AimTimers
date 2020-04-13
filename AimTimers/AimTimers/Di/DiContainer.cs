@@ -23,6 +23,7 @@ namespace AimTimers.Di
             unityContainer.RegisterInstance(DependencyService.Get<INotificationManager>());
             unityContainer.RegisterType<IViewFactory, ViewFactory>();
             unityContainer.RegisterType<INavigation, NavigationAdapter>();
+            unityContainer.RegisterType<IAlertManager, AlertManager>();
             unityContainer.RegisterSingleton<IRepository, BaseRepository>();
             unityContainer.RegisterSingleton<IAimTimerService, AimTimerService>();
             unityContainer.RegisterType<IAimTimerNotificationService, AimTimerNotificationService>();

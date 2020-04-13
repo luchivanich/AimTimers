@@ -6,6 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:utils="clr-namespace:AimTimers.Utils"
     xmlns:converters="clr-namespace:AimTimers.Converters"
+    xmlns:behaviors="clr-namespace:AimTimers.Behaviors"
     mc:Ignorable="d"
     x:Class="AimTimers.Views.AimTimerPage"
     Title="{Binding Title}"
@@ -23,24 +24,50 @@
         </Style>
     </ContentPage.Resources>
 
-    <!--<ContentPage.ToolbarItems>
-        <ToolbarItem Text="Update" Command="{Binding UpdateItemCommand}" />
-    </ContentPage.ToolbarItems>-->
+    <ContentPage.ToolbarItems>
+        <ToolbarItem
+            Command="{Binding DeleteItemCommand}">
+            <ToolbarItem.IconImageSource>
+                <FontImageSource
+                    FontFamily="{StaticResource MaterialFont}"
+                    Glyph="{x:Static utils:MaterialIconCodes.DeleteForever}"/>
+            </ToolbarItem.IconImageSource>
+        </ToolbarItem>
+    </ContentPage.ToolbarItems>
 
     <StackLayout Spacing="10" Padding="10">
-        <StackLayout Orientation="Vertical">
-            <Label Text="Name" HorizontalOptions="Start"/>
+        <StackLayout Orientation="Horizontal">
+            <Label 
+                Text="Name"
+                HorizontalOptions="Start"
+                VerticalOptions="Center"/>
             <Entry
                 Text="{Binding Title}"
-                HorizontalOptions="FillAndExpand"/>
+                HorizontalOptions="FillAndExpand"
+                VerticalOptions="Center">
+                <Entry.Behaviors>
+                    <behaviors:EventToCommandBehavior EventName="TextChanged" Command="{Binding UpdateItemCommand}"/>
+                </Entry.Behaviors>
+            </Entry>
         </StackLayout>
         <!--<StackLayout Orientation="Horizontal">
             <Label Text="Description" HorizontalOptions="Start"/>
             <Entry Text="{Binding Description}"  HorizontalOptions="FillAndExpand"/>
         </StackLayout>-->
-        <StackLayout Orientation="Vertical">
-            <Label Text="Time" HorizontalOptions="Start"/>
-            <TimePicker Time="{Binding Time}" Format="HH:mm"  HorizontalOptions="FillAndExpand"/>
+        <StackLayout Orientation="Horizontal">
+            <Label
+                Text="Time"
+                HorizontalOptions="Start"
+                VerticalOptions="Center"/>
+            <TimePicker
+                Time="{Binding Time}"
+                Format="HH:mm"
+                HorizontalOptions="FillAndExpand"
+                VerticalOptions="Center">
+                <TimePicker.Behaviors>
+                    <behaviors:EventToCommandBehavior EventName="PropertyChanged" Command="{Binding UpdateItemCommand}"/>
+                </TimePicker.Behaviors>
+            </TimePicker>
         </StackLayout>
 
         <!--<Label Text="History" HorizontalOptions="Center" FontSize="Large" Margin="0,20,0,10"/>

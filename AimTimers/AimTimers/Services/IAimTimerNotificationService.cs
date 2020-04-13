@@ -11,5 +11,6 @@ namespace AimTimers.Services
         void SetItemsToFollow(IEnumerable<IAimTimer> aimTimers);
         void Start();
         void Stop();
+        void Remove(IAimTimer aimTimer);
     }
 }

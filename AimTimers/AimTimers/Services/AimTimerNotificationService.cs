@@ -21,7 +21,7 @@ namespace AimTimers.Services
             remove => _statusChangedEventManager.RemoveEventHandler(value);
         }
 
-        private IEnumerable<IAimTimer> _aimTimers = new List<IAimTimer>();
+        private List<IAimTimer> _aimTimers = new List<IAimTimer>();
 
         public AimTimerNotificationService(ITimer timer)
         {
@@ -45,7 +45,7 @@ namespace AimTimers.Services
         {
             lock (_lock)
             {
-                _aimTimers = aimTimers;
+                _aimTimers = aimTimers.ToList();
             }
         }
 
@@ -59,6 +59,14 @@ namespace AimTimers.Services
                 }
 
                 _statusChangedEventManager.HandleEvent(this, new AimTimersEventArgs { AimTimers = _aimTimers }, nameof(OnStatusChanged));
+            }
+        }
+
+        public void Remove(IAimTimer aimTimer)
+        {
+            lock (_lock)
+            {
+                _aimTimers.Remove(aimTimer);
             }
         }
     }

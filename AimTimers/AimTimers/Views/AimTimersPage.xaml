@@ -29,7 +29,13 @@
     </ContentPage.Behaviors>
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Add" Command="{Binding AddItemCommand}" />
+        <ToolbarItem Text="Add" Command="{Binding AddItemCommand}">
+            <ToolbarItem.IconImageSource>
+                <FontImageSource
+                    FontFamily="{StaticResource MaterialFont}"
+                    Glyph="{x:Static utils:MaterialIconCodes.Add}"/>
+            </ToolbarItem.IconImageSource>
+        </ToolbarItem>
     </ContentPage.ToolbarItems>
 
     <StackLayout>
@@ -38,17 +44,14 @@
                 VerticalOptions="FillAndExpand"
                 HasUnevenRows="true"
                 RefreshCommand="{Binding RefreshCommand}"
-                IsPullToRefreshEnabled="true"
+                IsPullToRefreshEnabled="false"
                 IsRefreshing="{Binding IsBusy, Mode=OneWay}"
                 SelectionMode="None"
                 CachingStrategy="RecycleElement">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
-                        <StackLayout Orientation="Horizontal">
-                            <StackLayout.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding PlayPauseItemCommand}"/>
-                            </StackLayout.GestureRecognizers>
+                        <StackLayout Orientation="Horizontal" Spacing="0">
                             <StackLayout.Triggers>
                                 <MultiTrigger TargetType="StackLayout">
                                     <MultiTrigger.Conditions>
@@ -72,6 +75,9 @@
                                 </DataTrigger>
                             </StackLayout.Triggers>
                             <StackLayout Orientation="Vertical" Padding="10" HorizontalOptions="FillAndExpand">
+                                <StackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding PlayPauseItemCommand}"/>
+                                </StackLayout.GestureRecognizers>
                                 <StackLayout Orientation="Horizontal">
                                     <Label 
                                         Text="{Binding Title}" 
@@ -135,7 +141,7 @@
                                         </StackLayout>
                                     </StackLayout>
                                 </StackLayout>
-                                <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
+                                <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand" Margin="0,0,0,0">
                                     <Label 
                                         Text="Total"
                                         FontSize="13"/>
@@ -153,15 +159,15 @@
                                         FontSize="13"/>
                                 </StackLayout>
                             </StackLayout>
-                            <StackLayout Orientation="Vertical" Spacing="0" WidthRequest="70">
-                                <StackLayout Orientation="Horizontal" HorizontalOptions="Center" HeightRequest="65">
+                            <StackLayout Orientation="Vertical" Spacing="0" Margin="0,0,0,0">
+                                <StackLayout Orientation="Horizontal" HorizontalOptions="CenterAndExpand" WidthRequest="50" HeightRequest="65" Margin="0,0,0,0">
                                     <StackLayout.GestureRecognizers>
                                         <TapGestureRecognizer 
                                             Command="{Binding BindingContext.SelectItemCommand, Source={x:Reference AimTimersContentPage}}" 
                                             CommandParameter="{Binding .}"/>
                                     </StackLayout.GestureRecognizers>
                                     <Label
-                                        HorizontalOptions="Center"
+                                        HorizontalOptions="CenterAndExpand"
                                         VerticalOptions="Center"
                                         Text="{x:Static utils:MaterialIconCodes.MoreVert}"
                                         FontFamily="{StaticResource MaterialFont}"

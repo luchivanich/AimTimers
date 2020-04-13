@@ -47,6 +47,13 @@ namespace AimTimers.ViewModels
             }
             else
             {
+                var itemsToRemove = AimTimerItemViewModels.Where(i => i.GetAimTimer().IsDeleted).ToList();
+                foreach (var item in itemsToRemove)
+                {
+                    AimTimerItemViewModels.Remove(item);
+                    _aimTimerNotificationService.Remove(item.GetAimTimer());
+                }
+
                 foreach(var i in AimTimerItemViewModels)
                 {
                     i.Refresh();

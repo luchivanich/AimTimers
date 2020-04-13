@@ -49,6 +49,7 @@ namespace AimTimers.Bl
         }
 
         public TimeSpan TimeLeft { get; private set; }
+        public bool IsDeleted { get; set; }
 
         public void RefreshTimeLeft()
         {
