@@ -47,8 +47,9 @@
                 IsPullToRefreshEnabled="false"
                 IsRefreshing="{Binding IsBusy, Mode=OneWay}"
                 SelectionMode="None"
-                CachingStrategy="RecycleElement">
-            <ListView.ItemTemplate>
+                CachingStrategy="RecycleElement"
+                IsGroupingEnabled="True">
+            <ListView.GroupHeaderTemplate>
                 <DataTemplate>
                     <ViewCell>
                         <StackLayout Orientation="Horizontal" Spacing="0">
@@ -171,42 +172,78 @@
                                         VerticalOptions="Center"
                                         Text="{x:Static utils:MaterialIconCodes.MoreVert}"
                                         FontFamily="{StaticResource MaterialFont}"
-                                        FontSize="20">
-                                    </Label>
+                                        FontSize="20"/>
                                 </StackLayout>
-                                <!--<StackLayout Orientation="Horizontal" HorizontalOptions="Center" HeightRequest="65">
+                                <StackLayout Orientation="Horizontal" HorizontalOptions="CenterAndExpand" WidthRequest="50" HeightRequest="65" Margin="0,0,0,0">
                                     <StackLayout.GestureRecognizers>
-                                        <TapGestureRecognizer 
-                                            Command="{Binding BindingContext.ToggleCancelItemCommand, Source={x:Reference AimTimersContentPage}}"
-                                            CommandParameter="{Binding .}"/>
+                                        <TapGestureRecognizer Command="{Binding ToggleExpandCommand}"/>
                                     </StackLayout.GestureRecognizers>
                                     <Label
-                                        HorizontalOptions="Center"
+                                        HorizontalOptions="CenterAndExpand"
                                         VerticalOptions="Center"
-                                        Text="{x:Static utils:MaterialIconCodes.Cancel}"
                                         FontFamily="{StaticResource MaterialFont}"
-                                        IsVisible="True"
                                         FontSize="20">
                                         <Label.Triggers>
-                                            <DataTrigger TargetType="Label" Binding="{Binding Status}" Value="2">
-                                                <Setter Property="IsVisible" Value="false" />
+                                            <DataTrigger TargetType="Label" Binding="{Binding IsExpanded}" Value="true">
+                                                <Setter Property="Text" Value="{x:Static utils:MaterialIconCodes.ExpandLess}"/>
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Label" Binding="{Binding IsExpanded}" Value="false">
+                                                <Setter Property="Text" Value="{x:Static utils:MaterialIconCodes.ExpandMore}"/>
                                             </DataTrigger>
                                         </Label.Triggers>
                                     </Label>
+                                </StackLayout>
+                            </StackLayout>
+                        </StackLayout>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.GroupHeaderTemplate>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <StackLayout Orientation="Horizontal" Margin="30,10,30,10">
+                            <StackLayout Orientation="Vertical" HorizontalOptions="Start">
+                                <Label
+                                    Text="Interval"
+                                    LineBreakMode="NoWrap"/>
+                                <StackLayout Orientation="Horizontal">
                                     <Label
-                                        HorizontalOptions="Center"
-                                        VerticalOptions="Center"
-                                        Text="{x:Static utils:MaterialIconCodes.Undo}"
-                                        FontFamily="{StaticResource MaterialFont}"
-                                        IsVisible="False"
-                                        FontSize="20">
-                                        <Label.Triggers>
-                                            <DataTrigger TargetType="Label" Binding="{Binding Status}" Value="2">
-                                                <Setter Property="IsVisible" Value="true" />
-                                            </DataTrigger>
-                                        </Label.Triggers>
-                                    </Label>
-                                </StackLayout>-->
+                                        Text="{Binding StartDateString}" 
+                                        LineBreakMode="NoWrap"
+                                        FontAttributes="Bold"/>
+                                    <Label
+                                        Text="-" 
+                                        LineBreakMode="NoWrap"
+                                        FontAttributes="Bold"/>
+                                    <Label
+                                        Text="{Binding EndDateString}"
+                                        LineBreakMode="NoWrap"
+                                        FontAttributes="Bold"/>
+                                </StackLayout>
+                            </StackLayout>
+                            <StackLayout Orientation="Horizontal" HorizontalOptions="EndAndExpand">
+                                <Label
+                                    WidthRequest="40"
+                                    HorizontalOptions="CenterAndExpand"
+                                    VerticalOptions="Center"
+                                    Text="{x:Static utils:MaterialIconCodes.Edit}"
+                                    FontFamily="{StaticResource MaterialFont}"
+                                    FontSize="20">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding EditItemCommand}"/>
+                                    </Label.GestureRecognizers>
+                                </Label>
+                                <Label
+                                    WidthRequest="40"
+                                    HorizontalOptions="CenterAndExpand"
+                                    VerticalOptions="Center"
+                                    Text="{x:Static utils:MaterialIconCodes.Cancel}"
+                                    FontFamily="{StaticResource MaterialFont}"
+                                    FontSize="20">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding DeleteItemCommand}"/>
+                                    </Label.GestureRecognizers>
+                                </Label>
                             </StackLayout>
                         </StackLayout>
                     </ViewCell>

@@ -109,7 +109,7 @@ namespace AimTimers.ViewModels
 
         private async Task ExecuteDeleteItemCommand()
         {
-            if (await _alertManager.DisplayAlert("Warning!", "Would you like to remove timer completely?", "Yes", "No"))
+            if (await _alertManager.DisplayAlert("Warning!", "Would you like to remove the timer completely?", "Yes", "No"))
             {
                 _aimTimerService.DeleteAimTimer(_aimTimer.AimTimerModel.Id);
                 _aimTimer.IsDeleted = true;

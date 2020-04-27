@@ -75,7 +75,7 @@ namespace AimTimers.ViewModels
 
             foreach (var interval in _aimTimerItem.AimTimerItemModel.AimTimerIntervals)
             {
-                this.Add(_aimTimerIntervalListItemViewModelFactory.Create(interval));
+                //this.Add(_aimTimerIntervalListItemViewModelFactory.Create(interval));
             }
         }
 

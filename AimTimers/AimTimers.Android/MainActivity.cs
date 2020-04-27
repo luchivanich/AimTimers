@@ -5,7 +5,6 @@ using Android.Content.PM;
 using Android.OS;
 using Android.Runtime;
 using Unity;
-using Xamarin.Forms;
 
 namespace AimTimers.Droid
 {
@@ -20,6 +19,8 @@ namespace AimTimers.Droid
                 ToolbarResource = Resource.Layout.Toolbar;
 
                 base.OnCreate(savedInstanceState);
+
+                Rg.Plugins.Popup.Popup.Init(this, savedInstanceState);
 
                 AndroidEnvironment.UnhandledExceptionRaiser -= StoreLogger;
                 AndroidEnvironment.UnhandledExceptionRaiser += StoreLogger;

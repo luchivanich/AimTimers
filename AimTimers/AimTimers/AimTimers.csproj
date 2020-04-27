@@ -15,6 +15,7 @@
     <PackageReference Include="Couchbase.Lite" Version="2.7.0" />
     <PackageReference Include="Couchbase.Lite.Mapping" Version="1.1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Rg.Plugins.Popup" Version="2.0.0.2" />
     <PackageReference Include="Unity" Version="5.11.5" />
     <PackageReference Include="Xamarin.Forms" Version="4.5.0.530" />  
     <PackageReference Include="Xamarin.Essentials" Version="1.5.2" />
@@ -30,5 +31,11 @@
     <Compile Update="Views\AimTimerPage.xaml.cs">
       <DependentUpon>AimTimerPage.xaml</DependentUpon>
     </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Views\AimTimerIntervalPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

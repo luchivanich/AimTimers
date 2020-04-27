@@ -1,16 +1,18 @@
-﻿using AimTimers.Models;
+﻿using AimTimers.Bl;
 using AimTimers.ViewModels;
 
 namespace AimTimers.ViewModelFactories
 {
     public class AimTimerIntervalListItemViewModelFactory : IAimTimerIntervalListItemViewModelFactory
     {
-        public IAimTimerIntervalListItemViewModel Create(AimTimerIntervalModel interval)
+        public IAimTimerIntervalListItemViewModel Create(IAimTimerInterval interval, IAimTimerListItemViewModel parent)
         {
             return new AimTimerIntervalListItemViewModel
             {
+                AimTimerInterval = interval,
                 StartDate = interval.StartDate,
-                EndDate = interval.EndDate
+                EndDate = interval.EndDate,
+                Parent = parent
             };
         }
     }
