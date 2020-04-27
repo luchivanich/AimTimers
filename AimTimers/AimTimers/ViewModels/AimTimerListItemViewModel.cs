@@ -21,7 +21,7 @@ namespace AimTimers.ViewModels
         private readonly IAimTimerService _aimTimerService;
         private readonly IViewFactory _viewFactory;
         private readonly IAimTimerIntervalListItemViewModelFactory _aimTimerIntervalListItemViewModelFactory;
-        private readonly Func<AimTimerIntervalModel, IAimTimerInterval> _aimTimerIntervalFactory;
+        private readonly Func<IAimTimer, AimTimerIntervalModel, IAimTimerInterval> _aimTimerIntervalFactory;
         private readonly Func<IAimTimerInterval, IAimTimerIntervalViewModel> _aimTimerIntervalViewModelFactory;
 
         private IAimTimer _aimTimer;
@@ -154,7 +154,7 @@ namespace AimTimers.ViewModels
             IAimTimerService aimTimerService,
             IViewFactory viewFactory,
             IAimTimerIntervalListItemViewModelFactory aimTimerIntervalListItemViewModelFactory,
-            Func<AimTimerIntervalModel, IAimTimerInterval> aimTimerIntervalFactory,
+            Func<IAimTimer, AimTimerIntervalModel, IAimTimerInterval> aimTimerIntervalFactory,
             Func<IAimTimerInterval, IAimTimerIntervalViewModel> aimTimerIntervalViewModelFactory)
         {
             _alertManager = alertManager;
@@ -209,7 +209,7 @@ namespace AimTimers.ViewModels
 
             foreach (var intervalModel in _aimTimerItem.AimTimerItemModel.AimTimerIntervals.OrderByDescending(i => i.StartDate))
             {
-                var interval = _aimTimerIntervalFactory.Invoke(intervalModel);
+                var interval = _aimTimerIntervalFactory.Invoke(_aimTimer, intervalModel);
                 Add(_aimTimerIntervalListItemViewModelFactory.Create(interval, this));
             }
         }

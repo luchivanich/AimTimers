@@ -11,8 +11,8 @@ namespace AimTimers.ViewModels
 
         public IAimTimerListItemViewModel Parent { get; set; }
 
-        public DateTime StartDate { get; set; }
-        public DateTime? EndDate { get; set; }
+        public DateTime StartDate => AimTimerInterval.AimTimerIntervalModel.StartDate;
+        public DateTime? EndDate => AimTimerInterval.AimTimerIntervalModel.EndDate;
 
         public string StartDateString => StartDate.ToLongTimeString();
 
@@ -44,7 +44,7 @@ namespace AimTimers.ViewModels
 
         private void ExecuteDeleteItemCommand()
         {
-            //Parent.EditItemCommand.Execute(this);
+            Parent.DeleteItemCommand.Execute(this);
         }
     }
 }

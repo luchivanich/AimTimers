@@ -61,7 +61,7 @@
                 VerticalOptions="Center"/>
             <TimePicker
                 Time="{Binding Time}"
-                Format="HH:mm"
+                Format="hh\:mm"
                 HorizontalOptions="FillAndExpand"
                 VerticalOptions="Center">
                 <TimePicker.Behaviors>

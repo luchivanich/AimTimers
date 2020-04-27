@@ -40,10 +40,14 @@ namespace AimTimers.Droid.Renderers
                 Control.Click += Control_Click;
                 Control.FocusChange += Control_FocusChange;
 
-                if (Element != null && !Element.Time.Equals(default(TimeSpan)))
-                    Control.Text = Element.Time.ToString(@"hh\:mm");
-                else
-                    Control.Text = "00:00";
+                var format = Element.Format;
+                if (string.IsNullOrWhiteSpace(format))
+                {
+                    format = @"hh\:mm";
+                }
+
+                var time = Element?.Time ?? default;
+                Control.Text = time.ToString(format);
             }
         }
 

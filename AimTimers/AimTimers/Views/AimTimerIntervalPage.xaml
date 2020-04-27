@@ -3,13 +3,50 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:behaviors="clr-namespace:AimTimers.Behaviors"
              mc:Ignorable="d"
              x:Class="AimTimers.Views.AimTimerIntervalPage">
     <ContentPage.Content>
         <StackLayout>
-            <Label Text="Welcome to Xamarin.Forms!"
-                VerticalOptions="CenterAndExpand" 
-                HorizontalOptions="CenterAndExpand" />
+            <StackLayout Orientation="Horizontal">
+                <Label
+                    Text="Start Time"
+                    HorizontalOptions="Start"
+                    VerticalOptions="Center"/>
+                <TimePicker
+                    Time="{Binding StartTime}"
+                    Format="hh\:mm\:ss"
+                    HorizontalOptions="FillAndExpand"
+                    VerticalOptions="Center">
+                    <TimePicker.Behaviors>
+                        <behaviors:EventToCommandBehavior EventName="PropertyChanged" Command="{Binding UpdateItemCommand}"/>
+                    </TimePicker.Behaviors>
+                </TimePicker>
+                <Label
+                    Text="End Time"
+                    HorizontalOptions="Start"
+                    VerticalOptions="Center"/>
+                <TimePicker
+                    Time="{Binding EndTime}"
+                    Format="hh\:mm\:ss"
+                    HorizontalOptions="FillAndExpand"
+                    VerticalOptions="Center">
+                    <TimePicker.Behaviors>
+                        <behaviors:EventToCommandBehavior EventName="PropertyChanged" Command="{Binding UpdateItemCommand}"/>
+                    </TimePicker.Behaviors>
+                </TimePicker>
+            </StackLayout>
+            <StackLayout Orientation="Horizontal">
+                <Label
+                    Text="Duration"
+                    HorizontalOptions="Start"
+                    VerticalOptions="Center"/>
+                <Label
+                    Text="{Binding Duration}"
+                    HorizontalOptions="FillAndExpand"
+                    VerticalOptions="Center">
+                </Label>
+            </StackLayout>
         </StackLayout>
     </ContentPage.Content>
 </ContentPage>

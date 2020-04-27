@@ -1,14 +1,10 @@
-﻿using System;
-using AimTimers.Models;
+﻿using AimTimers.Models;
 
 namespace AimTimers.Bl
 {
     public interface IAimTimerInterval
     {
+        IAimTimer AimTimer { get; }
         AimTimerIntervalModel AimTimerIntervalModel { get; }
-
-        DateTime StartDate { get; set; }
-
-        DateTime? EndDate { get; set; }
     }
 }

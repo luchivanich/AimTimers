@@ -10,8 +10,6 @@ namespace AimTimers.ViewModelFactories
             return new AimTimerIntervalListItemViewModel
             {
                 AimTimerInterval = interval,
-                StartDate = interval.StartDate,
-                EndDate = interval.EndDate,
                 Parent = parent
             };
         }
