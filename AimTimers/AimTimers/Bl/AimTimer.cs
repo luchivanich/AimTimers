@@ -77,22 +77,22 @@ namespace AimTimers.Bl
             return aimTimerItem;
         }
 
-        public AimTimerRunningStatus GetAimTimerRunningStatus()
+        public AimTimerStatusFlags GetAimTimerStatusFlags()
         {
+            var result = AimTimerStatusFlags.None;
             var now = _dateTimeProvider.GetNow();
             var aimTimerItem = GetCurrentAimTimerItem();
             aimTimerItem.Refresh();
             var interval = aimTimerItem.AimTimerItemModel.AimTimerIntervals.FirstOrDefault(i => i.StartDate <= now && i.EndDate >= now || i.EndDate == null);
-            return (interval != null && interval.EndDate == null) ? AimTimerRunningStatus.InProgress : AimTimerRunningStatus.Paused;
-        }
-
-        public AimTimerStatus GetAimTimerStatus()
-        {
-            if (GetCurrentAimTimerItem().AimTimerItemModel.IsCanceled)
+            if (interval != null && interval.EndDate == null)
             {
-                return AimTimerStatus.Canceled;
+                result |= AimTimerStatusFlags.Running;
             }
-            return TimeLeft.Ticks < 0 ? AimTimerStatus.Finished : AimTimerStatus.Active;
+            if (TimeLeft.Ticks > 0)
+            {
+                result |= AimTimerStatusFlags.Active;
+            }
+            return result;
         }
 
         public void SetIsCanceled(bool isCanceled)

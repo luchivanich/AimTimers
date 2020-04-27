@@ -47,9 +47,7 @@ namespace AimTimers.ViewModels
             }
         }
 
-        public AimTimerStatus Status => _aimTimer.GetAimTimerStatus();
-
-        public AimTimerRunningStatus RunningStatus => _aimTimer.GetAimTimerRunningStatus();
+        public AimTimerStatusFlags Status => _aimTimer.GetAimTimerStatusFlags();
 
         public TimeSpan Time => new TimeSpan(_aimTimer.AimTimerModel.Ticks ?? default);
 
@@ -83,7 +81,7 @@ namespace AimTimers.ViewModels
 
         private void ExecutePlayPauseItemCommand()
         {
-            if (_aimTimer.GetAimTimerRunningStatus() == AimTimerRunningStatus.InProgress)
+            if ((Status & AimTimerStatusFlags.Running) == AimTimerStatusFlags.Running)
             {
                 _aimTimer.Stop();
             }
@@ -94,7 +92,6 @@ namespace AimTimers.ViewModels
             }
             _aimTimerService.AddAimTimer(_aimTimer.AimTimerModel);
             LoadIntervals();
-            OnPropertyChanged(new PropertyChangedEventArgs(nameof(RunningStatus)));
             OnPropertyChanged(new PropertyChangedEventArgs(nameof(Status)));
         }
 
@@ -193,7 +190,6 @@ namespace AimTimers.ViewModels
             OnPropertyChanged(new PropertyChangedEventArgs(nameof(Title)));
             OnPropertyChanged(new PropertyChangedEventArgs(nameof(Time)));
             OnPropertyChanged(new PropertyChangedEventArgs(nameof(Status)));
-            OnPropertyChanged(new PropertyChangedEventArgs(nameof(RunningStatus)));
 
             RefreshTimeLeft();
         }

@@ -5,20 +5,16 @@ using Xamarin.Forms;
 
 namespace AimTimers.Converters
 {
-    public class AimTimerStatusToStringConverter : IValueConverter
+    public class IsActiveStatusConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (!(value is AimTimerStatusFlags status))
+            if (value is AimTimerStatusFlags statusFlags)
             {
-                return string.Empty;
+                return (statusFlags & AimTimerStatusFlags.Active) == AimTimerStatusFlags.Active;
             }
 
-            if ((status & AimTimerStatusFlags.Active) == AimTimerStatusFlags.Active)
-            {
-                return "Active";
-            }
-            return "Finished";
+            return false;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

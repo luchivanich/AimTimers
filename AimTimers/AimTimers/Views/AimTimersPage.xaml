@@ -12,14 +12,9 @@
              x:Name="AimTimersContentPage">
     <ContentPage.Resources>
         <ResourceDictionary>
+            <converters:IsActiveStatusConverter x:Key="IsActiveStatusConverter" />
+            <converters:StatusFlagsToBackgroundColorConverter x:Key="StatusFlagsToBackgroundColorConverter" />
             <converters:AimTimerStatusToStringConverter x:Key="AimTimerStatusToStringConverter" />
-            <Style TargetType="Label">
-                <Style.Triggers>
-                    <DataTrigger TargetType="Label" Binding="{Binding Status}" Value="2">
-                        <Setter Property="TextColor" Value="#e0e0e0" />
-                    </DataTrigger>
-                </Style.Triggers>
-            </Style>
         </ResourceDictionary>
     </ContentPage.Resources>
 
@@ -52,29 +47,10 @@
             <ListView.GroupHeaderTemplate>
                 <DataTemplate>
                     <ViewCell>
-                        <StackLayout Orientation="Horizontal" Spacing="0">
-                            <StackLayout.Triggers>
-                                <MultiTrigger TargetType="StackLayout">
-                                    <MultiTrigger.Conditions>
-                                        <BindingCondition Binding="{Binding Status}" Value="0"/>
-                                        <BindingCondition Binding="{Binding RunningStatus}" Value="0"/>
-                                    </MultiTrigger.Conditions>
-                                    <Setter Property="BackgroundColor" Value="#ffd24d"/>
-                                </MultiTrigger>
-                                <MultiTrigger TargetType="StackLayout">
-                                    <MultiTrigger.Conditions>
-                                        <BindingCondition Binding="{Binding Status}" Value="0"/>
-                                        <BindingCondition Binding="{Binding RunningStatus}" Value="1"/>
-                                    </MultiTrigger.Conditions>
-                                    <Setter Property="BackgroundColor" Value="#ffb2ae"/>
-                                </MultiTrigger>
-                                <DataTrigger TargetType="StackLayout" Binding="{Binding Status}" Value="1">
-                                    <Setter Property="BackgroundColor" Value="#61f7ff" />
-                                </DataTrigger>
-                                <DataTrigger TargetType="StackLayout" Binding="{Binding Status}" Value="2">
-                                    <Setter Property="BackgroundColor" Value="#474747" />
-                                </DataTrigger>
-                            </StackLayout.Triggers>
+                        <StackLayout 
+                            Orientation="Horizontal"
+                            Spacing="0"
+                            BackgroundColor="{Binding Status, Converter={StaticResource StatusFlagsToBackgroundColorConverter}}">
                             <StackLayout Orientation="Vertical" Padding="10" HorizontalOptions="FillAndExpand">
                                 <StackLayout.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding PlayPauseItemCommand}"/>
@@ -124,11 +100,14 @@
                                                 VerticalOptions="Center"
                                                 Style="{DynamicResource ListItemDetailTextStyle}"
                                                 FontAttributes="Bold"
-                                                IsVisible="false"
+                                                IsVisible="False"
                                                 Margin="0,0,-5,0"
                                                 FontSize="25">
                                                 <Label.Triggers>
-                                                    <DataTrigger TargetType="Label" Binding="{Binding Status}" Value="1">
+                                                    <DataTrigger
+                                                        TargetType="Label"
+                                                        Binding="{Binding Status, Converter={StaticResource IsActiveStatusConverter}}"
+                                                        Value="False">
                                                         <Setter Property="IsVisible" Value="true" />
                                                     </DataTrigger>
                                                 </Label.Triggers>
@@ -201,49 +180,53 @@
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
-                        <StackLayout Orientation="Horizontal" Margin="30,10,30,10">
-                            <StackLayout Orientation="Vertical" HorizontalOptions="Start">
-                                <Label
-                                    Text="Interval"
-                                    LineBreakMode="NoWrap"/>
-                                <StackLayout Orientation="Horizontal">
+                        <StackLayout BackgroundColor="{Binding Path=Parent.Status, Converter={StaticResource StatusFlagsToBackgroundColorConverter}}">
+                            <StackLayout 
+                                Orientation="Horizontal"
+                                Margin="30,10,30,10">
+                                <StackLayout Orientation="Vertical" HorizontalOptions="Start">
                                     <Label
-                                        Text="{Binding StartDateString}" 
-                                        LineBreakMode="NoWrap"
-                                        FontAttributes="Bold"/>
-                                    <Label
-                                        Text="-" 
-                                        LineBreakMode="NoWrap"
-                                        FontAttributes="Bold"/>
-                                    <Label
-                                        Text="{Binding EndDateString}"
-                                        LineBreakMode="NoWrap"
-                                        FontAttributes="Bold"/>
+                                        Text="Interval"
+                                        LineBreakMode="NoWrap"/>
+                                    <StackLayout Orientation="Horizontal">
+                                        <Label
+                                            Text="{Binding StartDateString}" 
+                                            LineBreakMode="NoWrap"
+                                            FontAttributes="Bold"/>
+                                        <Label
+                                            Text="-" 
+                                            LineBreakMode="NoWrap"
+                                            FontAttributes="Bold"/>
+                                        <Label
+                                            Text="{Binding EndDateString}"
+                                            LineBreakMode="NoWrap"
+                                            FontAttributes="Bold"/>
+                                    </StackLayout>
                                 </StackLayout>
-                            </StackLayout>
-                            <StackLayout Orientation="Horizontal" HorizontalOptions="EndAndExpand">
-                                <Label
-                                    WidthRequest="40"
-                                    HorizontalOptions="CenterAndExpand"
-                                    VerticalOptions="Center"
-                                    Text="{x:Static utils:MaterialIconCodes.Edit}"
-                                    FontFamily="{StaticResource MaterialFont}"
-                                    FontSize="20">
-                                    <Label.GestureRecognizers>
-                                        <TapGestureRecognizer Command="{Binding EditItemCommand}"/>
-                                    </Label.GestureRecognizers>
-                                </Label>
-                                <Label
-                                    WidthRequest="40"
-                                    HorizontalOptions="CenterAndExpand"
-                                    VerticalOptions="Center"
-                                    Text="{x:Static utils:MaterialIconCodes.Cancel}"
-                                    FontFamily="{StaticResource MaterialFont}"
-                                    FontSize="20">
-                                    <Label.GestureRecognizers>
-                                        <TapGestureRecognizer Command="{Binding DeleteItemCommand}"/>
-                                    </Label.GestureRecognizers>
-                                </Label>
+                                <StackLayout Orientation="Horizontal" HorizontalOptions="EndAndExpand">
+                                    <Label
+                                        WidthRequest="40"
+                                        HorizontalOptions="CenterAndExpand"
+                                        VerticalOptions="Center"
+                                        Text="{x:Static utils:MaterialIconCodes.Edit}"
+                                        FontFamily="{StaticResource MaterialFont}"
+                                        FontSize="20">
+                                        <Label.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding EditItemCommand}"/>
+                                        </Label.GestureRecognizers>
+                                    </Label>
+                                    <Label
+                                        WidthRequest="40"
+                                        HorizontalOptions="CenterAndExpand"
+                                        VerticalOptions="Center"
+                                        Text="{x:Static utils:MaterialIconCodes.Cancel}"
+                                        FontFamily="{StaticResource MaterialFont}"
+                                        FontSize="20">
+                                        <Label.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding DeleteItemCommand}"/>
+                                        </Label.GestureRecognizers>
+                                    </Label>
+                                </StackLayout>
                             </StackLayout>
                         </StackLayout>
                     </ViewCell>
