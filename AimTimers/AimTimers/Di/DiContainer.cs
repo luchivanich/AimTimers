@@ -69,6 +69,7 @@ namespace AimTimers.Di
                     {
                         var result = new AimTimerIntervalViewModel(
                             container.Resolve<IDateTimeProvider>(),
+                            container.Resolve<INavigation>(),
                             container.Resolve<IAimTimerService>());
                         result.Setup(aimTimerInterval);
                         return result;

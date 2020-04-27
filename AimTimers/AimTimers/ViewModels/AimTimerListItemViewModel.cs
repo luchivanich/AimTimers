@@ -11,6 +11,7 @@ using AimTimers.Utils;
 using AimTimers.ViewModelFactories;
 using AimTimers.Views;
 using Xamarin.Forms;
+using Rg.Plugins.Popup.Extensions;
 
 namespace AimTimers.ViewModels
 {
@@ -69,6 +70,8 @@ namespace AimTimers.ViewModels
             }
         }
 
+        public bool IsExpandable => _aimTimerItem.AimTimerItemModel.AimTimerIntervals.Count > 0;
+
         #region Commands
 
         public ICommand PlayPauseItemCommand
@@ -93,6 +96,7 @@ namespace AimTimers.ViewModels
             _aimTimerService.AddAimTimer(_aimTimer.AimTimerModel);
             LoadIntervals();
             OnPropertyChanged(new PropertyChangedEventArgs(nameof(Status)));
+            OnPropertyChanged(new PropertyChangedEventArgs(nameof(IsExpandable)));
         }
 
         public ICommand ToggleExpandCommand
@@ -119,10 +123,9 @@ namespace AimTimers.ViewModels
         private async Task ExecuteEditItemCommand(IAimTimerIntervalListItemViewModel aimTimerIntervalListItemViewModel)
         {
             var aimTimerIntervalViewModel = _aimTimerIntervalViewModelFactory.Invoke(aimTimerIntervalListItemViewModel.AimTimerInterval);
-            var aimTimerIntervalView = _viewFactory.CreatePage(aimTimerIntervalViewModel);
-            await _navigation.PushAsync(aimTimerIntervalView);
+            var aimTimerIntervalView = _viewFactory.CreatePopupPage(aimTimerIntervalViewModel);
+            await _navigation.PushPopupAsync(aimTimerIntervalView);
         }
-
 
         public ICommand DeleteItemCommand
         {
@@ -140,6 +143,7 @@ namespace AimTimers.ViewModels
                 Remove(aimTimerIntervalListItemViewModel);
                 _aimTimerService.AddAimTimer(_aimTimer.AimTimerModel);
                 Refresh();
+                OnPropertyChanged(new PropertyChangedEventArgs(nameof(IsExpandable)));
             }
         }
 

@@ -13,18 +13,16 @@ namespace AimTimers.Converters
             {
                 if ((statusFlags & AimTimerStatusFlags.Active) != AimTimerStatusFlags.Active)
                 {
-                    return Color.FromHex("61f7ff");
+                    return Colors.BackgroundInactive;
                 }
 
                 if ((statusFlags & AimTimerStatusFlags.Running) == AimTimerStatusFlags.Running)
                 {
-                    return Color.FromHex("ffd24d");
+                    return Colors.BackgroundRunning;
                 }
-
-                return Color.FromHex("ffb2ae");
             }
 
-            return Color.FromHex("ffb2ae");
+            return Colors.BackgroundStopped;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

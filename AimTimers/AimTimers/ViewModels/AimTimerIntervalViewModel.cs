@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using AimTimers.Bl;
 using AimTimers.Services;
 using AimTimers.Utils;
+using Rg.Plugins.Popup.Extensions;
 using Xamarin.Forms;
 
 namespace AimTimers.ViewModels
@@ -10,6 +12,7 @@ namespace AimTimers.ViewModels
     public class AimTimerIntervalViewModel : BaseViewModel, IAimTimerIntervalViewModel
     {
         private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly INavigation _navigation;
         private readonly IAimTimerService _aimTimerService;
 
         private IAimTimerInterval _aimTimerInterval;
@@ -51,8 +54,9 @@ namespace AimTimers.ViewModels
 
         public TimeSpan Duration => EndTime - StartTime;
 
-        public AimTimerIntervalViewModel(IDateTimeProvider dateTimeProvider, IAimTimerService aimTimerService)
+        public AimTimerIntervalViewModel(IDateTimeProvider dateTimeProvider, INavigation navigation, IAimTimerService aimTimerService)
         {
+            _navigation = navigation;
             _dateTimeProvider = dateTimeProvider;
             _aimTimerService = aimTimerService;
         }
@@ -80,6 +84,25 @@ namespace AimTimers.ViewModels
                 _originalStartTime = StartTime;
                 _originalEndTime = EndTime;
             }
+        }
+
+        public ICommand UpdateAndCloseCommand
+        {
+            get
+            {
+                return new Command(async () => await ExecuteUpdateAndCloseCommand());
+            }
+        }
+
+        private async Task ExecuteUpdateAndCloseCommand()
+        {
+            //if (_originalStartTime != StartTime || _originalEndTime != EndTime)
+            //{
+            //    _aimTimerService.AddAimTimer(_aimTimerInterval.AimTimer.AimTimerModel);
+            //    _originalStartTime = StartTime;
+            //    _originalEndTime = EndTime;
+            //}
+            await _navigation.PopPopupAsync();
         }
     }
 }

@@ -19,32 +19,5 @@ namespace AimTimers.ViewModels
         public string EndDateString => EndDate?.ToLongTimeString() ?? string.Empty;
 
         public string Duration => EndDate.HasValue ? (EndDate.Value - StartDate).ToString(@"hh\:mm\:ss") : string.Empty;
-
-        public ICommand EditItemCommand
-        {
-            get
-            {
-                return new Command(() => ExecuteEditItemCommand());
-            }
-        }
-
-        private void ExecuteEditItemCommand()
-        {
-            Parent.EditItemCommand.Execute(this);
-        }
-
-
-        public ICommand DeleteItemCommand
-        {
-            get
-            {
-                return new Command(() => ExecuteDeleteItemCommand());
-            }
-        }
-
-        private void ExecuteDeleteItemCommand()
-        {
-            Parent.DeleteItemCommand.Execute(this);
-        }
     }
 }

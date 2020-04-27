@@ -1,16 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
-
-namespace AimTimers.Views
+﻿namespace AimTimers.Views
 {
-    [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class AimTimerIntervalPage : ContentPage
+    public partial class AimTimerIntervalPage : Rg.Plugins.Popup.Pages.PopupPage
     {
         public AimTimerIntervalPage()
         {

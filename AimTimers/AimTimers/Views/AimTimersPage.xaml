@@ -153,7 +153,13 @@
                                         FontFamily="{StaticResource MaterialFont}"
                                         FontSize="20"/>
                                 </StackLayout>
-                                <StackLayout Orientation="Horizontal" HorizontalOptions="CenterAndExpand" WidthRequest="50" HeightRequest="65" Margin="0,0,0,0">
+                                <StackLayout 
+                                    Orientation="Horizontal"
+                                    HorizontalOptions="CenterAndExpand"
+                                    WidthRequest="50"
+                                    HeightRequest="65"
+                                    Margin="0,0,0,0"
+                                    IsVisible="{Binding IsExpandable}">
                                     <StackLayout.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding ToggleExpandCommand}"/>
                                     </StackLayout.GestureRecognizers>
@@ -180,14 +186,11 @@
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
-                        <StackLayout BackgroundColor="{Binding Path=Parent.Status, Converter={StaticResource StatusFlagsToBackgroundColorConverter}}">
+                        <StackLayout BackgroundColor="{Binding Parent.Status, Converter={StaticResource StatusFlagsToBackgroundColorConverter}}">
                             <StackLayout 
                                 Orientation="Horizontal"
                                 Margin="30,10,30,10">
                                 <StackLayout Orientation="Vertical" HorizontalOptions="Start">
-                                    <Label
-                                        Text="Interval"
-                                        LineBreakMode="NoWrap"/>
                                     <StackLayout Orientation="Horizontal">
                                         <Label
                                             Text="{Binding StartDateString}" 
@@ -202,6 +205,16 @@
                                             LineBreakMode="NoWrap"
                                             FontAttributes="Bold"/>
                                     </StackLayout>
+                                    <StackLayout Orientation="Horizontal">
+                                        <Label
+                                            Text="Duration"
+                                            LineBreakMode="NoWrap"
+                                            FontAttributes="Bold"/>
+                                        <Label
+                                            Text="{Binding Duration}"
+                                            LineBreakMode="NoWrap"
+                                            FontAttributes="Bold"/>
+                                    </StackLayout>
                                 </StackLayout>
                                 <StackLayout Orientation="Horizontal" HorizontalOptions="EndAndExpand">
                                     <Label
@@ -212,7 +225,7 @@
                                         FontFamily="{StaticResource MaterialFont}"
                                         FontSize="20">
                                         <Label.GestureRecognizers>
-                                            <TapGestureRecognizer Command="{Binding EditItemCommand}"/>
+                                            <TapGestureRecognizer Command="{Binding Parent.EditItemCommand}" CommandParameter="{Binding .}"/>
                                         </Label.GestureRecognizers>
                                     </Label>
                                     <Label
@@ -223,7 +236,7 @@
                                         FontFamily="{StaticResource MaterialFont}"
                                         FontSize="20">
                                         <Label.GestureRecognizers>
-                                            <TapGestureRecognizer Command="{Binding DeleteItemCommand}"/>
+                                            <TapGestureRecognizer Command="{Binding Parent.DeleteItemCommand}" CommandParameter="{Binding .}"/>
                                         </Label.GestureRecognizers>
                                     </Label>
                                 </StackLayout>
