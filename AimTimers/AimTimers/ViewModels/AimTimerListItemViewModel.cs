@@ -112,30 +112,48 @@ namespace AimTimers.ViewModels
             IsExpanded = !IsExpanded;
         }
 
-        public ICommand EditItemCommand
+        public ICommand EditIntervalCommand
         {
             get
             {
-                return new Command<IAimTimerIntervalListItemViewModel>(async (aimTimerIntervalListItemViewModel) => await ExecuteEditItemCommand(aimTimerIntervalListItemViewModel));
+                return new Command<IAimTimerIntervalListItemViewModel>(
+                    async (aimTimerIntervalListItemViewModel) => await ExecuteEditIntervalCommand(aimTimerIntervalListItemViewModel));
             }
         }
 
-        private async Task ExecuteEditItemCommand(IAimTimerIntervalListItemViewModel aimTimerIntervalListItemViewModel)
+        private async Task ExecuteEditIntervalCommand(IAimTimerIntervalListItemViewModel aimTimerIntervalListItemViewModel)
         {
             var aimTimerIntervalViewModel = _aimTimerIntervalViewModelFactory.Invoke(aimTimerIntervalListItemViewModel.AimTimerInterval);
             var aimTimerIntervalView = _viewFactory.CreatePopupPage(aimTimerIntervalViewModel);
             await _navigation.PushPopupAsync(aimTimerIntervalView);
         }
 
-        public ICommand DeleteItemCommand
+        public ICommand AddIntervalItemCommand
         {
             get
             {
-                return new Command<IAimTimerIntervalListItemViewModel>(async (aimTimerIntervalListItemViewModel) => await ExecuteDeleteItemCommand(aimTimerIntervalListItemViewModel));
+                return new Command(async () => await ExecuteAddIntervalItemCommand());
             }
         }
 
-        private async Task ExecuteDeleteItemCommand(IAimTimerIntervalListItemViewModel aimTimerIntervalListItemViewModel)
+        private async Task ExecuteAddIntervalItemCommand()
+        {
+            //await _navigation.PopPopupAsync();
+            //var aimTimerViewModel = _aimTimerViewModelFactory.Create(_aimTimerItem.AimTimer);
+            //var aimTimerView = _viewFactory.CreatePopupPage(aimTimerViewModel);
+            //await _navigation.PushPopupAsync(aimTimerView);
+        }
+
+        public ICommand DeleteIntervalCommand
+        {
+            get
+            {
+                return new Command<IAimTimerIntervalListItemViewModel>(
+                    async (aimTimerIntervalListItemViewModel) => await ExecuteDeleteIntervalCommand(aimTimerIntervalListItemViewModel));
+            }
+        }
+
+        private async Task ExecuteDeleteIntervalCommand(IAimTimerIntervalListItemViewModel aimTimerIntervalListItemViewModel)
         {
             if (await _alertManager.DisplayAlert("Warning!", "Would you like to remove the interval completely?", "Yes", "No"))
             {
@@ -186,6 +204,12 @@ namespace AimTimers.ViewModels
                 OnPropertyChanged(new PropertyChangedEventArgs(nameof(TimeLeft)));
                 OnPropertyChanged(new PropertyChangedEventArgs(nameof(TimePassed)));
                 OnPropertyChanged(new PropertyChangedEventArgs(nameof(Status)));
+
+                foreach(var item in this)
+                {
+                    item.Refresh();
+                }
+
             //}
         }
 

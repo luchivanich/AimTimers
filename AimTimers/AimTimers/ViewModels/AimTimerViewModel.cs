@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using AimTimers.Bl;
-using AimTimers.Models;
 using AimTimers.Services;
-using AimTimers.Utils;
-using AimTimers.ViewModelFactories;
+using Rg.Plugins.Popup.Extensions;
 using Xamarin.Forms;
 
 namespace AimTimers.ViewModels
@@ -17,10 +13,8 @@ namespace AimTimers.ViewModels
     {
         private readonly IAimTimerNotificationService _aimTimerNotificationService;
         private readonly INavigation _navigation;
-        private readonly IAlertManager _alertManager;
+        private readonly IMessagingCenter _messagingCenter;
         private readonly IAimTimerService _aimTimerService;
-        Func<AimTimerModel, AimTimerItemModel, IAimTimerItem> _aimTimerItemFactory;
-        private readonly IAimTimerItemListItemViewModelFactory _aimTimerItemListItemViewModelFactory;
 
         private string _originalTitle;
         private TimeSpan _originalTime;
@@ -59,37 +53,31 @@ namespace AimTimers.ViewModels
             }
         }
 
-        public ObservableCollection<IAimTimerItemListItemViewModel> AimTimerItems { get; set; }
-
         #endregion
 
         public AimTimerViewModel(
             IAimTimerNotificationService aimTimerNotificationService,
             INavigation navigation,
-            IAlertManager alertManager,
-            IAimTimerService aimTimerService,
-            Func<AimTimerModel, AimTimerItemModel, IAimTimerItem> aimTimerItemFactory,
-            IAimTimerItemListItemViewModelFactory aimTimerItemListItemViewModelFactory)
+            IMessagingCenter messagingCenter,
+            IAimTimerService aimTimerService)
         {
             _aimTimerNotificationService = aimTimerNotificationService;
             _navigation = navigation;
-            _alertManager = alertManager;
+            _messagingCenter = messagingCenter;
             _aimTimerService = aimTimerService;
-            _aimTimerItemFactory = aimTimerItemFactory;
-            _aimTimerItemListItemViewModelFactory = aimTimerItemListItemViewModelFactory;
         }
 
         #region Commands
 
-        public ICommand UpdateItemCommand
+        public ICommand AcceptCommand
         {
             get
             {
-                return new Command(() => ExecuteUpdateItemCommand());
+                return new Command(async () => await ExecuteAcceptCommand());
             }
         }
 
-        private void ExecuteUpdateItemCommand()
+        private async Task ExecuteAcceptCommand()
         {
             if (_originalTitle != Title || _originalTime != Time)
             {
@@ -97,24 +85,8 @@ namespace AimTimers.ViewModels
                 _originalTime = Time;
                 _originalTitle = Title;
             }
-        }
-
-        public ICommand DeleteItemCommand
-        {
-            get
-            {
-                return new Command(async () => await ExecuteDeleteItemCommand());
-            }
-        }
-
-        private async Task ExecuteDeleteItemCommand()
-        {
-            if (await _alertManager.DisplayAlert("Warning!", "Would you like to remove the timer completely?", "Yes", "No"))
-            {
-                _aimTimerService.DeleteAimTimer(_aimTimer.AimTimerModel.Id);
-                _aimTimer.IsDeleted = true;
-                await _navigation.PopAsync();
-            }
+            _messagingCenter.Send("tmp", "AimTimerUpdated");
+            await _navigation.PopPopupAsync();
         }
 
         #endregion
@@ -128,23 +100,6 @@ namespace AimTimers.ViewModels
 
             _aimTimerNotificationService.SetItemsToFollow(new List<IAimTimer> { aimTimer });
             _aimTimerNotificationService.Start();
-            _aimTimerNotificationService.OnStatusChanged += _aimTimerNotificationService_OnStatusChanged;
-
-            AimTimerItems = new ObservableCollection<IAimTimerItemListItemViewModel>();
-            foreach (var item in _aimTimer.AimTimerModel.AimTimerItemModels.OrderByDescending(i => i.EndOfActivityPeriod).ToList())
-            {
-                var aimTimerItem = _aimTimerItemFactory.Invoke(aimTimer.AimTimerModel, item);
-                var itemToAdd = _aimTimerItemListItemViewModelFactory.Create(_aimTimer, aimTimerItem);
-                AimTimerItems.Add(itemToAdd);
-            }
-        }
-
-        private void _aimTimerNotificationService_OnStatusChanged(object sender, AimTimersEventArgs e)
-        {
-            foreach(var i in AimTimerItems)
-            {
-                i.RefreshTimeLeft();
-            }
         }
     }
 }

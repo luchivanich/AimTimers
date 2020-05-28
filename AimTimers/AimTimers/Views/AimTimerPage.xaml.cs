@@ -1,8 +1,7 @@
-﻿using Xamarin.Forms;
-
+﻿
 namespace AimTimers.Views
 {
-    public partial class AimTimerPage : ContentPage
+    public partial class AimTimerPage : BasePopupPage
     {
         public AimTimerPage()
         {

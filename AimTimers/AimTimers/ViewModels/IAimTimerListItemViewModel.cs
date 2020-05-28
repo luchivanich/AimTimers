@@ -1,5 +1,4 @@
-﻿using System.Windows.Input;
-using AimTimers.Bl;
+﻿using AimTimers.Bl;
 
 
 namespace AimTimers.ViewModels
@@ -11,9 +10,5 @@ namespace AimTimers.ViewModels
         void RefreshTimeLeft();
 
         IAimTimer GetAimTimer();
-
-        ICommand EditItemCommand { get; }
-
-        ICommand DeleteItemCommand { get; }
     }
 }

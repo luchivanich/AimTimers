@@ -5,7 +5,7 @@ using Xamarin.Forms;
 
 namespace AimTimers.ViewModels
 {
-    public class AimTimerIntervalListItemViewModel : IAimTimerIntervalListItemViewModel
+    public class AimTimerIntervalListItemViewModel : BaseViewModel, IAimTimerIntervalListItemViewModel
     {
         public IAimTimerInterval AimTimerInterval { get; set; }
 
@@ -19,5 +19,12 @@ namespace AimTimers.ViewModels
         public string EndDateString => EndDate?.ToLongTimeString() ?? string.Empty;
 
         public string Duration => EndDate.HasValue ? (EndDate.Value - StartDate).ToString(@"hh\:mm\:ss") : string.Empty;
+
+        public void Refresh()
+        {
+            OnPropertyChanged(nameof(StartDateString));
+            OnPropertyChanged(nameof(EndDateString));
+            OnPropertyChanged(nameof(Duration));
+        }
     }
 }

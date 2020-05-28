@@ -1,8 +1,5 @@
-﻿using System;
-using AimTimers.Bl;
-using AimTimers.Models;
+﻿using AimTimers.Bl;
 using AimTimers.Services;
-using AimTimers.Utils;
 using AimTimers.ViewModels;
 using Xamarin.Forms;
 
@@ -12,25 +9,19 @@ namespace AimTimers.ViewModelFactories
     {
         private readonly IAimTimerNotificationService _aimTimerNotificationService;
         private readonly INavigation _navigation;
-        private readonly IAlertManager _alertManager;
+        private readonly IMessagingCenter _messagingCenter;
         private readonly IAimTimerService _aimTimerService;
-        Func<AimTimerModel, AimTimerItemModel, IAimTimerItem> _aimTimerItemFactory;
-        private readonly IAimTimerItemListItemViewModelFactory _aimTimerItemListItemViewModelFactory;
 
         public AimTimerViewModelFactory(
             IAimTimerNotificationService aimTimerNotificationService,
             INavigation navigation,
-            IAlertManager alertManager,
-            IAimTimerService aimTimerService,
-            Func<AimTimerModel, AimTimerItemModel, IAimTimerItem> aimTimerItemFactory,
-            IAimTimerItemListItemViewModelFactory aimTimerItemListItemViewModelFactory)
+            IMessagingCenter messagingCenter,
+            IAimTimerService aimTimerService)
         {
             _aimTimerNotificationService = aimTimerNotificationService;
             _navigation = navigation;
-            _alertManager = alertManager;
+            _messagingCenter = messagingCenter;
             _aimTimerService = aimTimerService;
-            _aimTimerItemFactory = aimTimerItemFactory;
-            _aimTimerItemListItemViewModelFactory = aimTimerItemListItemViewModelFactory;
         }
 
         public IAimTimerViewModel Create(IAimTimer aimTimer)
@@ -38,10 +29,8 @@ namespace AimTimers.ViewModelFactories
             var result = new AimTimerViewModel(
                 _aimTimerNotificationService,
                 _navigation,
-                _alertManager,
-                _aimTimerService,
-                _aimTimerItemFactory,
-                _aimTimerItemListItemViewModelFactory);
+                _messagingCenter,
+                _aimTimerService);
             result.Setup(aimTimer);
             return result;
         }

@@ -72,6 +72,7 @@
   <ItemGroup>
     <Compile Include="AndroidNotificationManager.cs" />
     <Compile Include="MainActivity.cs" />
+    <Compile Include="Renderers\ContextMenuButtonRenderer.cs" />
     <Compile Include="Renderers\CustomEntryRenderer.cs" />
     <Compile Include="Renderers\CustomTimePickerRenderer.cs" />
     <Compile Include="Resources\Resource.designer.cs" />

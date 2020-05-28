@@ -5,5 +5,7 @@ namespace AimTimers.ViewModels
     public interface IAimTimerIntervalListItemViewModel
     {
         IAimTimerInterval AimTimerInterval { get; set; }
+
+        void Refresh();
     }
 }

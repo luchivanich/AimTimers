@@ -29,9 +29,13 @@ namespace AimTimers.Views
             var pageClassName = viewModelClassName.Replace("ViewModel", "Page");
             var asm = viewModel.GetType().Assembly;
             var pageType = asm.GetType($"{this.GetType().Namespace}.{pageClassName}");
-            var result = Activator.CreateInstance(pageType) as T;
-            result.BindingContext = viewModel;
-            return result;
+            var page = Activator.CreateInstance(pageType);
+            if (page is T result)
+            {
+                result.BindingContext = viewModel;
+                return result;
+            }
+            return null;
         }
     }
 }

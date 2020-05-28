@@ -11,6 +11,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="ViewModelFactories\AimTimerItemListItemViewModelFactory.cs" />
+    <Compile Remove="ViewModelFactories\IAimTimerItemListItemViewModelFactory.cs" />
+    <Compile Remove="ViewModels\AimTimerItemListItemViewModel.cs" />
+    <Compile Remove="ViewModels\IAimTimerItemListItemViewModel.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AsyncAwaitBestPractices" Version="4.1.0" />
     <PackageReference Include="Couchbase.Lite" Version="2.7.0" />
     <PackageReference Include="Couchbase.Lite.Mapping" Version="1.1.0" />
@@ -22,6 +29,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Controls\ContextMenuPage.xaml.cs">
+      <DependentUpon>ContextMenuPage.xaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
@@ -31,9 +41,24 @@
     <Compile Update="Views\AimTimerPage.xaml.cs">
       <DependentUpon>AimTimerPage.xaml</DependentUpon>
     </Compile>
+    <Compile Update="Views\BasePopupPage.xaml.cs">
+      <DependentUpon>BasePopupPage.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Update="Controls\ContextMenu.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Controls\CustomButton.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Views\BasePopupPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Controls\ContextMenuPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
     <EmbeddedResource Update="Views\AimTimerIntervalPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>

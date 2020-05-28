@@ -5,6 +5,7 @@ namespace AimTimers.Utils
     {
         public static string Add = "\ue145";
         public static string Cancel = "\ue5c9";
+        public static string Close = "\ue5cd";
         public static string DeleteForever = "\ue92b";
         public static string Edit = "\ue3c9";
         public static string ExpandLess = "\ue5ce";

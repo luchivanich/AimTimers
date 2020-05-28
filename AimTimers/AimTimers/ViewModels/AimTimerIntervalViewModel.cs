@@ -86,15 +86,15 @@ namespace AimTimers.ViewModels
             }
         }
 
-        public ICommand UpdateAndCloseCommand
+        public ICommand AcceptCommand
         {
             get
             {
-                return new Command(async () => await ExecuteUpdateAndCloseCommand());
+                return new Command(async () => await ExecuteAcceptCommand());
             }
         }
 
-        private async Task ExecuteUpdateAndCloseCommand()
+        private async Task ExecuteAcceptCommand()
         {
             //if (_originalStartTime != StartTime || _originalEndTime != EndTime)
             //{

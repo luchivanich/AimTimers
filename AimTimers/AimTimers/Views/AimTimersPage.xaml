@@ -3,9 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:behaviors="clr-namespace:AimTimers.Behaviors"
              xmlns:converters="clr-namespace:AimTimers.Converters"
              xmlns:utils="clr-namespace:AimTimers.Utils"
+             xmlns:controls="clr-namespace:AimTimers.Controls"
              mc:Ignorable="d"
              x:Class="AimTimers.Views.AimTimersPage"
              Title="{Binding Title}"
@@ -17,11 +17,6 @@
             <converters:AimTimerStatusToStringConverter x:Key="AimTimerStatusToStringConverter" />
         </ResourceDictionary>
     </ContentPage.Resources>
-
-    <ContentPage.Behaviors>
-        <behaviors:EventToCommandBehavior EventName="Appearing" Command="{Binding RefreshCommand}"/>
-        <behaviors:EventToCommandBehavior EventName="Disappearing" Command="{Binding FreezeCommand}"/>
-    </ContentPage.Behaviors>
 
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Add" Command="{Binding AddItemCommand}">
@@ -140,44 +135,46 @@
                                 </StackLayout>
                             </StackLayout>
                             <StackLayout Orientation="Vertical" Spacing="0" Margin="0,0,0,0">
-                                <StackLayout Orientation="Horizontal" HorizontalOptions="CenterAndExpand" WidthRequest="50" HeightRequest="65" Margin="0,0,0,0">
-                                    <StackLayout.GestureRecognizers>
-                                        <TapGestureRecognizer 
-                                            Command="{Binding BindingContext.SelectItemCommand, Source={x:Reference AimTimersContentPage}}" 
-                                            CommandParameter="{Binding .}"/>
-                                    </StackLayout.GestureRecognizers>
-                                    <Label
-                                        HorizontalOptions="CenterAndExpand"
-                                        VerticalOptions="Center"
-                                        Text="{x:Static utils:MaterialIconCodes.MoreVert}"
-                                        FontFamily="{StaticResource MaterialFont}"
-                                        FontSize="20"/>
-                                </StackLayout>
-                                <StackLayout 
-                                    Orientation="Horizontal"
+                                <controls:ContextMenuButton 
+                                    HorizontalOptions="CenterAndExpand"
+                                    WidthRequest="50"
+                                    HeightRequest="65"
+                                    Margin="0,0,0,0"
+                                    IconCode="{x:Static utils:MaterialIconCodes.MoreVert}">
+                                    <controls:ContextMenuButton.Items>
+                                        <x:Array Type="{x:Type controls:ContextMenuItem}">
+                                            <controls:ContextMenuItem
+                                                Text="Edit Timer"
+                                                Command="{Binding BindingContext.EditItemCommand, Source={x:Reference AimTimersContentPage}}"
+                                                CommandParameter="{Binding .}"/>
+                                            <controls:ContextMenuItem
+                                                Text="Add Interval"
+                                                Command="{Binding AddIntervalItemCommand}"/>
+                                            <controls:ContextMenuItem
+                                                Text="Delete Timer"
+                                                Command="{Binding BindingContext.DeleteItemCommand, Source={x:Reference AimTimersContentPage}}"
+                                                CommandParameter="{Binding .}"/>
+                                        </x:Array>
+                                    </controls:ContextMenuButton.Items>
+                                </controls:ContextMenuButton>
+                                <controls:CustomButton
                                     HorizontalOptions="CenterAndExpand"
                                     WidthRequest="50"
                                     HeightRequest="65"
                                     Margin="0,0,0,0"
                                     IsVisible="{Binding IsExpandable}">
-                                    <StackLayout.GestureRecognizers>
+                                    <controls:CustomButton.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding ToggleExpandCommand}"/>
-                                    </StackLayout.GestureRecognizers>
-                                    <Label
-                                        HorizontalOptions="CenterAndExpand"
-                                        VerticalOptions="Center"
-                                        FontFamily="{StaticResource MaterialFont}"
-                                        FontSize="20">
-                                        <Label.Triggers>
-                                            <DataTrigger TargetType="Label" Binding="{Binding IsExpanded}" Value="true">
-                                                <Setter Property="Text" Value="{x:Static utils:MaterialIconCodes.ExpandLess}"/>
-                                            </DataTrigger>
-                                            <DataTrigger TargetType="Label" Binding="{Binding IsExpanded}" Value="false">
-                                                <Setter Property="Text" Value="{x:Static utils:MaterialIconCodes.ExpandMore}"/>
-                                            </DataTrigger>
-                                        </Label.Triggers>
-                                    </Label>
-                                </StackLayout>
+                                    </controls:CustomButton.GestureRecognizers>
+                                    <controls:CustomButton.Triggers>
+                                        <DataTrigger TargetType="controls:CustomButton" Binding="{Binding IsExpanded}" Value="true">
+                                            <Setter Property="IconCode" Value="{x:Static utils:MaterialIconCodes.ExpandLess}"/>
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="controls:CustomButton" Binding="{Binding IsExpanded}" Value="false">
+                                            <Setter Property="IconCode" Value="{x:Static utils:MaterialIconCodes.ExpandMore}"/>
+                                        </DataTrigger>
+                                    </controls:CustomButton.Triggers>
+                                </controls:CustomButton>
                             </StackLayout>
                         </StackLayout>
                     </ViewCell>

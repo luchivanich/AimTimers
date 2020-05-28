@@ -9,12 +9,16 @@ namespace AimTimers.Bl
     {
         private readonly IDateTimeProvider _dateTimeProvider;
 
+        public IAimTimer AimTimer { get; }
+
         public AimTimerModel AimTimerModel { get; }
+
         public AimTimerItemModel AimTimerItemModel { get; }
 
-        public AimTimerItem(AimTimerModel aimTimerModel, AimTimerItemModel aimTimerItemModel, IDateTimeProvider dateTimeProvider)
+        public AimTimerItem(IAimTimer aimTimer, AimTimerItemModel aimTimerItemModel, IDateTimeProvider dateTimeProvider)
         {
-            AimTimerModel = aimTimerModel;
+            AimTimer = aimTimer;
+            AimTimerModel = AimTimer.AimTimerModel;
             AimTimerItemModel = aimTimerItemModel;
             _dateTimeProvider = dateTimeProvider;
         }

@@ -1,18 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage 
+<views:BasePopupPage
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:d="http://xamarin.com/schemas/2014/forms/design"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:utils="clr-namespace:AimTimers.Utils"
-    xmlns:converters="clr-namespace:AimTimers.Converters"
     xmlns:behaviors="clr-namespace:AimTimers.Behaviors"
+    xmlns:views="clr-namespace:AimTimers.Views"
+    xmlns:converters="clr-namespace:AimTimers.Converters"
     mc:Ignorable="d"
     x:Class="AimTimers.Views.AimTimerPage"
     Title="{Binding Title}"
-    x:Name="AimTimerContentPage">
+    x:Name="AimTimerContentPage"
+    
+    AcceptCommand="{Binding AcceptCommand}">
 
-    <ContentPage.Resources>
+    <views:BasePopupPage.Resources>
         <ResourceDictionary>
             <converters:InvertBooleanConverter x:Key="InvertBooleanConverter" />
         </ResourceDictionary>
@@ -22,162 +24,70 @@
         <Style x:Key="AimTimerItemValueLabelStyle" TargetType="Label" BasedOn="{StaticResource AimTimerItemLabelStyle}">
             <Setter Property="FontAttributes" Value="Bold"/>
         </Style>
-    </ContentPage.Resources>
+    </views:BasePopupPage.Resources>
 
-    <ContentPage.ToolbarItems>
-        <ToolbarItem
-            Command="{Binding DeleteItemCommand}">
-            <ToolbarItem.IconImageSource>
-                <FontImageSource
-                    FontFamily="{StaticResource MaterialFont}"
-                    Glyph="{x:Static utils:MaterialIconCodes.DeleteForever}"/>
-            </ToolbarItem.IconImageSource>
-        </ToolbarItem>
-    </ContentPage.ToolbarItems>
-
-    <StackLayout Spacing="10" Padding="10">
-        <StackLayout Orientation="Horizontal">
+    <views:BasePopupPage.PageContent>
+        <Grid Margin="15,0,15,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
             <Label 
-                Text="Name"
+                Grid.Column="0"
+                Grid.Row="0"
+                Text="Name: "
+                FontSize="16"
                 HorizontalOptions="Start"
                 VerticalOptions="Center"/>
             <Entry
+                Grid.Column="1"
+                Grid.Row="0"
                 Text="{Binding Title}"
-                HorizontalOptions="FillAndExpand"
-                VerticalOptions="Center">
-                <Entry.Behaviors>
-                    <behaviors:EventToCommandBehavior EventName="TextChanged" Command="{Binding UpdateItemCommand}"/>
-                </Entry.Behaviors>
-            </Entry>
-        </StackLayout>
-        <!--<StackLayout Orientation="Horizontal">
-            <Label Text="Description" HorizontalOptions="Start"/>
-            <Entry Text="{Binding Description}"  HorizontalOptions="FillAndExpand"/>
-        </StackLayout>-->
-        <StackLayout Orientation="Horizontal">
+                HorizontalOptions="EndAndExpand"
+                VerticalOptions="Center"/>
+
             <Label
-                Text="Time"
+                Grid.Column="0"
+                Grid.Row="1"
+                Text="Time: "
+                FontSize="16"
                 HorizontalOptions="Start"
                 VerticalOptions="Center"/>
             <TimePicker
+                Grid.Column="1"
+                Grid.Row="1"
                 Time="{Binding Time}"
                 Format="hh\:mm"
-                HorizontalOptions="FillAndExpand"
-                VerticalOptions="Center">
-                <TimePicker.Behaviors>
-                    <behaviors:EventToCommandBehavior EventName="PropertyChanged" Command="{Binding UpdateItemCommand}"/>
-                </TimePicker.Behaviors>
-            </TimePicker>
-        </StackLayout>
+                HorizontalOptions="EndAndExpand"
+                VerticalOptions="Center"/>
 
-        <!--<Label Text="History" HorizontalOptions="Center" FontSize="Large" Margin="0,20,0,10"/>
-
-        <ListView
-            x:Name="ItemsListView"
-            ItemsSource="{Binding AimTimerItems}"
-            VerticalOptions="FillAndExpand"
-            HasUnevenRows="true"
-            IsPullToRefreshEnabled="False"
-            IsRefreshing="False"
-            CachingStrategy="RecycleElement"
-            IsGroupingEnabled="True">
-            <ListView.GroupHeaderTemplate>
-                <DataTemplate>
-                    <ViewCell>
-                        <StackLayout Orientation="Vertical">
-                            <StackLayout Orientation="Horizontal">
-                                <StackLayout
-                                        Orientation="Vertical"
-                                        Padding="3"
-                                        HorizontalOptions="StartAndExpand">
-                                    <StackLayout Orientation="Horizontal">
-                                        <Label
-                                            Text="Date: " 
-                                            LineBreakMode="NoWrap" 
-                                            Style="{StaticResource AimTimerItemLabelStyle}"/>
-                                        <Label
-                                            Text="{Binding DateRunning}" 
-                                            LineBreakMode="NoWrap"
-                                            Style="{StaticResource AimTimerItemValueLabelStyle}"/>
-                                    </StackLayout>
-                                    <StackLayout Orientation="Horizontal">
-                                        <Label
-                                            Text="TimeLeft: " 
-                                            LineBreakMode="NoWrap"
-                                            Style="{StaticResource AimTimerItemLabelStyle}"/>
-                                        <Label
-                                            Text="{Binding TimeLeft}" 
-                                            LineBreakMode="NoWrap"
-                                            Style="{StaticResource AimTimerItemValueLabelStyle}"/>
-                                    </StackLayout>
-                                </StackLayout>
-                                <StackLayout 
-                                        Orientation="Horizontal"
-                                        HorizontalOptions="End"
-                                        IsVisible="{Binding IsCurrent}">
-                                    <Button
-                                        Text="{x:Static utils:MaterialIconCodes.Pause}"
-                                        Command="{Binding PauseCommand}"
-                                        VerticalOptions="Start"/>
-                                    <Button
-                                        Text="{x:Static utils:MaterialIconCodes.Play}"
-                                        Command="{Binding PlayCommand}"
-                                        VerticalOptions="Start"/>
-                                </StackLayout>
-                            </StackLayout>
-                            <StackLayout Orientation="Horizontal" HorizontalOptions="Center" HeightRequest="20" WidthRequest="20">
-                                <StackLayout.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding ToggleHistoryDetailsCommand}"/>
-                                </StackLayout.GestureRecognizers>
-                                <Label
-                                    Text="{x:Static utils:MaterialIconCodes.ExpandLess}"
-                                    FontFamily="{StaticResource MaterialFont}">
-                                    <Label.Triggers>
-                                        <DataTrigger TargetType="Label" Binding="{Binding IsExpanded}" Value="false">
-                                            <Setter Property="Text" Value="{x:Static utils:MaterialIconCodes.ExpandMore}"/>
-                                        </DataTrigger>
-                                        <DataTrigger TargetType="Label" Binding="{Binding IsExpanded}" Value="true">
-                                            <Setter Property="Text" Value="{x:Static utils:MaterialIconCodes.ExpandLess}"/>
-                                        </DataTrigger>
-                                    </Label.Triggers>
-                                </Label>
-                            </StackLayout>
-                        </StackLayout>
-                    </ViewCell>
-                </DataTemplate>
-            </ListView.GroupHeaderTemplate>
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <ViewCell>
-                        <StackLayout Orientation="Horizontal">
-                            <Label
-                                Text="Start: "
-                                LineBreakMode="NoWrap" 
-                                Style="{StaticResource AimTimerItemLabelStyle}"/>
-                            <Label
-                                Text="{Binding StartDateString}" 
-                                LineBreakMode="NoWrap"
-                                Style="{StaticResource AimTimerItemValueLabelStyle}"/>
-                            <Label 
-                                Text="End: "
-                                LineBreakMode="NoWrap"
-                                Style="{StaticResource AimTimerItemLabelStyle}"/>
-                            <Label
-                                Text="{Binding EndDateString}"
-                                LineBreakMode="NoWrap"
-                                Style="{StaticResource AimTimerItemValueLabelStyle}"/>
-                            <Label 
-                                Text="Duration: "
-                                LineBreakMode="NoWrap"
-                                Style="{StaticResource AimTimerItemLabelStyle}"/>
-                            <Label
-                                Text="{Binding Duration}"
-                                LineBreakMode="NoWrap"
-                                Style="{StaticResource AimTimerItemValueLabelStyle}"/>
-                        </StackLayout>
-                    </ViewCell>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>-->
-    </StackLayout>
-</ContentPage>
+        </Grid>
+        <!--<StackLayout Spacing="10" Padding="10">
+            <StackLayout Orientation="Horizontal">
+                <Label 
+                    Text="Name: "
+                    FontSize="16"
+                    HorizontalOptions="Start"
+                    VerticalOptions="Center"/>
+                <Entry
+                    Text="{Binding Title}"
+                    HorizontalOptions="EndAndExpand"
+                    VerticalOptions="Center">
+                </Entry>
+            </StackLayout>
+            <StackLayout Orientation="Horizontal">
+                <Label
+                    Text="Time: "
+                    FontSize="16"
+                    HorizontalOptions="Start"
+                    VerticalOptions="Center"/>
+                <TimePicker
+                    Time="{Binding Time}"
+                    Format="hh\:mm"
+                    HorizontalOptions="EndAndExpand"
+                    VerticalOptions="Center">
+                </TimePicker>
+            </StackLayout>
+        </StackLayout>-->
+    </views:BasePopupPage.PageContent>
+</views:BasePopupPage>

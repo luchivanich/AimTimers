@@ -1,82 +1,54 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<pages:PopupPage 
+<views:BasePopupPage
     xmlns="http://xamarin.com/schemas/2014/forms"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:d="http://xamarin.com/schemas/2014/forms/design"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:pages="clr-namespace:Rg.Plugins.Popup.Pages;assembly=Rg.Plugins.Popup"
-    xmlns:animations="clr-namespace:Rg.Plugins.Popup.Animations;assembly=Rg.Plugins.Popup"
     xmlns:behaviors="clr-namespace:AimTimers.Behaviors"
-    xmlns:utils="clr-namespace:AimTimers.Utils"
+    xmlns:views="clr-namespace:AimTimers.Views"
     mc:Ignorable="d"
     x:Class="AimTimers.Views.AimTimerIntervalPage">
-    <pages:PopupPage.Animation>
-        <animations:ScaleAnimation 
-            PositionIn="Center"
-            PositionOut="Center"
-            ScaleIn="1.2"
-            ScaleOut="0.8"
-            DurationIn="400"
-            DurationOut="300"
-            EasingIn="SinOut"
-            EasingOut="SinIn"
-            HasBackgroundAnimation="True"/>
-    </pages:PopupPage.Animation>
-    <StackLayout
-        VerticalOptions="Center"
-        HorizontalOptions="Center"
-        WidthRequest="300"
-        HeightRequest="300"
-        BackgroundColor="{x:Static utils:Colors.BackgroundPopup}">
-        <StackLayout Orientation="Horizontal">
-            <Label
-                Text="Start Time"
-                HorizontalOptions="Start"
-                VerticalOptions="Center"/>
-            <TimePicker
-                Time="{Binding StartTime}"
-                Format="hh\:mm\:ss"
-                HorizontalOptions="FillAndExpand"
-                VerticalOptions="Center">
-                <TimePicker.Behaviors>
-                    <behaviors:EventToCommandBehavior EventName="PropertyChanged" Command="{Binding UpdateItemCommand}"/>
-                </TimePicker.Behaviors>
-            </TimePicker>
-            <Label
-                Text="End Time"
-                HorizontalOptions="Start"
-                VerticalOptions="Center"/>
-            <TimePicker
-                Time="{Binding EndTime}"
-                Format="hh\:mm\:ss"
-                HorizontalOptions="FillAndExpand"
-                VerticalOptions="Center">
-                <TimePicker.Behaviors>
-                    <behaviors:EventToCommandBehavior EventName="PropertyChanged" Command="{Binding UpdateItemCommand}"/>
-                </TimePicker.Behaviors>
-            </TimePicker>
+    <views:BasePopupPage.PageContent>
+        <StackLayout>
+            <StackLayout Orientation="Horizontal" Margin="15,0,15,0">
+                <Label
+                    Text="Start"
+                    HorizontalOptions="Start"
+                    VerticalOptions="Center"/>
+                <TimePicker
+                    Time="{Binding StartTime}"
+                    Format="hh\:mm\:ss"
+                    HorizontalOptions="FillAndExpand"
+                    VerticalOptions="Center">
+                    <TimePicker.Behaviors>
+                        <behaviors:EventToCommandBehavior EventName="PropertyChanged" Command="{Binding UpdateItemCommand}"/>
+                    </TimePicker.Behaviors>
+                </TimePicker>
+                <Label
+                    Text="End"
+                    HorizontalOptions="EndAndExpand"
+                    VerticalOptions="Center"/>
+                <TimePicker
+                    Time="{Binding EndTime}"
+                    Format="hh\:mm\:ss"
+                    HorizontalOptions="End"
+                    VerticalOptions="Center">
+                    <TimePicker.Behaviors>
+                        <behaviors:EventToCommandBehavior EventName="PropertyChanged" Command="{Binding UpdateItemCommand}"/>
+                    </TimePicker.Behaviors>
+                </TimePicker>
+            </StackLayout>
+            <StackLayout Orientation="Horizontal"  Margin="15,0,15,15">
+                <Label
+                    Text="Duration"
+                    HorizontalOptions="Start"
+                    VerticalOptions="Center"/>
+                <Label
+                    Text="{Binding Duration}"
+                    HorizontalOptions="FillAndExpand"
+                    VerticalOptions="Center">
+                </Label>
+            </StackLayout>
         </StackLayout>
-        <StackLayout Orientation="Horizontal">
-            <Label
-                Text="Duration"
-                HorizontalOptions="Start"
-                VerticalOptions="Center"/>
-            <Label
-                Text="{Binding Duration}"
-                HorizontalOptions="FillAndExpand"
-                VerticalOptions="Center">
-            </Label>
-        </StackLayout>
-        <StackLayout Orientation="Horizontal" HorizontalOptions="CenterAndExpand" WidthRequest="50" HeightRequest="65" Margin="0,0,0,0">
-            <StackLayout.GestureRecognizers>
-                <TapGestureRecognizer 
-                    Command="{Binding UpdateAndCloseCommand}"/>
-            </StackLayout.GestureRecognizers>
-            <Label
-                HorizontalOptions="CenterAndExpand"
-                VerticalOptions="Center"
-                Text="Accept"
-                FontSize="20"/>
-        </StackLayout>
-    </StackLayout>
-</pages:PopupPage>
+    </views:BasePopupPage.PageContent>
+</views:BasePopupPage>

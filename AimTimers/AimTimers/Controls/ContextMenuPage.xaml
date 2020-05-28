@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<pages:PopupPage
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:pages="clr-namespace:Rg.Plugins.Popup.Pages;assembly=Rg.Plugins.Popup"
+    xmlns:utils="clr-namespace:AimTimers.Utils"
+    mc:Ignorable="d"
+    x:Class="AimTimers.Controls.ContextMenuPage"
+    x:Name="ContextMenuPopup">
+    <AbsoluteLayout >
+        <AbsoluteLayout.GestureRecognizers>
+            <TapGestureRecognizer Tapped="PageTapGestureRecognizer_Tapped"/>
+        </AbsoluteLayout.GestureRecognizers>
+        <Frame
+            AbsoluteLayout.LayoutBounds="215,150,110,110"
+            BackgroundColor="{x:Static utils:Colors.BackgroundPopup}"
+            Padding="0"
+            CornerRadius="5">
+            <ListView
+                Margin="10,10,10,10"
+                RowHeight="30"
+                SeparatorVisibility="None"
+                VerticalScrollBarVisibility="Never"
+                ItemsSource="{Binding Items, Source={Reference ContextMenuPopup}}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <StackLayout Orientation="Horizontal">
+                                <StackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="ItemTapGestureRecognizer_Tapped"/>
+                                </StackLayout.GestureRecognizers>
+                                <Label
+                                    HorizontalOptions="StartAndExpand"
+                                    VerticalOptions="Center"
+                                    Text="{Binding Text}"/>
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Frame>
+    </AbsoluteLayout>
+</pages:PopupPage>
