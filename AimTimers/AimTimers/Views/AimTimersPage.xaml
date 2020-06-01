@@ -30,7 +30,7 @@
 
     <StackLayout>
         <ListView x:Name="ItemsListView"
-                ItemsSource="{Binding AimTimerItemViewModels}"
+                ItemsSource="{Binding AimTimerListItemViewModels}"
                 VerticalOptions="FillAndExpand"
                 HasUnevenRows="true"
                 RefreshCommand="{Binding RefreshCommand}"
@@ -222,7 +222,7 @@
                                         FontFamily="{StaticResource MaterialFont}"
                                         FontSize="20">
                                         <Label.GestureRecognizers>
-                                            <TapGestureRecognizer Command="{Binding Parent.EditItemCommand}" CommandParameter="{Binding .}"/>
+                                            <TapGestureRecognizer Command="{Binding Parent.EditIntervalCommand}" CommandParameter="{Binding .}"/>
                                         </Label.GestureRecognizers>
                                     </Label>
                                     <Label
@@ -233,7 +233,7 @@
                                         FontFamily="{StaticResource MaterialFont}"
                                         FontSize="20">
                                         <Label.GestureRecognizers>
-                                            <TapGestureRecognizer Command="{Binding Parent.DeleteItemCommand}" CommandParameter="{Binding .}"/>
+                                            <TapGestureRecognizer Command="{Binding Parent.DeleteIntervalCommand}" CommandParameter="{Binding .}"/>
                                         </Label.GestureRecognizers>
                                     </Label>
                                 </StackLayout>

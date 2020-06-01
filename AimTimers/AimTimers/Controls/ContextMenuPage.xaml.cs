@@ -2,6 +2,7 @@
 using Rg.Plugins.Popup.Extensions;
 using Rg.Plugins.Popup.Pages;
 using Xamarin.Forms;
+using Xamarin.Forms.PlatformConfiguration;
 
 namespace AimTimers.Controls
 {
@@ -23,6 +24,8 @@ namespace AimTimers.Controls
             Items = items;
 
             InitializeComponent();
+
+            MainFrame.Margin = new Thickness(0, y, 20, 0);
 
             //TranslationX = x;
             //TranslationY = y;

@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Windows.Input;
 using AimTimers.Bl;
-using Xamarin.Forms;
 
 namespace AimTimers.ViewModels
 {

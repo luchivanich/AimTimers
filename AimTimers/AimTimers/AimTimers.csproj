@@ -11,6 +11,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Assets\**" />
+    <EmbeddedResource Remove="Assets\**" />
+    <None Remove="Assets\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="ViewModelFactories\AimTimerItemListItemViewModelFactory.cs" />
     <Compile Remove="ViewModelFactories\IAimTimerItemListItemViewModelFactory.cs" />
     <Compile Remove="ViewModels\AimTimerItemListItemViewModel.cs" />

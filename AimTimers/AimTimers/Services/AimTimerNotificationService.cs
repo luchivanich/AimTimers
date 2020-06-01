@@ -31,13 +31,15 @@ namespace AimTimers.Services
         public void Start()
         {
             _timer.Interval = 100;
-            _timer.Elapsed -= OnTimedEvent;
             _timer.Elapsed += OnTimedEvent;
+            _timer.Enabled = true;
             _timer.Start();
         }
 
         public void Stop()
         {
+            _timer.Elapsed -= OnTimedEvent;
+            _timer.Enabled = false;
             _timer.Stop();
         }
 

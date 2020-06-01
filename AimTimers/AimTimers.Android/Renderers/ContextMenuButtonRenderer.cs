@@ -26,11 +26,11 @@ namespace AimTimers.Droid.Renderers
 
         private (int x, int y) GetCoordinatesNative()
         {
-            var metrics = Resources.DisplayMetrics;
+            var density = Resources.DisplayMetrics.Density;
 
             var coords = new int[2];
             GetLocationOnScreen(coords);
-            return (coords[0], coords[1]);
+            return ((int)(coords[0]/density), (int)(coords[1]/density));
         }
     }
 }

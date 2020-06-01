@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using AimTimers.Models;
 using AimTimers.Repository;
 
@@ -23,10 +22,6 @@ namespace AimTimers.Services
 
         public void AddAimTimer(AimTimerModel aimTimer)
         {
-            if (string.IsNullOrEmpty(aimTimer.Id))
-            {
-                aimTimer.Id = Guid.NewGuid().ToString();
-            }
             _repository.Save(aimTimer, aimTimer.Id);
         }
 

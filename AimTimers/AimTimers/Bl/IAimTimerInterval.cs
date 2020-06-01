@@ -4,7 +4,7 @@ namespace AimTimers.Bl
 {
     public interface IAimTimerInterval
     {
-        IAimTimer AimTimer { get; }
+        IAimTimerItem AimTimerItem { get; }
         AimTimerIntervalModel AimTimerIntervalModel { get; }
     }
 }

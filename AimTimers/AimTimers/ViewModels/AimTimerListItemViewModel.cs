@@ -17,12 +17,14 @@ namespace AimTimers.ViewModels
 {
     public class AimTimerListItemViewModel : ObservableCollection<IAimTimerIntervalListItemViewModel>, IAimTimerListItemViewModel, INotifyPropertyChanged
     {
+        private readonly IDateTimeProvider _dateTimeProvider;
         private readonly IAlertManager _alertManager;
         private readonly INavigation _navigation;
+        private readonly IMessagingCenter _messagingCenter;
         private readonly IAimTimerService _aimTimerService;
         private readonly IViewFactory _viewFactory;
         private readonly IAimTimerIntervalListItemViewModelFactory _aimTimerIntervalListItemViewModelFactory;
-        private readonly Func<IAimTimer, AimTimerIntervalModel, IAimTimerInterval> _aimTimerIntervalFactory;
+        private readonly Func<IAimTimerItem, AimTimerIntervalModel, IAimTimerInterval> _aimTimerIntervalFactory;
         private readonly Func<IAimTimerInterval, IAimTimerIntervalViewModel> _aimTimerIntervalViewModelFactory;
 
         private IAimTimer _aimTimer;
@@ -138,10 +140,13 @@ namespace AimTimers.ViewModels
 
         private async Task ExecuteAddIntervalItemCommand()
         {
-            //await _navigation.PopPopupAsync();
-            //var aimTimerViewModel = _aimTimerViewModelFactory.Create(_aimTimerItem.AimTimer);
-            //var aimTimerView = _viewFactory.CreatePopupPage(aimTimerViewModel);
-            //await _navigation.PushPopupAsync(aimTimerView);
+            var intervalModel = new AimTimerIntervalModel { StartDate = _dateTimeProvider.GetNow(), EndDate = _dateTimeProvider.GetNow() };
+            var interval = _aimTimerIntervalFactory.Invoke(_aimTimerItem, intervalModel);
+            var aimTimerIntervalListItemViewModel = _aimTimerIntervalListItemViewModelFactory.Create(interval, this);
+
+            var aimTimerIntervalViewModel = _aimTimerIntervalViewModelFactory.Invoke(aimTimerIntervalListItemViewModel.AimTimerInterval);
+            var aimTimerIntervalView = _viewFactory.CreatePopupPage(aimTimerIntervalViewModel);
+            await _navigation.PushPopupAsync(aimTimerIntervalView);
         }
 
         public ICommand DeleteIntervalCommand
@@ -162,22 +167,30 @@ namespace AimTimers.ViewModels
                 _aimTimerService.AddAimTimer(_aimTimer.AimTimerModel);
                 Refresh();
                 OnPropertyChanged(new PropertyChangedEventArgs(nameof(IsExpandable)));
+                if (!IsExpandable)
+                {
+                    IsExpanded = false;
+                }
             }
         }
 
         #endregion
 
         public AimTimerListItemViewModel(
+            IDateTimeProvider dateTimeProvider,
             IAlertManager alertManager,
             INavigation navigation,
+            IMessagingCenter messagingCenter,
             IAimTimerService aimTimerService,
             IViewFactory viewFactory,
             IAimTimerIntervalListItemViewModelFactory aimTimerIntervalListItemViewModelFactory,
-            Func<IAimTimer, AimTimerIntervalModel, IAimTimerInterval> aimTimerIntervalFactory,
+            Func<IAimTimerItem, AimTimerIntervalModel, IAimTimerInterval> aimTimerIntervalFactory,
             Func<IAimTimerInterval, IAimTimerIntervalViewModel> aimTimerIntervalViewModelFactory)
         {
+            _dateTimeProvider = dateTimeProvider;
             _alertManager = alertManager;
             _navigation = navigation;
+            _messagingCenter = messagingCenter;
             _aimTimerService = aimTimerService;
             _viewFactory = viewFactory;
             _aimTimerIntervalListItemViewModelFactory = aimTimerIntervalListItemViewModelFactory;
@@ -189,6 +202,7 @@ namespace AimTimers.ViewModels
         {
             _aimTimer = aimTimer;
             _aimTimerItem = _aimTimer.GetCurrentAimTimerItem();
+            _messagingCenter.Subscribe<IAimTimerInterval>(this, MessagingCenterMessages.AimTimerIntervalUpdated, OnIntervalUpdated);
         }
 
         public IAimTimer GetAimTimer()
@@ -198,19 +212,15 @@ namespace AimTimers.ViewModels
 
         public void RefreshTimeLeft()
         {
-            //if (RunningStatus == AimTimerRunningStatus.InProgress)
-            //{
-                _aimTimer.RefreshTimeLeft();
-                OnPropertyChanged(new PropertyChangedEventArgs(nameof(TimeLeft)));
-                OnPropertyChanged(new PropertyChangedEventArgs(nameof(TimePassed)));
-                OnPropertyChanged(new PropertyChangedEventArgs(nameof(Status)));
+            _aimTimer.RefreshTimeLeft();
+            OnPropertyChanged(new PropertyChangedEventArgs(nameof(TimeLeft)));
+            OnPropertyChanged(new PropertyChangedEventArgs(nameof(TimePassed)));
+            OnPropertyChanged(new PropertyChangedEventArgs(nameof(Status)));
 
-                foreach(var item in this)
-                {
-                    item.Refresh();
-                }
-
-            //}
+            foreach(var item in this)
+            {
+                item.Refresh();
+            }
         }
 
         public void Refresh()
@@ -226,16 +236,38 @@ namespace AimTimers.ViewModels
         {
             this.Clear();
 
-            if (!_isExpanded)
+            if (!IsExpanded)
             {
                 return;
             }
 
             foreach (var intervalModel in _aimTimerItem.AimTimerItemModel.AimTimerIntervals.OrderByDescending(i => i.StartDate))
             {
-                var interval = _aimTimerIntervalFactory.Invoke(_aimTimer, intervalModel);
+                var interval = _aimTimerIntervalFactory.Invoke(_aimTimerItem, intervalModel);
                 Add(_aimTimerIntervalListItemViewModelFactory.Create(interval, this));
             }
+        }
+
+        private void OnIntervalUpdated(IAimTimerInterval aimTimerInterval)
+        {
+            if (aimTimerInterval.AimTimerItem != _aimTimerItem)
+            {
+                return;
+            }
+
+            OnPropertyChanged(new PropertyChangedEventArgs(nameof(IsExpandable)));
+
+            if (IsExpanded)
+            {
+                var result = this.FirstOrDefault(i => i.AimTimerInterval == aimTimerInterval);
+                if (result == null)
+                {
+                    result = _aimTimerIntervalListItemViewModelFactory.Create(aimTimerInterval, this);
+                    Add(result);
+                }
+                result.Refresh();
+            }
+            Refresh();
         }
     }
 }

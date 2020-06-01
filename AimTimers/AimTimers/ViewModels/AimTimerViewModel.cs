@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using AimTimers.Bl;
 using AimTimers.Services;
+using AimTimers.Utils;
 using Rg.Plugins.Popup.Extensions;
 using Xamarin.Forms;
 
@@ -11,44 +11,33 @@ namespace AimTimers.ViewModels
 {
     public class AimTimerViewModel : BaseViewModel, IAimTimerViewModel
     {
-        private readonly IAimTimerNotificationService _aimTimerNotificationService;
         private readonly INavigation _navigation;
         private readonly IMessagingCenter _messagingCenter;
         private readonly IAimTimerService _aimTimerService;
-
-        private string _originalTitle;
-        private TimeSpan _originalTime;
 
         private IAimTimer _aimTimer;
 
         #region Properties
 
+        private string _title;
+
         public string Title
         {
-            get => _aimTimer.AimTimerModel.Title;
+            get => _title;
             set
             {
-                _aimTimer.AimTimerModel.Title = value;
+                _title = value;
                 OnPropertyChanged();
             }
         }
 
-        public string Description
-        {
-            get => _aimTimer.AimTimerModel.Description;
-            set
-            {
-                _aimTimer.AimTimerModel.Description = value;
-                OnPropertyChanged();
-            }
-        }
-
+        private TimeSpan _time;
         public TimeSpan Time
         {
-            get => new TimeSpan(_aimTimer.AimTimerModel.Ticks ?? 0);
+            get => _time;
             set
             {
-                _aimTimer.AimTimerModel.Ticks = value.Ticks;
+                _time = value;
                 OnPropertyChanged();
             }
         }
@@ -56,12 +45,10 @@ namespace AimTimers.ViewModels
         #endregion
 
         public AimTimerViewModel(
-            IAimTimerNotificationService aimTimerNotificationService,
             INavigation navigation,
             IMessagingCenter messagingCenter,
             IAimTimerService aimTimerService)
         {
-            _aimTimerNotificationService = aimTimerNotificationService;
             _navigation = navigation;
             _messagingCenter = messagingCenter;
             _aimTimerService = aimTimerService;
@@ -79,13 +66,13 @@ namespace AimTimers.ViewModels
 
         private async Task ExecuteAcceptCommand()
         {
-            if (_originalTitle != Title || _originalTime != Time)
+            if (_aimTimer.AimTimerModel.Title != Title || _aimTimer.AimTimerModel.Ticks != Time.Ticks)
             {
+                _aimTimer.AimTimerModel.Title = Title;
+                _aimTimer.AimTimerModel.Ticks = Time.Ticks;
                 _aimTimerService.AddAimTimer(_aimTimer.AimTimerModel);
-                _originalTime = Time;
-                _originalTitle = Title;
+                _messagingCenter.Send(_aimTimer, MessagingCenterMessages.AimTimerUpdated);
             }
-            _messagingCenter.Send("tmp", "AimTimerUpdated");
             await _navigation.PopPopupAsync();
         }
 
@@ -95,11 +82,8 @@ namespace AimTimers.ViewModels
         {
             _aimTimer = aimTimer;
 
-            _originalTime = Time;
-            _originalTitle = Title;
-
-            _aimTimerNotificationService.SetItemsToFollow(new List<IAimTimer> { aimTimer });
-            _aimTimerNotificationService.Start();
+            Title = aimTimer.AimTimerModel.Title;
+            Time = new TimeSpan(aimTimer.AimTimerModel.Ticks ?? 0);
         }
     }
 }

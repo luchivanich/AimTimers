@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using AimTimers.Models;
 
 namespace AimTimers.Bl
@@ -6,12 +7,16 @@ namespace AimTimers.Bl
     public class AimTimerInterval : IAimTimerInterval
     {
         public AimTimerIntervalModel AimTimerIntervalModel { get; }
-        public IAimTimer AimTimer { get; }
+        public IAimTimerItem AimTimerItem { get; }
 
-        public AimTimerInterval(IAimTimer aimTimer, AimTimerIntervalModel aimTimerIntervalModel)
+        public AimTimerInterval(IAimTimerItem aimTimerItem,  AimTimerIntervalModel aimTimerIntervalModel)
         {
-            AimTimer = aimTimer;
+            AimTimerItem = aimTimerItem;
             AimTimerIntervalModel = aimTimerIntervalModel;
+            if (aimTimerItem.AimTimerItemModel.AimTimerIntervals.All(i => i.Id !=  aimTimerIntervalModel.Id))
+            {
+                aimTimerItem.AimTimerItemModel.AimTimerIntervals.Add(aimTimerIntervalModel);
+            }
         }
     }
 }

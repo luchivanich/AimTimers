@@ -13,40 +13,38 @@ namespace AimTimers.ViewModels
     {
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly INavigation _navigation;
+        private readonly IMessagingCenter _messagingCenter;
         private readonly IAimTimerService _aimTimerService;
 
         private IAimTimerInterval _aimTimerInterval;
 
-        private TimeSpan _originalStartTime;
-        private TimeSpan _originalEndTime;
-
+        private TimeSpan _startTime;
         public TimeSpan StartTime
         {
-            get => _aimTimerInterval.AimTimerIntervalModel.StartDate.TimeOfDay;
+            get => _startTime;
             set
             {
                 if (value > EndTime)
                 {
                     value = EndTime;
                 }
-                var now = _dateTimeProvider.GetNow();
-                _aimTimerInterval.AimTimerIntervalModel.StartDate = new DateTime(now.Year, now.Month, now.Day, value.Hours, value.Minutes, value.Seconds);
+                _startTime = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(Duration));
             }
         }
 
+        private TimeSpan _endTime;
         public TimeSpan EndTime
         {
-            get => _aimTimerInterval.AimTimerIntervalModel.EndDate?.TimeOfDay ?? default;
+            get => _endTime;
             set
             {
                 if (value < StartTime)
                 {
                     value = StartTime;
                 }
-                var now = _dateTimeProvider.GetNow();
-                _aimTimerInterval.AimTimerIntervalModel.EndDate = new DateTime(now.Year, now.Month, now.Day, value.Hours, value.Minutes, value.Seconds);
+                _endTime = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(Duration));
             }
@@ -54,36 +52,23 @@ namespace AimTimers.ViewModels
 
         public TimeSpan Duration => EndTime - StartTime;
 
-        public AimTimerIntervalViewModel(IDateTimeProvider dateTimeProvider, INavigation navigation, IAimTimerService aimTimerService)
+        public AimTimerIntervalViewModel(
+            IDateTimeProvider dateTimeProvider,
+            INavigation navigation,
+            IMessagingCenter messagingCenter,
+            IAimTimerService aimTimerService)
         {
-            _navigation = navigation;
             _dateTimeProvider = dateTimeProvider;
+            _navigation = navigation;
+            _messagingCenter = messagingCenter;
             _aimTimerService = aimTimerService;
         }
 
         internal void Setup(IAimTimerInterval aimTimerInterval)
         {
             _aimTimerInterval = aimTimerInterval;
-            _originalStartTime = StartTime;
-            _originalEndTime = EndTime;
-        }
-
-        public ICommand UpdateItemCommand
-        {
-            get
-            {
-                return new Command(() => ExecuteUpdateItemCommand());
-            }
-        }
-
-        private void ExecuteUpdateItemCommand()
-        {
-            if (_originalStartTime != StartTime || _originalEndTime != EndTime)
-            {
-                _aimTimerService.AddAimTimer(_aimTimerInterval.AimTimer.AimTimerModel);
-                _originalStartTime = StartTime;
-                _originalEndTime = EndTime;
-            }
+            StartTime = _aimTimerInterval.AimTimerIntervalModel.StartDate.TimeOfDay;
+            EndTime = _aimTimerInterval.AimTimerIntervalModel.EndDate?.TimeOfDay ?? default;
         }
 
         public ICommand AcceptCommand
@@ -96,12 +81,17 @@ namespace AimTimers.ViewModels
 
         private async Task ExecuteAcceptCommand()
         {
-            //if (_originalStartTime != StartTime || _originalEndTime != EndTime)
-            //{
-            //    _aimTimerService.AddAimTimer(_aimTimerInterval.AimTimer.AimTimerModel);
-            //    _originalStartTime = StartTime;
-            //    _originalEndTime = EndTime;
-            //}
+            if (_aimTimerInterval.AimTimerIntervalModel.StartDate.TimeOfDay != StartTime ||
+                (_aimTimerInterval.AimTimerIntervalModel.EndDate?.TimeOfDay ?? default) != EndTime)
+            {
+                var now = _dateTimeProvider.GetNow();
+                _aimTimerInterval.AimTimerIntervalModel.StartDate = new DateTime(now.Year, now.Month, now.Day, StartTime.Hours, StartTime.Minutes, StartTime.Seconds);
+                _aimTimerInterval.AimTimerIntervalModel.EndDate = new DateTime(now.Year, now.Month, now.Day, EndTime.Hours, EndTime.Minutes, EndTime.Seconds);
+
+                _aimTimerService.AddAimTimer(_aimTimerInterval.AimTimerItem.AimTimer.AimTimerModel);
+                _messagingCenter.Send(_aimTimerInterval, MessagingCenterMessages.AimTimerIntervalUpdated);
+            }
+
             await _navigation.PopPopupAsync();
         }
     }
