@@ -43,7 +43,9 @@
                 Grid.Column="1"
                 Grid.Row="0"
                 Text="{Binding Title}"
-                HorizontalOptions="EndAndExpand"
+                Placeholder="Enter a Name"
+                HorizontalTextAlignment="End"
+                HorizontalOptions="FillAndExpand"
                 VerticalOptions="Center"/>
 
             <Label

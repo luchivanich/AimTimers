@@ -29,12 +29,12 @@
         <Frame
             x:Name="MainFrame"
             HorizontalOptions="End"
-            WidthRequest="200"
+            WidthRequest="120"
             BackgroundColor="{x:Static utils:Colors.BackgroundPopup}"
             Padding="0"
             CornerRadius="2">
             <ListView
-                Margin="10,10,10,10"
+                Margin="20,10,10,10"
                 RowHeight="30"
                 SeparatorVisibility="None"
                 VerticalScrollBarVisibility="Never"

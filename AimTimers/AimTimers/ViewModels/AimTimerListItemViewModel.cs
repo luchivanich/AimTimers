@@ -30,25 +30,7 @@ namespace AimTimers.ViewModels
         private IAimTimer _aimTimer;
         private IAimTimerItem _aimTimerItem;
 
-        public string Title
-        {
-            get => _aimTimer.AimTimerModel.Title;
-            set
-            {
-                _aimTimer.AimTimerModel.Title = value;
-                OnPropertyChanged(new PropertyChangedEventArgs(nameof(Title)));
-            }
-        }
-
-        public string Description
-        {
-            get => _aimTimer.AimTimerModel.Description;
-            set
-            {
-                _aimTimer.AimTimerModel.Description = value;
-                OnPropertyChanged(new PropertyChangedEventArgs(nameof(Description)));
-            }
-        }
+        public string Title => _aimTimer.AimTimerModel.Title;
 
         public AimTimerStatusFlags Status => _aimTimer.GetAimTimerStatusFlags();
 

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using AimTimers.Models;
 
 namespace AimTimers.Bl
@@ -13,7 +12,7 @@ namespace AimTimers.Bl
         {
             AimTimerItem = aimTimerItem;
             AimTimerIntervalModel = aimTimerIntervalModel;
-            if (aimTimerItem.AimTimerItemModel.AimTimerIntervals.All(i => i.Id !=  aimTimerIntervalModel.Id))
+            if (aimTimerItem.AimTimerItemModel.AimTimerIntervals.All(i => i.Id != aimTimerIntervalModel.Id))
             {
                 aimTimerItem.AimTimerItemModel.AimTimerIntervals.Add(aimTimerIntervalModel);
             }

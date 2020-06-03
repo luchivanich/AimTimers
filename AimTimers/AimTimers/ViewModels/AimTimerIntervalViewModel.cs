@@ -67,8 +67,8 @@ namespace AimTimers.ViewModels
         internal void Setup(IAimTimerInterval aimTimerInterval)
         {
             _aimTimerInterval = aimTimerInterval;
-            StartTime = _aimTimerInterval.AimTimerIntervalModel.StartDate.TimeOfDay;
             EndTime = _aimTimerInterval.AimTimerIntervalModel.EndDate?.TimeOfDay ?? default;
+            StartTime = _aimTimerInterval.AimTimerIntervalModel.StartDate.TimeOfDay;
         }
 
         public ICommand AcceptCommand
