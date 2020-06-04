@@ -19,7 +19,8 @@ namespace AimTimers.Di
             var unityContainer = new UnityContainer();
 
             unityContainer.RegisterType<ITimer, TimerAdapter>();
-            unityContainer.RegisterType<IDateTimeProvider, DateTimeProvider>();
+            //unityContainer.RegisterType<IDateTimeProvider, DateTimeProvider>();
+            unityContainer.RegisterInstance<IDateTimeProvider>(new DateTimeProvider());
             unityContainer.RegisterInstance(DependencyService.Get<INotificationManager>());
             unityContainer.RegisterType<IViewFactory, ViewFactory>();
             unityContainer.RegisterType<INavigation, NavigationAdapter>();
@@ -59,6 +60,7 @@ namespace AimTimers.Di
             unityContainer.RegisterFactory<IAimTimersViewModel>(c =>
             {
                 var result = new AimTimersViewModel(
+                    c.Resolve<IDateTimeProvider>(),
                     c.Resolve<IAimTimerNotificationService>(),
                     c.Resolve<INavigation>(),
                     c.Resolve<IAlertManager>(),

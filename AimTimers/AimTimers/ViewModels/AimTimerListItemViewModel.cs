@@ -156,6 +156,19 @@ namespace AimTimers.ViewModels
             }
         }
 
+        //public ICommand MinusDayCommand
+        //{
+        //    get
+        //    {
+        //        return new Command(() => ExecuteMinusDayCommand());
+        //    }
+        //}
+
+        //private void ExecuteMinusDayCommand()
+        //{
+
+        //}
+
         #endregion
 
         public AimTimerListItemViewModel(

@@ -16,6 +16,7 @@ namespace AimTimers.ViewModels
 {
     public class AimTimersViewModel : BaseViewModel, IAimTimersViewModel
     {
+        private readonly IDateTimeProvider _dateTimeProvider;
         private readonly IAimTimerNotificationService _aimTimerNotificationService;
         private readonly INavigation _navigation;
         private readonly IAlertManager _alertManager;
@@ -28,7 +29,7 @@ namespace AimTimers.ViewModels
 
         public ObservableCollection<IAimTimerListItemViewModel> AimTimerListItemViewModels { get; set; } = new ObservableCollection<IAimTimerListItemViewModel>();
 
-        public string Title => "Active Timers";
+        public string Title => _dateTimeProvider.GetNow().ToShortDateString();
 
         #region Commands
 
@@ -76,9 +77,54 @@ namespace AimTimers.ViewModels
             }
         }
 
+        public ICommand GoDayBeforeCommand
+        {
+            get
+            {
+                return new Command(() => ExecuteGoDayBeforeCommand());
+            }
+        }
+
+        private void ExecuteGoDayBeforeCommand()
+        {
+            var now = _dateTimeProvider.GetNow();
+            _dateTimeProvider.SetNow(now.AddDays(-1));
+            Init();
+        }
+
+        public ICommand GoNextDayCommand
+        {
+            get
+            {
+                return new Command(() => ExecuteGoNextDayCommand());
+            }
+        }
+
+        private void ExecuteGoNextDayCommand()
+        {
+            var now = _dateTimeProvider.GetNow();
+            _dateTimeProvider.SetNow(now.AddDays(1));
+            Init();
+        }
+
+        public ICommand GoTodayCommand
+        {
+            get
+            {
+                return new Command(() => ExecuteGoTodayCommand());
+            }
+        }
+
+        private void ExecuteGoTodayCommand()
+        {
+            _dateTimeProvider.SetNow(null);
+            Init();
+        }
+
         #endregion
 
         public AimTimersViewModel(
+            IDateTimeProvider dateTimeProvider,
             IAimTimerNotificationService aimTimerNotificationService,
             INavigation navigation,
             IAlertManager alertManager,
@@ -89,6 +135,7 @@ namespace AimTimers.ViewModels
             IAimTimerViewModelFactory aimTimerViewModelFactory,
             Func<AimTimerModel, IAimTimer> aimTimerFactory)
         {
+            _dateTimeProvider = dateTimeProvider;
             _aimTimerNotificationService = aimTimerNotificationService;
             _navigation = navigation;
             _alertManager = alertManager;
@@ -102,6 +149,11 @@ namespace AimTimers.ViewModels
 
         public void Init()
         {
+            _aimTimerNotificationService.Stop();
+            AimTimerListItemViewModels.CollectionChanged -= AimTimerItemViewModels_CollectionChanged;
+            _aimTimerNotificationService.OnStatusChanged -= AimTimerNotificationService_OnStatusChanged;
+            _messagingCenter.Unsubscribe<IAimTimer>(this, MessagingCenterMessages.AimTimerUpdated);
+
             AimTimerListItemViewModels.Clear();
             foreach (var aimTimerModel in _aimTimerService.GetActiveAimTimers())
             {
@@ -114,6 +166,8 @@ namespace AimTimers.ViewModels
             _aimTimerNotificationService.OnStatusChanged += AimTimerNotificationService_OnStatusChanged;
             _aimTimerNotificationService.Start();
             _messagingCenter.Subscribe<IAimTimer>(this, MessagingCenterMessages.AimTimerUpdated, OnItemUpdated);
+
+            OnPropertyChanged(nameof(Title));
         }
 
         private void OnItemUpdated(IAimTimer aimTimer)

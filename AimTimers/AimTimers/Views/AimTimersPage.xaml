@@ -29,16 +29,18 @@
     </ContentPage.ToolbarItems>
 
     <StackLayout>
-        <ListView x:Name="ItemsListView"
-                ItemsSource="{Binding AimTimerListItemViewModels}"
-                VerticalOptions="FillAndExpand"
-                HasUnevenRows="true"
-                RefreshCommand="{Binding RefreshCommand}"
-                IsPullToRefreshEnabled="false"
-                IsRefreshing="{Binding IsBusy, Mode=OneWay}"
-                SelectionMode="None"
-                CachingStrategy="RecycleElement"
-                IsGroupingEnabled="True">
+        <ListView 
+            ItemsSource="{Binding AimTimerListItemViewModels}"
+            VerticalOptions="Start"
+            HasUnevenRows="True"
+            IsPullToRefreshEnabled="False"
+            IsRefreshing="False"
+            SelectionMode="None"
+            CachingStrategy="RecycleElement"
+            IsGroupingEnabled="True">
+            <ListView.GestureRecognizers>
+                <SwipeGestureRecognizer Direction="Left, Right" Command="{Binding MinusDayCommand}"/>
+            </ListView.GestureRecognizers>
             <ListView.GroupHeaderTemplate>
                 <DataTemplate>
                     <ViewCell>
@@ -49,6 +51,7 @@
                             <StackLayout Orientation="Vertical" Padding="10" HorizontalOptions="FillAndExpand">
                                 <StackLayout.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding PlayPauseItemCommand}"/>
+                                    <SwipeGestureRecognizer Direction="Left, Right" Command="{Binding MinusDayCommand}"/>
                                 </StackLayout.GestureRecognizers>
                                 <StackLayout Orientation="Horizontal">
                                     <Label 
@@ -243,5 +246,37 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
+        <StackLayout Orientation="Horizontal">
+            <controls:CustomButton
+                HorizontalOptions="Start"
+                WidthRequest="50"
+                HeightRequest="65"
+                IconCode="{x:Static utils:MaterialIconCodes.NavigateBefore}"
+                Margin="0,0,0,0">
+                <controls:CustomButton.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding GoDayBeforeCommand}"/>
+                </controls:CustomButton.GestureRecognizers>
+            </controls:CustomButton>
+            <controls:CustomButton
+                HorizontalOptions="Start"
+                WidthRequest="50"
+                HeightRequest="65"
+                IconCode="{x:Static utils:MaterialIconCodes.NavigateNext}"
+                Margin="0,0,0,0">
+                <controls:CustomButton.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding GoNextDayCommand}"/>
+                </controls:CustomButton.GestureRecognizers>
+            </controls:CustomButton>
+            <controls:CustomButton
+                HorizontalOptions="Start"
+                WidthRequest="50"
+                HeightRequest="65"
+                IconCode="{x:Static utils:MaterialIconCodes.Home}"
+                Margin="0,0,0,0">
+                <controls:CustomButton.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding GoTodayCommand}"/>
+                </controls:CustomButton.GestureRecognizers>
+            </controls:CustomButton>
+        </StackLayout>
     </StackLayout>
 </ContentPage>
