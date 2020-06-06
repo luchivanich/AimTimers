@@ -6,6 +6,8 @@ namespace AimTimers.Utils
     {
         private DateTime? _now;
 
+        public bool IsToday => _now == null;
+
         public DateTime GetNow()
         {
             return _now ?? DateTime.Now;

@@ -62,7 +62,7 @@ namespace AimTimers.ViewModels
         {
             get
             {
-                return new Command(() => ExecutePlayPauseItemCommand());
+                return new Command(() => ExecutePlayPauseItemCommand(), () => _dateTimeProvider.IsToday);
             }
         }
 
@@ -75,7 +75,6 @@ namespace AimTimers.ViewModels
             else
             {
                 _aimTimer.Start();
-                
             }
             _aimTimerService.AddAimTimer(_aimTimer.AimTimerModel);
             LoadIntervals();
