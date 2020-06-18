@@ -6,7 +6,6 @@ using Xamarin.Forms;
 
 namespace AimTimers.Views
 {
-    //[ContentProperty("PageContent")]
     public partial class BasePopupPage : PopupPage
     {
         public static readonly BindableProperty AcceptCommandProperty = BindableProperty.Create(

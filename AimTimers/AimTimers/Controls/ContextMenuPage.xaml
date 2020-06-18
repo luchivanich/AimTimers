@@ -5,56 +5,41 @@
     xmlns:d="http://xamarin.com/schemas/2014/forms/design"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:pages="clr-namespace:Rg.Plugins.Popup.Pages;assembly=Rg.Plugins.Popup"
-    xmlns:animations="clr-namespace:Rg.Plugins.Popup.Animations;assembly=Rg.Plugins.Popup"
     xmlns:utils="clr-namespace:AimTimers.Utils"
     mc:Ignorable="d"
     x:Class="AimTimers.Controls.ContextMenuPage"
     x:Name="ContextMenuPopup">
-    <pages:PopupPage.Animation>
-        <animations:ScaleAnimation 
-            PositionIn="Center"
-            PositionOut="Center"
-            ScaleIn="1.2"
-            ScaleOut="0.8"
-            DurationIn="400"
-            DurationOut="300"
-            EasingIn="SinOut"
-            EasingOut="SinIn"
-            HasBackgroundAnimation="True"/>
-    </pages:PopupPage.Animation>
-    <StackLayout >
-        <StackLayout.GestureRecognizers>
+    <Frame
+        x:Name="MainFrame"
+        HorizontalOptions="Start"
+        VerticalOptions="Start"
+        BackgroundColor="{x:Static utils:Colors.BackgroundPopup}"
+        Padding="0"
+        CornerRadius="2">
+        <Frame.GestureRecognizers>
             <TapGestureRecognizer Tapped="PageTapGestureRecognizer_Tapped"/>
-        </StackLayout.GestureRecognizers>
-        <Frame
-            x:Name="MainFrame"
-            HorizontalOptions="End"
-            WidthRequest="120"
-            BackgroundColor="{x:Static utils:Colors.BackgroundPopup}"
-            Padding="0"
-            CornerRadius="2">
-            <ListView
-                Margin="20,10,10,10"
-                RowHeight="30"
-                SeparatorVisibility="None"
-                VerticalScrollBarVisibility="Never"
-                ItemsSource="{Binding Items, Source={Reference ContextMenuPopup}}">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <ViewCell>
-                            <StackLayout Orientation="Horizontal">
-                                <StackLayout.GestureRecognizers>
-                                    <TapGestureRecognizer Tapped="ItemTapGestureRecognizer_Tapped"/>
-                                </StackLayout.GestureRecognizers>
-                                <Label
-                                    HorizontalOptions="StartAndExpand"
-                                    VerticalOptions="Center"
-                                    Text="{Binding Text}"/>
-                            </StackLayout>
-                        </ViewCell>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-        </Frame>
-    </StackLayout>
+        </Frame.GestureRecognizers>
+        <ListView
+            Margin="10"
+            RowHeight="30"
+            SeparatorVisibility="None"
+            VerticalScrollBarVisibility="Never"
+            ItemsSource="{Binding Items, Source={Reference ContextMenuPopup}}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <StackLayout Orientation="Horizontal">
+                            <StackLayout.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="ItemTapGestureRecognizer_Tapped"/>
+                            </StackLayout.GestureRecognizers>
+                            <Label
+                                HorizontalOptions="StartAndExpand"
+                                VerticalOptions="Center"
+                                Text="{Binding Text}"/>
+                        </StackLayout>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </Frame>
 </pages:PopupPage>

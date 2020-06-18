@@ -7,6 +7,60 @@ namespace AimTimers.Controls
 {
     public class ContextMenuButton : CustomButton
     {
+        private ContextMenuPage _contextMenuPage;
+
+        #region ItemsContainerWidth
+
+        public static readonly BindableProperty ItemsContainerWidthProperty = BindableProperty.Create(
+            nameof(ItemsContainerWidth),
+            typeof(double),
+            typeof(ContextMenuButton),
+            propertyChanged: OnItemsContainerWidthChanged);
+
+        private static void OnItemsContainerWidthChanged(BindableObject bindable, object oldValue, object newValue)
+        {
+            if (bindable is ContextMenuButton contextMenuButton && newValue is double newValueDouble &&
+                contextMenuButton._contextMenuPage != null)
+            {
+                contextMenuButton._contextMenuPage.ItemsContainerWidth= newValueDouble;
+            }
+        }
+
+        public double ItemsContainerWidth
+        {
+            get { return (double)GetValue(ItemsContainerWidthProperty); }
+            set { SetValue(ItemsContainerWidthProperty, value); }
+        }
+
+        #endregion
+
+        #region ItemsContainerHeight
+
+        public static readonly BindableProperty ItemsContainerHeightProperty = BindableProperty.Create(
+            nameof(ItemsContainerHeight),
+            typeof(double),
+            typeof(ContextMenuButton),
+            propertyChanged: OnItemsContainerHeightChanged);
+
+        private static void OnItemsContainerHeightChanged(BindableObject bindable, object oldValue, object newValue)
+        {
+            if (bindable is ContextMenuButton contextMenuButton && newValue is double newValueDouble &&
+                contextMenuButton._contextMenuPage != null)
+            {
+                contextMenuButton._contextMenuPage.ItemsContainerHeight = newValueDouble;
+            }
+        }
+
+        public double ItemsContainerHeight
+        {
+            get { return (double)GetValue(ItemsContainerHeightProperty); }
+            set { SetValue(ItemsContainerHeightProperty, value); }
+        }
+
+        #endregion
+
+        #region Items
+
         private IEnumerable<ContextMenuItem> _items;
         public IEnumerable<ContextMenuItem> Items
         {
@@ -18,6 +72,8 @@ namespace AimTimers.Controls
             }
         }
 
+        #endregion
+
         public ContextMenuButton()
             : base()
         {
@@ -26,14 +82,23 @@ namespace AimTimers.Controls
             GestureRecognizers.Add(tapGestureRecognizer);
         }
 
-        private async void ShowContextMenu_Tapped(object sender, System.EventArgs e)
+        private void ShowContextMenu_Tapped(object sender, System.EventArgs e)
         {
-            //var item = Items.First();
-            //item.Command.Execute(item.CommandParameter);
+            _contextMenuPage = new ContextMenuPage(Items);
+            _contextMenuPage.ItemsContainerHeight = ItemsContainerHeight;
+            _contextMenuPage.ItemsContainerWidth = ItemsContainerWidth;
+            SetContextMenuPosition();
+            Navigation.PushPopupAsync(_contextMenuPage);
+        }
 
-            var coordinates = GetCoordinates?.Invoke();
-            var contextMenuPage = new ContextMenuPage(coordinates?.x ?? default, coordinates?.y ?? default, Items);
-            await Navigation.PushPopupAsync(contextMenuPage);
+        private void SetContextMenuPosition()
+        {
+            var coordinates = GetCoordinates.Invoke();
+            var leftOffset = (int)(Width / 2);
+            var topOffset = (int)(Height / 2);
+            var leftCenter = coordinates.x + leftOffset;
+            var topCenter = coordinates.y + topOffset;
+            _contextMenuPage.SetPosition(leftCenter, leftOffset, topCenter, topOffset);
         }
 
         public Func<(int x, int y)> GetCoordinates = null;
