@@ -15,7 +15,7 @@ namespace AimTimers.ViewModels
         private readonly IMessagingCenter _messagingCenter;
         private readonly IAimTimerService _aimTimerService;
 
-        private IAimTimer _aimTimer;
+        private IAimTimerItem _aimTimerItem;
 
         #region Properties
 
@@ -66,24 +66,25 @@ namespace AimTimers.ViewModels
 
         private async Task ExecuteAcceptCommand()
         {
-            if (_aimTimer.AimTimerModel.Title != Title || _aimTimer.AimTimerModel.Ticks != Time.Ticks)
+            if (_aimTimerItem.AimTimer.AimTimerModel.Title != Title || _aimTimerItem.AimTimerItemModel.Ticks != Time.Ticks)
             {
-                _aimTimer.AimTimerModel.Title = Title;
-                _aimTimer.AimTimerModel.Ticks = Time.Ticks;
-                _aimTimerService.AddAimTimer(_aimTimer.AimTimerModel);
-                _messagingCenter.Send(_aimTimer, MessagingCenterMessages.AimTimerUpdated);
+                _aimTimerItem.AimTimer.AimTimerModel.Title = Title;
+                _aimTimerItem.AimTimerItemModel.Ticks = Time.Ticks;
+                _aimTimerItem.AimTimer.AimTimerModel.Ticks = Time.Ticks;
+                _aimTimerService.AddAimTimer(_aimTimerItem);
+                _messagingCenter.Send(_aimTimerItem, MessagingCenterMessages.AimTimerUpdated);
             }
             await _navigation.PopPopupAsync();
         }
 
         #endregion
 
-        public void Setup(IAimTimer aimTimer)
+        public void Setup(IAimTimerItem aimTimerItem)
         {
-            _aimTimer = aimTimer;
+            _aimTimerItem = aimTimerItem;
 
-            Title = aimTimer.AimTimerModel.Title;
-            Time = new TimeSpan(aimTimer.AimTimerModel.Ticks ?? 0);
+            Title = _aimTimerItem.AimTimer.AimTimerModel.Title;
+            Time = new TimeSpan(_aimTimerItem.AimTimer.AimTimerModel.Ticks ?? 0);
         }
     }
 }

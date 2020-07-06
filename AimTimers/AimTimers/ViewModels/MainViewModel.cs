@@ -38,8 +38,8 @@ namespace AimTimers.ViewModels
 
         public void Init()
         {
+            _aimTimersViewModel.Init();
             ItemsTab = new DataTemplate(() => { return _viewFactory.CreatePage(_aimTimersViewModel); });
-            //ArchiveItemsTab = new DataTemplate(() => { return new AboutPage(); });
         }
     }
 }

@@ -6,6 +6,6 @@ namespace AimTimers.Services
 {
     public class AimTimersEventArgs : EventArgs
     {
-        public IEnumerable<IAimTimer> AimTimers { get; set; }
+        public IEnumerable<IAimTimerItem> AimTimerItems { get; set; }
     }
 }

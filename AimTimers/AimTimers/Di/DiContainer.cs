@@ -1,5 +1,6 @@
 ﻿using System;
 using AimTimers.Bl;
+using AimTimers.Hotfixes;
 using AimTimers.Models;
 using AimTimers.Repository;
 using AimTimers.Services;
@@ -25,9 +26,20 @@ namespace AimTimers.Di
             unityContainer.RegisterType<INavigation, NavigationAdapter>();
             unityContainer.RegisterType<IAlertManager, AlertManager>();
             unityContainer.RegisterInstance(MessagingCenter.Instance);
-            unityContainer.RegisterSingleton<IRepository, BaseRepository>();
+            unityContainer.RegisterSingleton<IRepository, AimTimerRepository>();
+            unityContainer.RegisterSingleton<IRepository, HotfixRepository>("Hotfix");
             unityContainer.RegisterSingleton<IAimTimerService, AimTimerService>();
             unityContainer.RegisterType<IAimTimerNotificationService, AimTimerNotificationService>();
+
+            unityContainer.RegisterFactory<IHotfixService>(container =>
+              {
+                  var result = new HotfixService(
+                      container.Resolve<IRepository>("Hotfix"),
+                      container.Resolve<IRepository>()
+                  );
+                  result.Init();
+                  return result;
+              });
 
             unityContainer.RegisterFactory<Func<AimTimerModel, IAimTimer>>(
                 container => new Func<AimTimerModel, IAimTimer>(
@@ -48,28 +60,30 @@ namespace AimTimers.Di
             unityContainer.RegisterFactory<Application>(container =>
             {
                 var result = new App(
+                    container.Resolve<IHotfixService>(),
                     container.Resolve<IViewFactory>(),
                     container.Resolve<IMainViewModel>()
-                );
+                ); ;
                 result.Init();
                 return result;
             });
             
             unityContainer.RegisterType<IAimTimerListItemViewModelFactory, AimTimerListItemViewModelFactory>();
-            unityContainer.RegisterFactory<IAimTimersViewModel>(c =>
+            unityContainer.RegisterFactory<IAimTimersViewModel>(container =>
             {
                 var result = new AimTimersViewModel(
-                    c.Resolve<IDateTimeProvider>(),
-                    c.Resolve<IAimTimerNotificationService>(),
-                    c.Resolve<INavigation>(),
-                    c.Resolve<IAlertManager>(),
-                    c.Resolve<IMessagingCenter>(),
-                    c.Resolve<IViewFactory>(),
-                    c.Resolve<IAimTimerService>(),
-                    c.Resolve<IAimTimerListItemViewModelFactory>(),
-                    c.Resolve<IAimTimerViewModelFactory>(),
-                    c.Resolve<Func<AimTimerModel, IAimTimer>>());
-                result.Init();
+                    container.Resolve<IDateTimeProvider>(),
+                    container.Resolve<IAimTimerNotificationService>(),
+                    container.Resolve<INavigation>(),
+                    container.Resolve<IAlertManager>(),
+                    container.Resolve<IMessagingCenter>(),
+                    container.Resolve<IViewFactory>(),
+                    container.Resolve<IAimTimerService>(),
+                    container.Resolve<IAimTimerListItemViewModelFactory>(),
+                    container.Resolve<IAimTimerViewModelFactory>(),
+                    container.Resolve<Func<AimTimerModel, IAimTimer>>(),
+                    container.Resolve<Func<IAimTimer, AimTimerItemModel, IAimTimerItem>>());
+                //result.Init();
                 return result;
             });
             unityContainer.RegisterType<IAimTimerViewModelFactory, AimTimerViewModelFactory>();
@@ -92,13 +106,13 @@ namespace AimTimers.Di
                 )
             );
 
-            unityContainer.RegisterFactory<IMainViewModel>(c =>
+            unityContainer.RegisterFactory<IMainViewModel>(containter =>
             {
                 var result = new MainViewModel(
-                    c.Resolve<IViewFactory>(),
-                    c.Resolve<IAimTimersViewModel>()
+                    containter.Resolve<IViewFactory>(),
+                    containter.Resolve<IAimTimersViewModel>()
                 );
-                result.Init();
+                //result.Init();
                 return result;
             });
 

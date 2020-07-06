@@ -4,6 +4,6 @@ namespace AimTimers.ViewModels
 {
     public interface IAimTimerViewModel
     {
-        void Setup(IAimTimer aimTimer);
+        void Setup(IAimTimerItem aimTimerItem);
     }
 }

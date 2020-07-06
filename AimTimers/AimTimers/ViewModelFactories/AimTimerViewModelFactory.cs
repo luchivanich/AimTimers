@@ -21,13 +21,13 @@ namespace AimTimers.ViewModelFactories
             _aimTimerService = aimTimerService;
         }
 
-        public IAimTimerViewModel Create(IAimTimer aimTimer)
+        public IAimTimerViewModel Create(IAimTimerItem aimTimerItem)
         {
             var result = new AimTimerViewModel(
                 _navigation,
                 _messagingCenter,
                 _aimTimerService);
-            result.Setup(aimTimer);
+            result.Setup(aimTimerItem);
             return result;
         }
     }

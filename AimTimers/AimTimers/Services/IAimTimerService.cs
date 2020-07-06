@@ -6,9 +6,8 @@ namespace AimTimers.Services
 {
     public interface IAimTimerService
     {
-        void AddAimTimer(AimTimerModel aimTimer);
-        IEnumerable<AimTimerModel> GetActiveAimTimers();
-
+        void AddAimTimer(IAimTimerItem aimTimerItem);
+        IEnumerable<IAimTimerItem> GetActiveAimTimers();
         void DeleteAimTimer(string aimTimerId);
     }
 }

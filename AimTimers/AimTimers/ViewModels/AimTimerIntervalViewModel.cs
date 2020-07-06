@@ -88,7 +88,7 @@ namespace AimTimers.ViewModels
                 _aimTimerInterval.AimTimerIntervalModel.StartDate = new DateTime(now.Year, now.Month, now.Day, StartTime.Hours, StartTime.Minutes, StartTime.Seconds);
                 _aimTimerInterval.AimTimerIntervalModel.EndDate = new DateTime(now.Year, now.Month, now.Day, EndTime.Hours, EndTime.Minutes, EndTime.Seconds);
 
-                _aimTimerService.AddAimTimer(_aimTimerInterval.AimTimerItem.AimTimer.AimTimerModel);
+                _aimTimerService.AddAimTimer(_aimTimerInterval.AimTimerItem);
                 _messagingCenter.Send(_aimTimerInterval, MessagingCenterMessages.AimTimerIntervalUpdated);
             }
 

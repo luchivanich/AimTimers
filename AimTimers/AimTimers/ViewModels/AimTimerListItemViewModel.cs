@@ -27,16 +27,16 @@ namespace AimTimers.ViewModels
         private readonly Func<IAimTimerItem, AimTimerIntervalModel, IAimTimerInterval> _aimTimerIntervalFactory;
         private readonly Func<IAimTimerInterval, IAimTimerIntervalViewModel> _aimTimerIntervalViewModelFactory;
 
-        private IAimTimer _aimTimer;
+        //private IAimTimer _aimTimer;
         private IAimTimerItem _aimTimerItem;
 
-        public string Title => _aimTimer.AimTimerModel.Title;
+        public string Title => _aimTimerItem.AimTimer.AimTimerModel.Title;
 
-        public AimTimerStatusFlags Status => _aimTimer.GetAimTimerStatusFlags();
+        public AimTimerStatusFlags Status => _aimTimerItem.GetAimTimerStatusFlags();
 
-        public TimeSpan Time => new TimeSpan(_aimTimer.AimTimerModel.Ticks ?? default);
+        public TimeSpan Time => new TimeSpan(_aimTimerItem.AimTimerItemModel.Ticks ?? default);
 
-        public TimeSpan TimeLeft => _aimTimer.TimeLeft;
+        public TimeSpan TimeLeft => _aimTimerItem.GetTimeLeft();
 
         public TimeSpan TimePassed => Time - new TimeSpan(TimeLeft.Hours, TimeLeft.Minutes, TimeLeft.Seconds);
 
@@ -70,13 +70,13 @@ namespace AimTimers.ViewModels
         {
             if ((Status & AimTimerStatusFlags.Running) == AimTimerStatusFlags.Running)
             {
-                _aimTimer.Stop();
+                _aimTimerItem.Stop();
             }
             else
             {
-                _aimTimer.Start();
+                _aimTimerItem.Start();
             }
-            _aimTimerService.AddAimTimer(_aimTimer.AimTimerModel);
+            _aimTimerService.AddAimTimer(_aimTimerItem);
             LoadIntervals();
             OnPropertyChanged(new PropertyChangedEventArgs(nameof(Status)));
             OnPropertyChanged(new PropertyChangedEventArgs(nameof(IsExpandable)));
@@ -145,7 +145,7 @@ namespace AimTimers.ViewModels
             {
                 _aimTimerItem.AimTimerItemModel.AimTimerIntervals.Remove(aimTimerIntervalListItemViewModel.AimTimerInterval.AimTimerIntervalModel);
                 Remove(aimTimerIntervalListItemViewModel);
-                _aimTimerService.AddAimTimer(_aimTimer.AimTimerModel);
+                _aimTimerService.AddAimTimer(_aimTimerItem);
                 Refresh();
                 OnPropertyChanged(new PropertyChangedEventArgs(nameof(IsExpandable)));
                 if (!IsExpandable)
@@ -192,21 +192,20 @@ namespace AimTimers.ViewModels
             _aimTimerIntervalFactory = aimTimerIntervalFactory;
         }
 
-        public void Setup(IAimTimer aimTimer)
+        public void Setup(IAimTimerItem aimTimerItem)
         {
-            _aimTimer = aimTimer;
-            _aimTimerItem = _aimTimer.GetCurrentAimTimerItem();
+            _aimTimerItem = aimTimerItem;
             _messagingCenter.Subscribe<IAimTimerInterval>(this, MessagingCenterMessages.AimTimerIntervalUpdated, OnIntervalUpdated);
         }
 
-        public IAimTimer GetAimTimer()
+        public IAimTimerItem GetAimTimerItem()
         {
-            return _aimTimer;
+            return _aimTimerItem;
         }
 
         public void RefreshTimeLeft()
         {
-            _aimTimer.RefreshTimeLeft();
+            //_aimTimer.RefreshTimeLeft();
             OnPropertyChanged(new PropertyChangedEventArgs(nameof(TimeLeft)));
             OnPropertyChanged(new PropertyChangedEventArgs(nameof(TimePassed)));
             OnPropertyChanged(new PropertyChangedEventArgs(nameof(Status)));

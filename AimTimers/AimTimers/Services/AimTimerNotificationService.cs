@@ -21,7 +21,7 @@ namespace AimTimers.Services
             remove => _statusChangedEventManager.RemoveEventHandler(value);
         }
 
-        private List<IAimTimer> _aimTimers = new List<IAimTimer>();
+        private List<IAimTimerItem> _aimTimerItems = new List<IAimTimerItem>();
 
         public AimTimerNotificationService(ITimer timer)
         {
@@ -30,7 +30,7 @@ namespace AimTimers.Services
 
         public void Start()
         {
-            _timer.Interval = 100;
+            _timer.Interval = 1000;
             _timer.Elapsed += OnTimedEvent;
             _timer.Enabled = true;
             _timer.Start();
@@ -43,11 +43,11 @@ namespace AimTimers.Services
             _timer.Stop();
         }
 
-        public void SetItemsToFollow(IEnumerable<IAimTimer> aimTimers)
+        public void SetItemsToFollow(IEnumerable<IAimTimerItem> aimTimerItems)
         {
             lock (_lock)
             {
-                _aimTimers = aimTimers.ToList();
+                _aimTimerItems = aimTimerItems.ToList();
             }
         }
 
@@ -55,20 +55,20 @@ namespace AimTimers.Services
         {
             lock (_lock)
             {
-                if (_aimTimers == null || _aimTimers.Count() == 0)
+                if (_aimTimerItems == null || _aimTimerItems.Count() == 0)
                 {
                     return;
                 }
 
-                _statusChangedEventManager.HandleEvent(this, new AimTimersEventArgs { AimTimers = _aimTimers }, nameof(OnStatusChanged));
+                _statusChangedEventManager.HandleEvent(this, new AimTimersEventArgs { AimTimerItems = _aimTimerItems }, nameof(OnStatusChanged));
             }
         }
 
-        public void Remove(IAimTimer aimTimer)
+        public void Remove(IAimTimerItem aimTimerItem)
         {
             lock (_lock)
             {
-                _aimTimers.Remove(aimTimer);
+                _aimTimerItems.Remove(aimTimerItem);
             }
         }
     }

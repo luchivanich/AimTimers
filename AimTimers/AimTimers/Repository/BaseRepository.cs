@@ -8,8 +8,11 @@ using Newtonsoft.Json;
 
 namespace AimTimers.Repository
 {
-    public class BaseRepository : IDisposable, IRepository
+    public abstract class BaseRepository : IDisposable, IRepository
     {
+        private const string TYPE_PROPERTY = "type";
+        protected abstract string GetRepositoryName();
+
         DatabaseConfiguration _databaseConfig;
         protected DatabaseConfiguration DatabaseConfig
         {
@@ -19,7 +22,7 @@ namespace AimTimers.Repository
                 {
                     _databaseConfig = new DatabaseConfiguration
                     {
-                        Directory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AimTimer")
+                        Directory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), GetRepositoryName())
                     };
                 }
 
@@ -35,7 +38,7 @@ namespace AimTimers.Repository
             {
                 if (_database == null)
                 {
-                    _database = new Database("AimTimer", DatabaseConfig);
+                    _database = new Database(GetRepositoryName(), DatabaseConfig);
                 }
 
                 return _database;
@@ -56,6 +59,7 @@ namespace AimTimers.Repository
             {
                 using (var modelAsDocument = model.ToMutableDocument(id))
                 {
+                    modelAsDocument.SetString(TYPE_PROPERTY, typeof(T).Name);
                     Database.Save(modelAsDocument);
                 }
             }
@@ -65,10 +69,18 @@ namespace AimTimers.Repository
             }
         }
 
+        public void Save<T>(T model) where T : IModel
+        {
+            Save(model, model.Id);
+        }
+
         public List<T> LoadAll<T>() where T: IModel
         {
             var result = new List<T>();
-            using (var query = QueryBuilder.Select(SelectResult.All(), SelectResult.Expression(Meta.ID)).From(DataSource.Database(Database)))
+            using (var query = QueryBuilder
+                .Select(SelectResult.All(), SelectResult.Expression(Meta.ID))
+                .From(DataSource.Database(Database))
+                .Where(Expression.Property(TYPE_PROPERTY).EqualTo(Expression.String(typeof(T).Name))))
             {
                 foreach (var item in query.Execute())
                 {

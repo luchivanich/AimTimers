@@ -43,7 +43,7 @@ namespace AimTimers.ViewModelFactories
             _aimTimerIntervalViewModelFactory = aimTimerIntervalViewModelFactory;
         }
 
-        public IAimTimerListItemViewModel Create(IAimTimer aimTimer)
+        public IAimTimerListItemViewModel Create(IAimTimerItem aimTimerItem)
         {
             var result = new AimTimerListItemViewModel(
                 _dateTimeProvider,
@@ -55,7 +55,7 @@ namespace AimTimers.ViewModelFactories
                 _aimTimerIntervalListItemViewModelFactory,
                 _aimTimerIntervalFactory,
                 _aimTimerIntervalViewModelFactory);
-            result.Setup(aimTimer);
+            result.Setup(aimTimerItem);
             return result;
         }
     }

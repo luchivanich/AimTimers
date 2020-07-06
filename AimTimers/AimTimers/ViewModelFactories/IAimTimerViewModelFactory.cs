@@ -5,6 +5,6 @@ namespace AimTimers.ViewModelFactories
 {
     public interface IAimTimerViewModelFactory
     {
-        IAimTimerViewModel Create(IAimTimer aimTimer);
+        IAimTimerViewModel Create(IAimTimerItem aimTimerItem);
     }
 }

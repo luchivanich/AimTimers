@@ -8,9 +8,9 @@ namespace AimTimers.Services
     {
         event EventHandler<AimTimersEventArgs> OnStatusChanged;
 
-        void SetItemsToFollow(IEnumerable<IAimTimer> aimTimers);
+        void SetItemsToFollow(IEnumerable<IAimTimerItem> aimTimerItems);
         void Start();
         void Stop();
-        void Remove(IAimTimer aimTimer);
+        void Remove(IAimTimerItem aimTimerItem);
     }
 }

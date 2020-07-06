@@ -2,5 +2,6 @@
 {
     public interface IMainViewModel
     {
+        void Init();
     }
 }
