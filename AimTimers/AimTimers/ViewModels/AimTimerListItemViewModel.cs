@@ -24,23 +24,23 @@ namespace AimTimers.ViewModels
         private readonly IAimTimerService _aimTimerService;
         private readonly IViewFactory _viewFactory;
         private readonly IAimTimerIntervalListItemViewModelFactory _aimTimerIntervalListItemViewModelFactory;
-        private readonly Func<IAimTimerItem, AimTimerIntervalModel, IAimTimerInterval> _aimTimerIntervalFactory;
-        private readonly Func<IAimTimerInterval, IAimTimerIntervalViewModel> _aimTimerIntervalViewModelFactory;
+        private readonly Func<DateTime, DateTime?, IAimTimerInterval> _aimTimerIntervalFactory;
+        private readonly Func<IAimTimerItem, IAimTimerInterval, IAimTimerIntervalViewModel> _aimTimerIntervalViewModelFactory;
 
         //private IAimTimer _aimTimer;
         private IAimTimerItem _aimTimerItem;
 
-        public string Title => _aimTimerItem.AimTimer.AimTimerModel.Title;
+        public string Title => _aimTimerItem.AimTimer.Title;
 
         public AimTimerStatusFlags Status => _aimTimerItem.GetAimTimerStatusFlags();
 
-        public TimeSpan Time => new TimeSpan(_aimTimerItem.AimTimerItemModel.Ticks ?? default);
+        public TimeSpan Time => new TimeSpan(_aimTimerItem.Ticks);
 
         public TimeSpan TimeLeft => _aimTimerItem.GetTimeLeft();
 
         public TimeSpan TimePassed => Time - new TimeSpan(TimeLeft.Hours, TimeLeft.Minutes, TimeLeft.Seconds);
 
-        public string EndOfActivityPeriod => _aimTimerItem.AimTimerItemModel.EndOfActivityPeriod.ToLongTimeString() ?? string.Empty;
+        public string EndOfActivityPeriod => _aimTimerItem.EndOfActivityPeriod.ToLongTimeString() ?? string.Empty;
 
         private bool _isExpanded;
         public bool IsExpanded
@@ -54,7 +54,7 @@ namespace AimTimers.ViewModels
             }
         }
 
-        public bool IsExpandable => _aimTimerItem.AimTimerItemModel.AimTimerIntervals.Count > 0;
+        public bool IsExpandable => _aimTimerItem.AimTimerIntervals.Count > 0;
 
         #region Commands
 
@@ -106,7 +106,7 @@ namespace AimTimers.ViewModels
 
         private async Task ExecuteEditIntervalCommand(IAimTimerIntervalListItemViewModel aimTimerIntervalListItemViewModel)
         {
-            var aimTimerIntervalViewModel = _aimTimerIntervalViewModelFactory.Invoke(aimTimerIntervalListItemViewModel.AimTimerInterval);
+            var aimTimerIntervalViewModel = _aimTimerIntervalViewModelFactory.Invoke(_aimTimerItem, aimTimerIntervalListItemViewModel.AimTimerInterval);
             var aimTimerIntervalView = _viewFactory.CreatePopupPage(aimTimerIntervalViewModel);
             await _navigation.PushPopupAsync(aimTimerIntervalView);
         }
@@ -121,11 +121,10 @@ namespace AimTimers.ViewModels
 
         private async Task ExecuteAddIntervalItemCommand()
         {
-            var intervalModel = new AimTimerIntervalModel { StartDate = _dateTimeProvider.GetNow(), EndDate = _dateTimeProvider.GetNow() };
-            var interval = _aimTimerIntervalFactory.Invoke(_aimTimerItem, intervalModel);
+            var interval = _aimTimerIntervalFactory.Invoke(_dateTimeProvider.GetNow(), _dateTimeProvider.GetNow());
             var aimTimerIntervalListItemViewModel = _aimTimerIntervalListItemViewModelFactory.Create(interval, this);
 
-            var aimTimerIntervalViewModel = _aimTimerIntervalViewModelFactory.Invoke(aimTimerIntervalListItemViewModel.AimTimerInterval);
+            var aimTimerIntervalViewModel = _aimTimerIntervalViewModelFactory.Invoke(_aimTimerItem, aimTimerIntervalListItemViewModel.AimTimerInterval);
             var aimTimerIntervalView = _viewFactory.CreatePopupPage(aimTimerIntervalViewModel);
             await _navigation.PushPopupAsync(aimTimerIntervalView);
         }
@@ -143,7 +142,7 @@ namespace AimTimers.ViewModels
         {
             if (await _alertManager.DisplayAlert("Warning!", "Would you like to remove the interval completely?", "Yes", "No"))
             {
-                _aimTimerItem.AimTimerItemModel.AimTimerIntervals.Remove(aimTimerIntervalListItemViewModel.AimTimerInterval.AimTimerIntervalModel);
+                _aimTimerItem.AimTimerIntervals.Remove(aimTimerIntervalListItemViewModel.AimTimerInterval);
                 Remove(aimTimerIntervalListItemViewModel);
                 _aimTimerService.AddAimTimer(_aimTimerItem);
                 Refresh();
@@ -178,8 +177,8 @@ namespace AimTimers.ViewModels
             IAimTimerService aimTimerService,
             IViewFactory viewFactory,
             IAimTimerIntervalListItemViewModelFactory aimTimerIntervalListItemViewModelFactory,
-            Func<IAimTimerItem, AimTimerIntervalModel, IAimTimerInterval> aimTimerIntervalFactory,
-            Func<IAimTimerInterval, IAimTimerIntervalViewModel> aimTimerIntervalViewModelFactory)
+            Func<DateTime, DateTime?, IAimTimerInterval> aimTimerIntervalFactory,
+            Func<IAimTimerItem, IAimTimerInterval, IAimTimerIntervalViewModel> aimTimerIntervalViewModelFactory)
         {
             _dateTimeProvider = dateTimeProvider;
             _alertManager = alertManager;
@@ -195,7 +194,7 @@ namespace AimTimers.ViewModels
         public void Setup(IAimTimerItem aimTimerItem)
         {
             _aimTimerItem = aimTimerItem;
-            _messagingCenter.Subscribe<IAimTimerInterval>(this, MessagingCenterMessages.AimTimerIntervalUpdated, OnIntervalUpdated);
+            _messagingCenter.Subscribe<IAimTimerItem, IAimTimerInterval>(this, MessagingCenterMessages.AimTimerIntervalUpdated, OnIntervalUpdated);
         }
 
         public IAimTimerItem GetAimTimerItem()
@@ -234,16 +233,15 @@ namespace AimTimers.ViewModels
                 return;
             }
 
-            foreach (var intervalModel in _aimTimerItem.AimTimerItemModel.AimTimerIntervals.OrderByDescending(i => i.StartDate))
+            foreach (var interval in _aimTimerItem.AimTimerIntervals.OrderByDescending(i => i.StartDate))
             {
-                var interval = _aimTimerIntervalFactory.Invoke(_aimTimerItem, intervalModel);
                 Add(_aimTimerIntervalListItemViewModelFactory.Create(interval, this));
             }
         }
 
-        private void OnIntervalUpdated(IAimTimerInterval aimTimerInterval)
+        private void OnIntervalUpdated(IAimTimerItem aimTimerItem, IAimTimerInterval aimTimerInterval)
         {
-            if (aimTimerInterval.AimTimerItem != _aimTimerItem)
+            if (aimTimerItem != _aimTimerItem)
             {
                 return;
             }

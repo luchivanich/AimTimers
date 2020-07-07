@@ -9,8 +9,8 @@ namespace AimTimers.ViewModels
 
         public IAimTimerListItemViewModel Parent { get; set; }
 
-        public DateTime StartDate => AimTimerInterval.AimTimerIntervalModel.StartDate;
-        public DateTime? EndDate => AimTimerInterval.AimTimerIntervalModel.EndDate;
+        public DateTime StartDate => AimTimerInterval.StartDate;
+        public DateTime? EndDate => AimTimerInterval.EndDate;
 
         public string StartDateString => StartDate.ToLongTimeString();
 

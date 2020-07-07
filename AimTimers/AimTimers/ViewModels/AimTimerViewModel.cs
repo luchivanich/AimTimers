@@ -66,11 +66,11 @@ namespace AimTimers.ViewModels
 
         private async Task ExecuteAcceptCommand()
         {
-            if (_aimTimerItem.AimTimer.AimTimerModel.Title != Title || _aimTimerItem.AimTimerItemModel.Ticks != Time.Ticks)
+            if (_aimTimerItem.AimTimer.Title != Title || _aimTimerItem.Ticks != Time.Ticks)
             {
-                _aimTimerItem.AimTimer.AimTimerModel.Title = Title;
-                _aimTimerItem.AimTimerItemModel.Ticks = Time.Ticks;
-                _aimTimerItem.AimTimer.AimTimerModel.Ticks = Time.Ticks;
+                _aimTimerItem.AimTimer.Title = Title;
+                _aimTimerItem.Ticks = Time.Ticks;
+                _aimTimerItem.AimTimer.Ticks = Time.Ticks;
                 _aimTimerService.AddAimTimer(_aimTimerItem);
                 _messagingCenter.Send(_aimTimerItem, MessagingCenterMessages.AimTimerUpdated);
             }
@@ -83,8 +83,8 @@ namespace AimTimers.ViewModels
         {
             _aimTimerItem = aimTimerItem;
 
-            Title = _aimTimerItem.AimTimer.AimTimerModel.Title;
-            Time = new TimeSpan(_aimTimerItem.AimTimer.AimTimerModel.Ticks ?? 0);
+            Title = _aimTimerItem.AimTimer.Title;
+            Time = new TimeSpan(_aimTimerItem.AimTimer.Ticks);
         }
     }
 }

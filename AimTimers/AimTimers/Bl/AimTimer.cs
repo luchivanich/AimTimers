@@ -1,52 +1,39 @@
 ﻿using System;
-using System.Linq;
 using AimTimers.Models;
-using AimTimers.Utils;
 
 namespace AimTimers.Bl
 {
     public class AimTimer : IAimTimer
     {
-        private readonly IDateTimeProvider _dateTimeProvider;
+        private AimTimerModel _aimTimerModel;
 
-        public AimTimerModel AimTimerModel { get; }
+        public string Title { get; set; }
 
-        public AimTimer(AimTimerModel aimTimerModel, IDateTimeProvider dateTimeProvider)
+        public long Ticks { get; set; }
+
+        public DateTime OriginDate { get; set; }
+
+        public AimTimer(AimTimerModel aimTimerModel)
         {
-            _dateTimeProvider = dateTimeProvider;
-            AimTimerModel = aimTimerModel;
+            _aimTimerModel = aimTimerModel;
         }
 
-        public TimeSpan TimeLeft { get; private set; }
-
-        public void RefreshTimeLeft()
+        public void Init()
         {
-            var now = _dateTimeProvider.GetNow();
-            var aimTimerItem = GetCurrentAimTimerItem();
-            aimTimerItem.Refresh();
-            TimeLeft = new TimeSpan(AimTimerModel.Ticks ?? 0) - new TimeSpan(aimTimerItem.AimTimerItemModel.AimTimerIntervals?.Sum(i => (i.EndDate ?? now).Ticks - i.StartDate.Ticks) ?? 0);
+            Title = _aimTimerModel.Title;
+            Ticks = _aimTimerModel.Ticks;
+            OriginDate = _aimTimerModel.OriginDate;
         }
 
-        public IAimTimerItem GetCurrentAimTimerItem()
+        public AimTimerModel GetAimTimerModel()
         {
-            var now = _dateTimeProvider.GetNow();
-            var aimTimerItemModel = AimTimerModel.AimTimerItemModels.FirstOrDefault(i => i.StartOfActivityPeriod <= now && i.EndOfActivityPeriod >= now);
-            if (aimTimerItemModel == null)
+            return new AimTimerModel
             {
-                aimTimerItemModel = AddAimTimerItem(now);
-            }
-            return new AimTimerItem(this, aimTimerItemModel, _dateTimeProvider);
-        }
-
-        private AimTimerItemModel AddAimTimerItem(DateTime date)
-        {
-            var aimTimerItem = new AimTimerItemModel
-            {
-                AimTimerId = AimTimerModel.Id,
-                StartOfActivityPeriod = date.Date,
-                EndOfActivityPeriod = date.Date.AddDays(1).AddTicks(-1)
+                Id = _aimTimerModel.Id,
+                Title = Title,
+                Ticks = Ticks,
+                OriginDate = OriginDate,
             };
-            return aimTimerItem;
         }
     }
 }

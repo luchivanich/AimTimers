@@ -1,11 +1,13 @@
 ﻿using System;
 using AimTimers.Models;
-using AimTimers.Utils;
 
 namespace AimTimers.Bl
 {
     public interface IAimTimer
     {
-        AimTimerModel AimTimerModel { get; }
+        string Title { get; set; }
+        long Ticks { get; set; }
+        DateTime OriginDate { get; set; }
+        AimTimerModel GetAimTimerModel();
     }
 }

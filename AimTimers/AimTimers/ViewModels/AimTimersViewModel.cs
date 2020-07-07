@@ -79,7 +79,7 @@ namespace AimTimers.ViewModels
         {
             if (await _alertManager.DisplayAlert("Warning!", "Would you like to remove the timer completely?", "Yes", "No"))
             {
-                _aimTimerService.DeleteAimTimer(aimTimerListItemViewModel.GetAimTimerItem()?.AimTimerItemModel.AimTimerId);
+                _aimTimerService.DeleteAimTimer(aimTimerListItemViewModel.GetAimTimerItem().AimTimer);
                 AimTimerListItemViewModels.Remove(aimTimerListItemViewModel);
             }
         }

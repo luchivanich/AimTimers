@@ -16,6 +16,7 @@ namespace AimTimers.ViewModels
         private readonly IMessagingCenter _messagingCenter;
         private readonly IAimTimerService _aimTimerService;
 
+        private IAimTimerItem _aimTimerItem;
         private IAimTimerInterval _aimTimerInterval;
 
         private TimeSpan _startTime;
@@ -64,11 +65,12 @@ namespace AimTimers.ViewModels
             _aimTimerService = aimTimerService;
         }
 
-        internal void Setup(IAimTimerInterval aimTimerInterval)
+        internal void Setup(IAimTimerItem aimTimerItem, IAimTimerInterval aimTimerInterval)
         {
+            _aimTimerItem = aimTimerItem;
             _aimTimerInterval = aimTimerInterval;
-            EndTime = _aimTimerInterval.AimTimerIntervalModel.EndDate?.TimeOfDay ?? default;
-            StartTime = _aimTimerInterval.AimTimerIntervalModel.StartDate.TimeOfDay;
+            EndTime = _aimTimerInterval.EndDate?.TimeOfDay ?? default;
+            StartTime = _aimTimerInterval.StartDate.TimeOfDay;
         }
 
         public ICommand AcceptCommand
@@ -81,15 +83,20 @@ namespace AimTimers.ViewModels
 
         private async Task ExecuteAcceptCommand()
         {
-            if (_aimTimerInterval.AimTimerIntervalModel.StartDate.TimeOfDay != StartTime ||
-                (_aimTimerInterval.AimTimerIntervalModel.EndDate?.TimeOfDay ?? default) != EndTime)
+            if (_aimTimerInterval.StartDate.TimeOfDay != StartTime ||
+                (_aimTimerInterval.EndDate?.TimeOfDay ?? default) != EndTime)
             {
-                var now = _dateTimeProvider.GetNow();
-                _aimTimerInterval.AimTimerIntervalModel.StartDate = new DateTime(now.Year, now.Month, now.Day, StartTime.Hours, StartTime.Minutes, StartTime.Seconds);
-                _aimTimerInterval.AimTimerIntervalModel.EndDate = new DateTime(now.Year, now.Month, now.Day, EndTime.Hours, EndTime.Minutes, EndTime.Seconds);
+                if (!_aimTimerItem.AimTimerIntervals.Contains(_aimTimerInterval))
+                {
+                    _aimTimerItem.AimTimerIntervals.Add(_aimTimerInterval);
+                }
 
-                _aimTimerService.AddAimTimer(_aimTimerInterval.AimTimerItem);
-                _messagingCenter.Send(_aimTimerInterval, MessagingCenterMessages.AimTimerIntervalUpdated);
+                var now = _dateTimeProvider.GetNow();
+                _aimTimerInterval.StartDate = new DateTime(now.Year, now.Month, now.Day, StartTime.Hours, StartTime.Minutes, StartTime.Seconds);
+                _aimTimerInterval.EndDate = new DateTime(now.Year, now.Month, now.Day, EndTime.Hours, EndTime.Minutes, EndTime.Seconds);
+
+                _aimTimerService.AddAimTimer(_aimTimerItem);
+                _messagingCenter.Send(_aimTimerItem, MessagingCenterMessages.AimTimerIntervalUpdated, _aimTimerInterval);
             }
 
             await _navigation.PopPopupAsync();

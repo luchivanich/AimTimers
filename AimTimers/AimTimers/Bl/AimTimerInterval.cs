@@ -1,21 +1,20 @@
-﻿using System.Linq;
+﻿using System;
 using AimTimers.Models;
 
 namespace AimTimers.Bl
 {
     public class AimTimerInterval : IAimTimerInterval
     {
-        public AimTimerIntervalModel AimTimerIntervalModel { get; }
-        public IAimTimerItem AimTimerItem { get; }
+        public DateTime StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
 
-        public AimTimerInterval(IAimTimerItem aimTimerItem,  AimTimerIntervalModel aimTimerIntervalModel)
+        public AimTimerIntervalModel GetAimTimerIntervalModel()
         {
-            AimTimerItem = aimTimerItem;
-            AimTimerIntervalModel = aimTimerIntervalModel;
-            if (aimTimerItem.AimTimerItemModel.AimTimerIntervals.All(i => i.Id != aimTimerIntervalModel.Id))
+            return new AimTimerIntervalModel
             {
-                aimTimerItem.AimTimerItemModel.AimTimerIntervals.Add(aimTimerIntervalModel);
-            }
+                StartDate = StartDate,
+                EndDate = EndDate
+            };
         }
     }
 }

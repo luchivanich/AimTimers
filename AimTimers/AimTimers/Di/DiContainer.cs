@@ -43,17 +43,31 @@ namespace AimTimers.Di
 
             unityContainer.RegisterFactory<Func<AimTimerModel, IAimTimer>>(
                 container => new Func<AimTimerModel, IAimTimer>(
-                    aimTimerModel => new AimTimer(aimTimerModel, container.Resolve<IDateTimeProvider>())
+                    aimTimerModel =>
+                    {
+                        var result = new AimTimer(aimTimerModel);
+                        result.Init();
+                        return result;
+                    }
                 )
             );
             unityContainer.RegisterFactory<Func<IAimTimer, AimTimerItemModel, IAimTimerItem>>(
                 container => new Func<IAimTimer, AimTimerItemModel, IAimTimerItem>(
-                    (aimTimer, aimTimerItemModel) => new AimTimerItem(aimTimer, aimTimerItemModel, container.Resolve<IDateTimeProvider>())
+                    (aimTimer, aimTimerItemModel) =>
+                    {
+                        var result = new AimTimerItem(
+                            aimTimer, 
+                            aimTimerItemModel, 
+                            container.Resolve<IDateTimeProvider>(),
+                            container.Resolve<Func<DateTime, DateTime?, IAimTimerInterval>>());
+                        result.Init();
+                        return result;
+                    }
                 )
             );
-            unityContainer.RegisterFactory<Func<IAimTimerItem, AimTimerIntervalModel, IAimTimerInterval>>(
-                container => new Func<IAimTimerItem, AimTimerIntervalModel, IAimTimerInterval>(
-                    (aimTimerItem, aimTimerIntervalModel) => new AimTimerInterval(aimTimerItem, aimTimerIntervalModel)
+            unityContainer.RegisterFactory<Func<DateTime, DateTime?, IAimTimerInterval>>(
+                container => new Func<DateTime, DateTime?, IAimTimerInterval>(
+                    (startDate, endDate) => new AimTimerInterval { StartDate = startDate, EndDate = endDate }
                 )
             );
 
@@ -91,16 +105,17 @@ namespace AimTimers.Di
             unityContainer.RegisterType<IAimTimerIntervalListItemViewModelFactory, AimTimerIntervalListItemViewModelFactory>();
 
             unityContainer.RegisterType<IAimTimerIntervalViewModel, AimTimerIntervalViewModel>();
-            unityContainer.RegisterFactory<Func<IAimTimerInterval, IAimTimerIntervalViewModel>>(
-                container => new Func<IAimTimerInterval, IAimTimerIntervalViewModel>(
-                    aimTimerInterval =>
+            
+            unityContainer.RegisterFactory<Func<IAimTimerItem, IAimTimerInterval, IAimTimerIntervalViewModel>>(
+                container => new Func<IAimTimerItem, IAimTimerInterval, IAimTimerIntervalViewModel>(
+                    (aimTimerItem, aimTimerInterval) =>
                     {
                         var result = new AimTimerIntervalViewModel(
                             container.Resolve<IDateTimeProvider>(),
                             container.Resolve<INavigation>(),
                             container.Resolve<IMessagingCenter>(),
                             container.Resolve<IAimTimerService>());
-                        result.Setup(aimTimerInterval);
+                        result.Setup(aimTimerItem, aimTimerInterval);
                         return result;
                     }
                 )

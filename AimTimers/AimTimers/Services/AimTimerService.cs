@@ -58,14 +58,22 @@ namespace AimTimers.Services
 
         public void AddAimTimer(IAimTimerItem aimTimerItem)
         {
-            _repository.Save(aimTimerItem.AimTimerModel, aimTimerItem.AimTimerModel.Id);
-            aimTimerItem.AimTimerItemModel.AimTimerId = aimTimerItem.AimTimerModel.Id;
-            _repository.Save(aimTimerItem.AimTimerItemModel, aimTimerItem.AimTimerItemModel.Id);
+            var aimTimerModel = aimTimerItem.AimTimer.GetAimTimerModel();
+            var aimTimerItemModel = aimTimerItem.GetAimTimerItemModel();
+            _repository.Save(aimTimerModel, aimTimerModel.Id);
+            aimTimerItemModel.AimTimerId = aimTimerModel.Id;
+            _repository.Save(aimTimerItemModel, aimTimerItemModel.Id);
         }
 
-        public void DeleteAimTimer(string aimTimerId)
+        public void DeleteAimTimer(IAimTimer aimTimer)
         {
-            _repository.Delete(aimTimerId);
+            var aimTimerModel = aimTimer.GetAimTimerModel();
+            var aimTimerItemModels = _repository.LoadAll<AimTimerItemModel>().Where(i => i.AimTimerId == aimTimerModel.Id).ToList();
+            foreach(var aimTimerItemModel in aimTimerItemModels)
+            {
+                _repository.Delete(aimTimerItemModel.Id);
+            }
+            _repository.Delete(aimTimerModel.Id);
         }
 
         public IEnumerable<IAimTimerItem> GetAimTimerItems(DateTime date)
