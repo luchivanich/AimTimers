@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using AimTimers.Bl;
-using AimTimers.Models;
 using AimTimers.Services;
 using AimTimers.Utils;
 using AimTimers.ViewModelFactories;

@@ -41,11 +41,36 @@ namespace AimTimers.Di
                   return result;
               });
 
+            unityContainer.RegisterFactory<Func<IAimTimer>>(
+                container => new Func<IAimTimer>(
+                    () =>
+                    {
+                        var result = new AimTimer(new AimTimerModel());
+                        result.Init();
+                        return result;
+                    }
+                )
+            );
             unityContainer.RegisterFactory<Func<AimTimerModel, IAimTimer>>(
                 container => new Func<AimTimerModel, IAimTimer>(
                     aimTimerModel =>
                     {
                         var result = new AimTimer(aimTimerModel);
+                        result.Init();
+                        return result;
+                    }
+                )
+            );
+
+            unityContainer.RegisterFactory<Func<IAimTimer, IAimTimerItem>>(
+                container => new Func<IAimTimer, IAimTimerItem>(
+                    (aimTimer) =>
+                    {
+                        var result = new AimTimerItem(
+                            aimTimer,
+                            new AimTimerItemModel(),
+                            container.Resolve<IDateTimeProvider>(),
+                            container.Resolve<Func<DateTime, DateTime?, IAimTimerInterval>>());
                         result.Init();
                         return result;
                     }
@@ -95,8 +120,8 @@ namespace AimTimers.Di
                     container.Resolve<IAimTimerService>(),
                     container.Resolve<IAimTimerListItemViewModelFactory>(),
                     container.Resolve<IAimTimerViewModelFactory>(),
-                    container.Resolve<Func<AimTimerModel, IAimTimer>>(),
-                    container.Resolve<Func<IAimTimer, AimTimerItemModel, IAimTimerItem>>());
+                    container.Resolve<Func<IAimTimer>>(),
+                    container.Resolve<Func<IAimTimer, IAimTimerItem>>());
                 //result.Init();
                 return result;
             });

@@ -101,6 +101,8 @@ namespace AimTimers.Bl
 
         public AimTimerItemModel GetAimTimerItemModel()
         {
+            var aimTimerModel = AimTimer.GetAimTimerModel();
+
             var aimTimerIntervalModels = new List<AimTimerIntervalModel>();
             foreach(var aimTimerInterval in AimTimerIntervals)
             {
@@ -114,7 +116,7 @@ namespace AimTimers.Bl
             return new AimTimerItemModel
             {
                 Id = _aimTimerItemModel.Id,
-                AimTimerId = _aimTimerItemModel.AimTimerId,
+                AimTimerId = aimTimerModel.Id,
                 Ticks = Ticks,
                 AimTimerIntervals = aimTimerIntervalModels,
                 StartOfActivityPeriod = StartOfActivityPeriod,

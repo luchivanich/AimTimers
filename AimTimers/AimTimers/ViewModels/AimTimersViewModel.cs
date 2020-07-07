@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using AimTimers.Bl;
-using AimTimers.Models;
 using AimTimers.Services;
 using AimTimers.Utils;
 using AimTimers.ViewModelFactories;
@@ -25,8 +24,8 @@ namespace AimTimers.ViewModels
         private readonly IAimTimerService _aimTimerService;
         private readonly IAimTimerListItemViewModelFactory _aimTimerItemViewModelFactory;
         private readonly IAimTimerViewModelFactory _aimTimerViewModelFactory;
-        private readonly Func<AimTimerModel, IAimTimer> _aimTimerFactory;
-        private readonly Func<IAimTimer, AimTimerItemModel, IAimTimerItem> _aimTimerItemFactory;
+        private readonly Func<IAimTimer> _aimTimerFactory;
+        private readonly Func<IAimTimer, IAimTimerItem> _aimTimerItemFactory;
 
         public ObservableCollection<IAimTimerListItemViewModel> AimTimerListItemViewModels { get; set; } = new ObservableCollection<IAimTimerListItemViewModel>();
 
@@ -44,13 +43,10 @@ namespace AimTimers.ViewModels
 
         private async Task ExecuteAddItemCommand()
         {
-            var aimTimer = _aimTimerFactory.Invoke(new AimTimerModel());
-            var itemToAdd = new AimTimerItemModel
-            {
-                StartOfActivityPeriod = _dateTimeProvider.GetStartOfTheDay(),
-                EndOfActivityPeriod = _dateTimeProvider.GetEndOfTheDay()
-            };
-            var aimTimerItem = _aimTimerItemFactory.Invoke(aimTimer, itemToAdd);
+            var aimTimer = _aimTimerFactory.Invoke();
+            var aimTimerItem = _aimTimerItemFactory.Invoke(aimTimer);
+            aimTimerItem.StartOfActivityPeriod = _dateTimeProvider.GetStartOfTheDay();
+            aimTimerItem.EndOfActivityPeriod = _dateTimeProvider.GetEndOfTheDay();
             await NavigateAimTimerView(aimTimerItem);
         }
 
@@ -140,8 +136,8 @@ namespace AimTimers.ViewModels
             IAimTimerService aimTimerService,
             IAimTimerListItemViewModelFactory aimTimerItemViewModelFactory,
             IAimTimerViewModelFactory aimTimerViewModelFactory,
-            Func<AimTimerModel, IAimTimer> aimTimerFactory,
-            Func<IAimTimer, AimTimerItemModel, IAimTimerItem> aimTimerItemFactory)
+            Func<IAimTimer> aimTimerFactory,
+            Func<IAimTimer, IAimTimerItem> aimTimerItemFactory)
         {
             _dateTimeProvider = dateTimeProvider;
             _aimTimerNotificationService = aimTimerNotificationService;
