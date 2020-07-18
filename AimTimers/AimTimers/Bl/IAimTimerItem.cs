@@ -12,11 +12,12 @@ namespace AimTimers.Bl
         List<IAimTimerInterval> AimTimerIntervals { get; set; }
         DateTime StartOfActivityPeriod { get; set; }
         DateTime EndOfActivityPeriod { get; set; }
-        void Refresh();
-        TimeSpan GetTimeLeft();
+        bool IsFinished { get; set; }
+        int InARow { get; set; }
+
+        AimTimerItemStatus GetStatus();
         void Start();
         void Stop();
-        AimTimerStatusFlags GetAimTimerStatusFlags();
         AimTimerItemModel GetAimTimerItemModel();
     }
 }

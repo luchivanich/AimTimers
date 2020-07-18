@@ -23,21 +23,28 @@ namespace AimTimers.ViewModels
         private readonly IAimTimerService _aimTimerService;
         private readonly IViewFactory _viewFactory;
         private readonly IAimTimerIntervalListItemViewModelFactory _aimTimerIntervalListItemViewModelFactory;
-        private readonly Func<DateTime, DateTime?, IAimTimerInterval> _aimTimerIntervalFactory;
+        private readonly Func<IAimTimerItem, DateTime, DateTime?, IAimTimerInterval> _aimTimerIntervalFactory;
         private readonly Func<IAimTimerItem, IAimTimerInterval, IAimTimerIntervalViewModel> _aimTimerIntervalViewModelFactory;
 
-        //private IAimTimer _aimTimer;
         private IAimTimerItem _aimTimerItem;
 
         public string Title => _aimTimerItem.AimTimer.Title;
 
-        public AimTimerStatusFlags Status => _aimTimerItem.GetAimTimerStatusFlags();
+        private AimTimerItemStatus _status;
+        public AimTimerItemStatus Status
+        {
+            get => _status;
+            set
+            {
+                _status = value;
+                OnPropertyChanged(new PropertyChangedEventArgs(nameof(Status)));
+                OnPropertyChanged(new PropertyChangedEventArgs(nameof(TimePassed)));
+            }
+        }
 
         public TimeSpan Time => new TimeSpan(_aimTimerItem.Ticks);
 
-        public TimeSpan TimeLeft => _aimTimerItem.GetTimeLeft();
-
-        public TimeSpan TimePassed => Time - new TimeSpan(TimeLeft.Hours, TimeLeft.Minutes, TimeLeft.Seconds);
+        public TimeSpan TimePassed => Time - new TimeSpan(Status.TimeLeft.Hours, Status.TimeLeft.Minutes, Status.TimeLeft.Seconds);
 
         public string EndOfActivityPeriod => _aimTimerItem.EndOfActivityPeriod.ToLongTimeString() ?? string.Empty;
 
@@ -67,7 +74,7 @@ namespace AimTimers.ViewModels
 
         private void ExecutePlayPauseItemCommand()
         {
-            if ((Status & AimTimerStatusFlags.Running) == AimTimerStatusFlags.Running)
+            if ((Status.StatusFlags & AimTimerStatusFlags.Running) == AimTimerStatusFlags.Running)
             {
                 _aimTimerItem.Stop();
             }
@@ -75,9 +82,10 @@ namespace AimTimers.ViewModels
             {
                 _aimTimerItem.Start();
             }
-            _aimTimerService.AddAimTimer(_aimTimerItem);
+            _aimTimerService.SaveAimTimer(_aimTimerItem);
+            
+            Status = _aimTimerItem.GetStatus();
             LoadIntervals();
-            OnPropertyChanged(new PropertyChangedEventArgs(nameof(Status)));
             OnPropertyChanged(new PropertyChangedEventArgs(nameof(IsExpandable)));
         }
 
@@ -120,7 +128,8 @@ namespace AimTimers.ViewModels
 
         private async Task ExecuteAddIntervalItemCommand()
         {
-            var interval = _aimTimerIntervalFactory.Invoke(_dateTimeProvider.GetNow(), _dateTimeProvider.GetNow());
+            var now = _dateTimeProvider.GetNow();
+            var interval = _aimTimerIntervalFactory.Invoke(_aimTimerItem, now, now);
             var aimTimerIntervalListItemViewModel = _aimTimerIntervalListItemViewModelFactory.Create(interval, this);
 
             var aimTimerIntervalViewModel = _aimTimerIntervalViewModelFactory.Invoke(_aimTimerItem, aimTimerIntervalListItemViewModel.AimTimerInterval);
@@ -143,7 +152,7 @@ namespace AimTimers.ViewModels
             {
                 _aimTimerItem.AimTimerIntervals.Remove(aimTimerIntervalListItemViewModel.AimTimerInterval);
                 Remove(aimTimerIntervalListItemViewModel);
-                _aimTimerService.AddAimTimer(_aimTimerItem);
+                _aimTimerService.SaveAimTimer(_aimTimerItem);
                 Refresh();
                 OnPropertyChanged(new PropertyChangedEventArgs(nameof(IsExpandable)));
                 if (!IsExpandable)
@@ -152,19 +161,6 @@ namespace AimTimers.ViewModels
                 }
             }
         }
-
-        //public ICommand MinusDayCommand
-        //{
-        //    get
-        //    {
-        //        return new Command(() => ExecuteMinusDayCommand());
-        //    }
-        //}
-
-        //private void ExecuteMinusDayCommand()
-        //{
-
-        //}
 
         #endregion
 
@@ -176,7 +172,7 @@ namespace AimTimers.ViewModels
             IAimTimerService aimTimerService,
             IViewFactory viewFactory,
             IAimTimerIntervalListItemViewModelFactory aimTimerIntervalListItemViewModelFactory,
-            Func<DateTime, DateTime?, IAimTimerInterval> aimTimerIntervalFactory,
+            Func<IAimTimerItem, DateTime, DateTime?, IAimTimerInterval> aimTimerIntervalFactory,
             Func<IAimTimerItem, IAimTimerInterval, IAimTimerIntervalViewModel> aimTimerIntervalViewModelFactory)
         {
             _dateTimeProvider = dateTimeProvider;
@@ -201,26 +197,16 @@ namespace AimTimers.ViewModels
             return _aimTimerItem;
         }
 
-        public void RefreshTimeLeft()
+        public void Refresh()
         {
-            //_aimTimer.RefreshTimeLeft();
-            OnPropertyChanged(new PropertyChangedEventArgs(nameof(TimeLeft)));
-            OnPropertyChanged(new PropertyChangedEventArgs(nameof(TimePassed)));
-            OnPropertyChanged(new PropertyChangedEventArgs(nameof(Status)));
+            Status = _aimTimerItem.GetStatus();
+            OnPropertyChanged(new PropertyChangedEventArgs(nameof(Title)));
+            OnPropertyChanged(new PropertyChangedEventArgs(nameof(Time)));
 
-            foreach(var item in this)
+            foreach (var item in this)
             {
                 item.Refresh();
             }
-        }
-
-        public void Refresh()
-        {
-            OnPropertyChanged(new PropertyChangedEventArgs(nameof(Title)));
-            OnPropertyChanged(new PropertyChangedEventArgs(nameof(Time)));
-            OnPropertyChanged(new PropertyChangedEventArgs(nameof(Status)));
-
-            RefreshTimeLeft();
         }
 
         private void LoadIntervals()

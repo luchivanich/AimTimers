@@ -47,7 +47,7 @@
                         <StackLayout 
                             Orientation="Horizontal"
                             Spacing="0"
-                            BackgroundColor="{Binding Status, Converter={StaticResource StatusFlagsToBackgroundColorConverter}}">
+                            BackgroundColor="{Binding Status.StatusFlags, Converter={StaticResource StatusFlagsToBackgroundColorConverter}}">
                             <StackLayout Orientation="Vertical" Padding="10" HorizontalOptions="FillAndExpand">
                                 <StackLayout.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding PlayPauseItemCommand}"/>
@@ -63,7 +63,7 @@
                                         HorizontalOptions="Start"
                                         FontSize="20" />
                                     <Label 
-                                        Text="{Binding Status, Converter={StaticResource AimTimerStatusToStringConverter}}"  
+                                        Text="{Binding Status.StatusFlags, Converter={StaticResource AimTimerStatusToStringConverter}}"  
                                         Style="{DynamicResource ListItemTextStyle}"
                                         FontAttributes="Bold"
                                         HorizontalOptions="EndAndExpand"
@@ -104,14 +104,14 @@
                                                 <Label.Triggers>
                                                     <DataTrigger
                                                         TargetType="Label"
-                                                        Binding="{Binding Status, Converter={StaticResource IsActiveStatusConverter}}"
+                                                        Binding="{Binding Status.StatusFlags, Converter={StaticResource IsActiveStatusConverter}}"
                                                         Value="False">
                                                         <Setter Property="IsVisible" Value="true" />
                                                     </DataTrigger>
                                                 </Label.Triggers>
                                             </Label>
                                             <Label
-                                                Text="{Binding TimeLeft, StringFormat='{}{0:hh\\:mm\\:ss}'}"
+                                                Text="{Binding Status.TimeLeft, StringFormat='{}{0:hh\\:mm\\:ss}'}"
                                                 VerticalOptions="Center"
                                                 Style="{DynamicResource ListItemDetailTextStyle}"
                                                 FontAttributes="Bold"
@@ -188,7 +188,7 @@
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
-                        <StackLayout BackgroundColor="{Binding Parent.Status, Converter={StaticResource StatusFlagsToBackgroundColorConverter}}">
+                        <StackLayout BackgroundColor="{Binding Parent.Status.StatusFlags, Converter={StaticResource StatusFlagsToBackgroundColorConverter}}">
                             <StackLayout 
                                 Orientation="Horizontal"
                                 Margin="30,10,30,10">

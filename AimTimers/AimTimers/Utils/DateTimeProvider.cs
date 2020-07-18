@@ -10,7 +10,8 @@ namespace AimTimers.Utils
 
         public DateTime GetNow()
         {
-            return _now ?? DateTime.Now;
+            var result = _now ?? DateTime.Now;
+            return new DateTime(result.Year, result.Month, result.Day, result.Hour, result.Minute, result.Second);
         }
 
         public void SetNow(DateTime? dateTime)

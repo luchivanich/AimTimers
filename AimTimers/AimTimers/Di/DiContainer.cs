@@ -70,7 +70,7 @@ namespace AimTimers.Di
                             aimTimer,
                             new AimTimerItemModel(),
                             container.Resolve<IDateTimeProvider>(),
-                            container.Resolve<Func<DateTime, DateTime?, IAimTimerInterval>>());
+                            container.Resolve<Func<IAimTimerItem, DateTime, DateTime?, IAimTimerInterval>>());
                         result.Init();
                         return result;
                     }
@@ -84,15 +84,15 @@ namespace AimTimers.Di
                             aimTimer, 
                             aimTimerItemModel, 
                             container.Resolve<IDateTimeProvider>(),
-                            container.Resolve<Func<DateTime, DateTime?, IAimTimerInterval>>());
+                            container.Resolve<Func<IAimTimerItem, DateTime, DateTime?, IAimTimerInterval>>());
                         result.Init();
                         return result;
                     }
                 )
             );
-            unityContainer.RegisterFactory<Func<DateTime, DateTime?, IAimTimerInterval>>(
-                container => new Func<DateTime, DateTime?, IAimTimerInterval>(
-                    (startDate, endDate) => new AimTimerInterval { StartDate = startDate, EndDate = endDate }
+            unityContainer.RegisterFactory<Func<IAimTimerItem, DateTime, DateTime?, IAimTimerInterval>>(
+                container => new Func<IAimTimerItem, DateTime, DateTime?, IAimTimerInterval>(
+                    (timerItem, startDate, endDate) => new AimTimerInterval (timerItem) { StartDate = startDate, EndDate = endDate }
                 )
             );
 
@@ -112,6 +112,7 @@ namespace AimTimers.Di
             {
                 var result = new AimTimersViewModel(
                     container.Resolve<IDateTimeProvider>(),
+                    container.Resolve<ITimer>(),
                     container.Resolve<IAimTimerNotificationService>(),
                     container.Resolve<INavigation>(),
                     container.Resolve<IAlertManager>(),

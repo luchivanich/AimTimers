@@ -17,7 +17,7 @@ namespace AimTimers.ViewModelFactories
         private readonly IAimTimerService _aimTimerService;
         private readonly IViewFactory _viewFactory;
         private readonly IAimTimerIntervalListItemViewModelFactory _aimTimerIntervalListItemViewModelFactory;
-        private readonly Func<DateTime, DateTime?, IAimTimerInterval> _aimTimerIntervalFactory;
+        private readonly Func<IAimTimerItem, DateTime, DateTime?, IAimTimerInterval> _aimTimerIntervalFactory;
         private readonly Func<IAimTimerItem, IAimTimerInterval, IAimTimerIntervalViewModel> _aimTimerIntervalViewModelFactory;
 
         public AimTimerListItemViewModelFactory(
@@ -28,7 +28,7 @@ namespace AimTimers.ViewModelFactories
             IAimTimerService aimTimerService,
             IViewFactory viewFactory,
             IAimTimerIntervalListItemViewModelFactory aimTimerIntervalListItemViewModelFactory,
-            Func<DateTime, DateTime?, IAimTimerInterval> aimTimerIntervalFactory,
+            Func<IAimTimerItem, DateTime, DateTime?, IAimTimerInterval> aimTimerIntervalFactory,
             Func<IAimTimerItem, IAimTimerInterval, IAimTimerIntervalViewModel> aimTimerIntervalViewModelFactory)
         {
             _dateTimeProvider = dateTimeProvider;

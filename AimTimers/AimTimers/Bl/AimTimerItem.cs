@@ -9,7 +9,7 @@ namespace AimTimers.Bl
     public class AimTimerItem : IAimTimerItem
     {
         private readonly IDateTimeProvider _dateTimeProvider;
-        private readonly Func<DateTime, DateTime?, IAimTimerInterval> _aimTimerIntervalFactory;
+        private readonly Func<IAimTimerItem, DateTime, DateTime?, IAimTimerInterval> _aimTimerIntervalFactory;
 
         private AimTimerItemModel _aimTimerItemModel;
 
@@ -18,12 +18,14 @@ namespace AimTimers.Bl
         public List<IAimTimerInterval> AimTimerIntervals { get; set; } = new List<IAimTimerInterval>();
         public DateTime StartOfActivityPeriod { get; set; }
         public DateTime EndOfActivityPeriod { get; set; }
+        public bool IsFinished { get; set; }
+        public int InARow { get; set; }
 
         public AimTimerItem(
             IAimTimer aimTimer,
             AimTimerItemModel aimTimerItemModel,
             IDateTimeProvider dateTimeProvider,
-            Func<DateTime, DateTime?, IAimTimerInterval> aimTimerIntervalFactory)
+            Func<IAimTimerItem, DateTime, DateTime?, IAimTimerInterval> aimTimerIntervalFactory)
         {
             AimTimer = aimTimer;
             _aimTimerItemModel = aimTimerItemModel;
@@ -36,26 +38,43 @@ namespace AimTimers.Bl
             Ticks = _aimTimerItemModel.Ticks;
             foreach (var aimTimerIntervalModel in _aimTimerItemModel.AimTimerIntervals)
             {
-                var aimTimerInterval = _aimTimerIntervalFactory.Invoke(aimTimerIntervalModel.StartDate, aimTimerIntervalModel.EndDate);
+                var aimTimerInterval = _aimTimerIntervalFactory.Invoke(this, aimTimerIntervalModel.StartDate, aimTimerIntervalModel.EndDate);
                 AimTimerIntervals.Add(aimTimerInterval);
             }
             StartOfActivityPeriod = _aimTimerItemModel.StartOfActivityPeriod;
             EndOfActivityPeriod = _aimTimerItemModel.EndOfActivityPeriod;
+            IsFinished = _aimTimerItemModel.IsFinished;
+            InARow = _aimTimerItemModel.InARow;
         }
 
-        public void Refresh()
-        {
-            foreach (var item in AimTimerIntervals.Where(i => i.EndDate > EndOfActivityPeriod || (i.EndDate == null && DateTime.Now > EndOfActivityPeriod)))
-            {
-                item.EndDate = EndOfActivityPeriod;
-            }
-        }
-
-        public TimeSpan GetTimeLeft()
+        public AimTimerItemStatus GetStatus()
         {
             var now = _dateTimeProvider.GetNow();
-            Refresh();
-            return new TimeSpan(Ticks) - new TimeSpan(AimTimerIntervals.Sum(i => (i.EndDate ?? now).Ticks - i.StartDate.Ticks));
+            var result = new AimTimerItemStatus()
+            {
+                StatusFlags = AimTimerStatusFlags.None,
+                TimeLeft = new TimeSpan(Ticks) - new TimeSpan(AimTimerIntervals.Sum(i => (i.EndDate ?? now).Ticks - i.StartDate.Ticks))
+            };
+            
+            var interval = AimTimerIntervals
+                .Where(i => i.StartDate <= now && i.EndDate >= now || i.EndDate == null)
+                .OrderByDescending(i => i.EndDate ?? DateTime.MaxValue)
+                .FirstOrDefault();
+
+            if (interval != null && interval.EndDate == null)
+            {
+                result.StatusFlags |= AimTimerStatusFlags.Running;
+            }
+
+            if (result.TimeLeft.Ticks > 0)
+            {
+                result.StatusFlags |= AimTimerStatusFlags.Active;
+            }
+
+            result.IsFinished = result.TimeLeft.Ticks <= 0;
+            result.InARow = InARow + (result.IsFinished ? 1 : 0);
+
+            return result;
         }
 
         public void Start()
@@ -66,7 +85,7 @@ namespace AimTimers.Bl
                 return;
             }
 
-            var aimTimerInterval = _aimTimerIntervalFactory.Invoke(now, null);
+            var aimTimerInterval = _aimTimerIntervalFactory.Invoke(this, now, null);
             AimTimerIntervals.Add(aimTimerInterval);
         }
 
@@ -80,23 +99,6 @@ namespace AimTimers.Bl
             }
 
             lastInterval.EndDate = now;
-        }
-
-        public AimTimerStatusFlags GetAimTimerStatusFlags()
-        {
-            var result = AimTimerStatusFlags.None;
-            var now = _dateTimeProvider.GetNow();
-            Refresh();
-            var interval = AimTimerIntervals.FirstOrDefault(i => i.StartDate <= now && i.EndDate >= now || i.EndDate == null);
-            if (interval != null && interval.EndDate == null)
-            {
-                result |= AimTimerStatusFlags.Running;
-            }
-            if (GetTimeLeft().Ticks > 0)
-            {
-                result |= AimTimerStatusFlags.Active;
-            }
-            return result;
         }
 
         public AimTimerItemModel GetAimTimerItemModel()

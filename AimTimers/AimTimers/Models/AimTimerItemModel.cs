@@ -10,5 +10,7 @@ namespace AimTimers.Models
         public List<AimTimerIntervalModel> AimTimerIntervals { get; set; } = new List<AimTimerIntervalModel>();
         public DateTime StartOfActivityPeriod { get; set; }
         public DateTime EndOfActivityPeriod { get; set; }
+        public bool IsFinished { get; set; }
+        public int InARow { get; set; }
     }
 }

@@ -56,7 +56,7 @@ namespace AimTimers.Services
             return result;
         }
 
-        public void AddAimTimer(IAimTimerItem aimTimerItem)
+        public void SaveAimTimer(IAimTimerItem aimTimerItem)
         {
             var aimTimerModel = aimTimerItem.AimTimer.GetAimTimerModel();
             var aimTimerItemModel = aimTimerItem.GetAimTimerItemModel();

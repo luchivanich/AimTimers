@@ -71,7 +71,7 @@ namespace AimTimers.ViewModels
                 _aimTimerItem.AimTimer.Title = Title;
                 _aimTimerItem.Ticks = Time.Ticks;
                 _aimTimerItem.AimTimer.Ticks = Time.Ticks;
-                _aimTimerService.AddAimTimer(_aimTimerItem);
+                _aimTimerService.SaveAimTimer(_aimTimerItem);
                 _messagingCenter.Send(_aimTimerItem, MessagingCenterMessages.AimTimerUpdated);
             }
             await _navigation.PopPopupAsync();
