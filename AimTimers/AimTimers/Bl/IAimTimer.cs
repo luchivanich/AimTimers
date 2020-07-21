@@ -9,5 +9,7 @@ namespace AimTimers.Bl
         long Ticks { get; set; }
         DateTime OriginDate { get; set; }
         AimTimerModel GetAimTimerModel();
+        int GetIndexByDate(DateTime date);
+        (DateTime startDate, DateTime endDate) GetPeriodByIndex(int index);
     }
 }

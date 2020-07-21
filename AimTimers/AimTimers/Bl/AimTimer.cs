@@ -35,5 +35,16 @@ namespace AimTimers.Bl
                 OriginDate = OriginDate,
             };
         }
+
+        public int GetIndexByDate(DateTime date)
+        {
+            return (int)(date.Date - OriginDate.Date).TotalDays;
+        }
+
+        public (DateTime startDate, DateTime endDate) GetPeriodByIndex(int index)
+        {
+            var date = OriginDate.AddDays(index);
+            return (date.Date, date.Date.AddDays(1).AddMilliseconds(-1));
+        }
     }
 }

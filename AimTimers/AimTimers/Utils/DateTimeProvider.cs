@@ -18,15 +18,5 @@ namespace AimTimers.Utils
         {
             _now = dateTime;
         }
-
-        public DateTime GetStartOfTheDay()
-        {
-            return GetNow().Date;
-        }
-
-        public DateTime GetEndOfTheDay()
-        {
-            return GetNow().Date.AddDays(1).AddMilliseconds(-1);
-        }
     }
 }

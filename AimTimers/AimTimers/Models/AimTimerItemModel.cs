@@ -11,6 +11,7 @@ namespace AimTimers.Models
         public DateTime StartOfActivityPeriod { get; set; }
         public DateTime EndOfActivityPeriod { get; set; }
         public bool IsFinished { get; set; }
-        public int InARow { get; set; }
+        public int PreviousInARow { get; set; }
+        public int Index { get; set; }
     }
 }

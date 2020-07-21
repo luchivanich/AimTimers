@@ -39,8 +39,11 @@ namespace AimTimers.ViewModels
                 _status = value;
                 OnPropertyChanged(new PropertyChangedEventArgs(nameof(Status)));
                 OnPropertyChanged(new PropertyChangedEventArgs(nameof(TimePassed)));
+                OnPropertyChanged(new PropertyChangedEventArgs(nameof(InARow)));
             }
         }
+
+        public string InARow => Status.InARow.ToString();
 
         public TimeSpan Time => new TimeSpan(_aimTimerItem.Ticks);
 

@@ -55,18 +55,32 @@
                                 </StackLayout.GestureRecognizers>
                                 <StackLayout Orientation="Horizontal">
                                     <Label 
-                                        Text="{Binding Title}" 
-                                        LineBreakMode="NoWrap" 
+                                        Text="{Binding Title}"
+                                        LineBreakMode="NoWrap"
                                         Style="{DynamicResource ListItemTextStyle}"
                                         FontAttributes="Bold"
                                         VerticalOptions="Center"
                                         HorizontalOptions="Start"
                                         FontSize="20" />
-                                    <Label 
-                                        Text="{Binding Status.StatusFlags, Converter={StaticResource AimTimerStatusToStringConverter}}"  
+                                    <!--<Label 
+                                        Text="{Binding Status.StatusFlags, Converter={StaticResource AimTimerStatusToStringConverter}}" 
                                         Style="{DynamicResource ListItemTextStyle}"
                                         FontAttributes="Bold"
                                         HorizontalOptions="EndAndExpand"
+                                        VerticalOptions="Center"
+                                        FontSize="15" />-->
+                                    <Label 
+                                        Text="{Binding InARow}"
+                                        Style="{DynamicResource ListItemTextStyle}"
+                                        FontAttributes="Bold"
+                                        HorizontalOptions="EndAndExpand"
+                                        VerticalOptions="Center"
+                                        FontSize="15" />
+                                    <Label 
+                                        Text="in a row"
+                                        Style="{DynamicResource ListItemTextStyle}"
+                                        FontAttributes="Bold"
+                                        HorizontalOptions="End"
                                         VerticalOptions="Center"
                                         FontSize="15" />
                                 </StackLayout>

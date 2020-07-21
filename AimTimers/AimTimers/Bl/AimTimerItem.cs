@@ -44,7 +44,7 @@ namespace AimTimers.Bl
             StartOfActivityPeriod = _aimTimerItemModel.StartOfActivityPeriod;
             EndOfActivityPeriod = _aimTimerItemModel.EndOfActivityPeriod;
             IsFinished = _aimTimerItemModel.IsFinished;
-            InARow = _aimTimerItemModel.InARow;
+            InARow = _aimTimerItemModel.PreviousInARow;
         }
 
         public AimTimerItemStatus GetStatus()

@@ -32,43 +32,82 @@ namespace AimTimers.Services
             var now = _dateTimeProvider.GetNow();
             var aimTimerModels = _repository.LoadAll<AimTimerModel>();
             var result = new List<IAimTimerItem>();
-            foreach(var aimTimerModel in aimTimerModels)
+            foreach (var aimTimerModel in aimTimerModels)
             {
                 var aimTimer = _aimTimerFactory.Invoke(aimTimerModel);
-                var tmp = _repository
-                    .LoadAll<AimTimerItemModel>();
-                var itemToAdd = _repository
-                    .LoadAll<AimTimerItemModel>()
-                    .FirstOrDefault(i => i.StartOfActivityPeriod <= now && i.EndOfActivityPeriod >= now);
-
-                if (itemToAdd == null)
+                var indexForCurrentPeriod = aimTimer.GetIndexByDate(now);
+                if (indexForCurrentPeriod < 0)
                 {
-                    itemToAdd = new AimTimerItemModel
-                    {
-                        StartOfActivityPeriod = _dateTimeProvider.GetStartOfTheDay(),
-                        EndOfActivityPeriod = _dateTimeProvider.GetEndOfTheDay(),
-                        Ticks = aimTimerModel.Ticks
-                    };
+                    continue;
                 }
 
-                result.Add(_aimTimerItemFactory.Invoke(aimTimer, itemToAdd));
+                var allItems = _repository
+                    .LoadAllByKey<AimTimerItemModel>("aimTimerId", aimTimerModel.Id)
+                    .Where(i => i.Index <= indexForCurrentPeriod)
+                    .OrderByDescending(i => i.Index)
+                    .ToList();
+
+                var latestItem = allItems.FirstOrDefault();
+                var startIndex = latestItem?.Index + 1 ?? GlobalConstants.START_INDEX;
+
+                for (var aimTimerItemIndex = startIndex; aimTimerItemIndex < indexForCurrentPeriod; aimTimerItemIndex++)
+                {
+                    var period = aimTimer.GetPeriodByIndex(aimTimerItemIndex);
+                    var itemToAdd = new AimTimerItemModel
+                    {
+                        AimTimerId = aimTimerModel.Id,
+                        StartOfActivityPeriod = period.startDate,
+                        EndOfActivityPeriod = period.endDate,
+                        Ticks = aimTimerModel.Ticks,
+                        PreviousInARow = latestItem.IsFinished ? latestItem.PreviousInARow + 1 : 0,
+                        IsFinished = false,
+                        Index = aimTimerItemIndex
+                    };
+                    _repository.Save(itemToAdd);
+                    latestItem = itemToAdd;
+                }
+
+                result.Add(_aimTimerItemFactory.Invoke(aimTimer, latestItem));
             }
             return result;
         }
 
         public void SaveAimTimer(IAimTimerItem aimTimerItem)
         {
+            var now = _dateTimeProvider.GetNow();
+
+            var status = aimTimerItem.GetStatus();
+
             var aimTimerModel = aimTimerItem.AimTimer.GetAimTimerModel();
             var aimTimerItemModel = aimTimerItem.GetAimTimerItemModel();
-            _repository.Save(aimTimerModel, aimTimerModel.Id);
             aimTimerItemModel.AimTimerId = aimTimerModel.Id;
+            aimTimerItemModel.IsFinished = status.IsFinished;
+            aimTimerItemModel.Index = aimTimerItem.AimTimer.GetIndexByDate(aimTimerItem.StartOfActivityPeriod);
+
+            _repository.Save(aimTimerModel, aimTimerModel.Id);
             _repository.Save(aimTimerItemModel, aimTimerItemModel.Id);
+
+            var itemsToUpdate = _repository
+                .LoadAllByKey<AimTimerItemModel>("aimTimerId", aimTimerModel.Id)
+                .Where(i => i.StartOfActivityPeriod > now)
+                .OrderBy(i => i.StartOfActivityPeriod)
+                .ToList();
+
+            var inARow = aimTimerItemModel.IsFinished ? aimTimerItemModel.PreviousInARow + 1 : 0;
+
+            foreach(var i in itemsToUpdate)
+            {
+                i.PreviousInARow = inARow;
+                inARow = i.IsFinished ? i.PreviousInARow + 1 : 0;
+                _repository.Save(i, i.Id);
+            }
+
         }
 
         public void DeleteAimTimer(IAimTimer aimTimer)
         {
             var aimTimerModel = aimTimer.GetAimTimerModel();
-            var aimTimerItemModels = _repository.LoadAll<AimTimerItemModel>().Where(i => i.AimTimerId == aimTimerModel.Id).ToList();
+            var aimTimerItemModels = _repository.LoadAllByKey<AimTimerItemModel>("aimTimerId", aimTimerModel.Id);
             foreach(var aimTimerItemModel in aimTimerItemModels)
             {
                 _repository.Delete(aimTimerItemModel.Id);

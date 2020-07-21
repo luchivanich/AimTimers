@@ -55,17 +55,10 @@ namespace AimTimers.Repository
 
         public void Save<T>(T model, string id)
         {
-            try
+            using (var modelAsDocument = model.ToMutableDocument(id))
             {
-                using (var modelAsDocument = model.ToMutableDocument(id))
-                {
-                    modelAsDocument.SetString(TYPE_PROPERTY, typeof(T).Name);
-                    Database.Save(modelAsDocument);
-                }
-            }
-            catch(Exception e)
-            {
-
+                modelAsDocument.SetString(TYPE_PROPERTY, typeof(T).Name);
+                Database.Save(modelAsDocument);
             }
         }
 
@@ -84,18 +77,34 @@ namespace AimTimers.Repository
             {
                 foreach (var item in query.Execute())
                 {
-                    try
-                    {
-                        var body = item.GetDictionary(0);
-                        var jsonString = JsonConvert.SerializeObject(body);
-                        var resultItem = JsonConvert.DeserializeObject<T>(jsonString);
-                        resultItem.Id = item[1].String;
-                        result.Add(resultItem);
-                    }
-                    catch(Exception e)
-                    {
+                    var body = item.GetDictionary(0);
+                    var jsonString = JsonConvert.SerializeObject(body);
+                    var resultItem = JsonConvert.DeserializeObject<T>(jsonString);
+                    resultItem.Id = item[1].String;
+                    result.Add(resultItem);
+                }
+            }
+            return result;
+        }
 
-                    }
+        public List<T> LoadAllByKey<T>(string key, object value) where T: IModel
+        {
+            var result = new List<T>();
+            using (var query = QueryBuilder
+                .Select(SelectResult.All(), SelectResult.Expression(Meta.ID))
+                .From(DataSource.Database(Database))
+                .Where(
+                    Expression.Property(TYPE_PROPERTY).EqualTo(Expression.String(typeof(T).Name))
+                    .And(Expression.Property(key).EqualTo(Expression.Value(value))))
+                )
+            {
+                foreach (var item in query.Execute())
+                {
+                    var body = item.GetDictionary(0);
+                    var jsonString = JsonConvert.SerializeObject(body);
+                    var resultItem = JsonConvert.DeserializeObject<T>(jsonString);
+                    resultItem.Id = item[1].String;
+                    result.Add(resultItem);
                 }
             }
             return result;

@@ -28,7 +28,7 @@ namespace AimTimers.ViewModels
         private readonly IAimTimerService _aimTimerService;
         private readonly IAimTimerListItemViewModelFactory _aimTimerItemViewModelFactory;
         private readonly IAimTimerViewModelFactory _aimTimerViewModelFactory;
-        private readonly Func<IAimTimer> _aimTimerFactory;
+        private readonly Func<DateTime, IAimTimer> _aimTimerFactory;
         private readonly Func<IAimTimer, IAimTimerItem> _aimTimerItemFactory;
 
         public ObservableCollection<IAimTimerListItemViewModel> AimTimerListItemViewModels { get; set; } = new ObservableCollection<IAimTimerListItemViewModel>();
@@ -47,10 +47,13 @@ namespace AimTimers.ViewModels
 
         private async Task ExecuteAddItemCommand()
         {
-            var aimTimer = _aimTimerFactory.Invoke();
+            var now = _dateTimeProvider.GetNow();
+            var aimTimer = _aimTimerFactory.Invoke(now);
+            var period = aimTimer.GetPeriodByIndex(GlobalConstants.START_INDEX);
+
             var aimTimerItem = _aimTimerItemFactory.Invoke(aimTimer);
-            aimTimerItem.StartOfActivityPeriod = _dateTimeProvider.GetStartOfTheDay();
-            aimTimerItem.EndOfActivityPeriod = _dateTimeProvider.GetEndOfTheDay();
+            aimTimerItem.StartOfActivityPeriod = period.startDate;
+            aimTimerItem.EndOfActivityPeriod = period.endDate;
             await NavigateAimTimerView(aimTimerItem);
         }
 
@@ -141,7 +144,7 @@ namespace AimTimers.ViewModels
             IAimTimerService aimTimerService,
             IAimTimerListItemViewModelFactory aimTimerItemViewModelFactory,
             IAimTimerViewModelFactory aimTimerViewModelFactory,
-            Func<IAimTimer> aimTimerFactory,
+            Func<DateTime, IAimTimer> aimTimerFactory,
             Func<IAimTimer, IAimTimerItem> aimTimerItemFactory)
         {
             _dateTimeProvider = dateTimeProvider;

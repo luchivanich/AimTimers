@@ -7,7 +7,5 @@ namespace AimTimers.Utils
         bool IsToday { get; }
         DateTime GetNow();
         void SetNow(DateTime? dateTime);
-        DateTime GetStartOfTheDay();
-        DateTime GetEndOfTheDay();
     }
 }
